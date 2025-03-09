@@ -1,4 +1,3 @@
-<!-- resources/views/admin/quanlyungvien.blade.php -->
 @extends('layouts.admin')
 
 @section('title', 'Quản lý danh sách ứng viên')
@@ -15,22 +14,36 @@
             <span class="badge bg-secondary">Actor: HR</span>
             <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCandidateModal">Thêm mới</button>
         </div>
+        <form method="GET" action="{{ route('admin.candidates') }}" id="searchForm">
+            <div class="row mb-3">
+                <div class="col">
+                    <input type="text" class="form-control" name="name" placeholder="Tìm họ và tên" value="{{ request('name') }}" onchange="document.getElementById('searchForm').submit();">
+                </div>
+                <div class="col">
+                    <input type="text" class="form-control" name="email" placeholder="Tìm theo email" value="{{ request('email') }}" onchange="document.getElementById('searchForm').submit();">
+                </div>
+                <div class="col">
+                    <input type="text" class="form-control" name="phone" placeholder="Tìm theo SĐT" value="{{ request('phone') }}" onchange="document.getElementById('searchForm').submit();">
+                </div>
+                <div class="col">
+                    <select class="form-control" name="school_id" onchange="document.getElementById('searchForm').submit();">
+                        <option value="">Chọn trường</option>
+                        @foreach($schools as $school)
+                            <option value="{{ $school->id }}" {{ request('school_id') == $school->id ? 'selected' : '' }}>{{ $school->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+        </form>
         <table class="table table-bordered text-center">
             <thead class="bg-light">
                 <tr>
                     <th>Mã ứng viên</th>
                     <th>Thời gian nộp</th>
-                    <th>Họ và tên <input type="text" class="form-control" placeholder="Tìm họ và tên"></th>
-                    <th>Email <input type="text" class="form-control" placeholder="Tìm theo email"> </th>
-                    <th>Số điện thoại <input type="text" class="form-control" placeholder="Tìm theo SĐT"> </th>
-                    <th>Trường 
-                        <select class="form-control mt-2">
-                            <option value="">Chọn trường</option>
-                            <option value="truong1">Trường 1</option>
-                            <option value="truong2">Trường 2</option>
-                            <option value="truong3">Trường 3</option>
-                        </select> 
-                    </th>
+                    <th>Họ và tên</th>
+                    <th>Email</th>
+                    <th>Số điện thoại</th>
+                    <th>Trường</th>
                     <th>CV</th>
                     <th>Trạng thái</th>
                     <th>Hành động</th>
@@ -39,12 +52,12 @@
             <tbody>
                 @foreach($candidates as $candidate)
                 <tr>
-                    <td>TTS00{{ $candidate->id }}</td>
+                    <td>{{ $candidate->id }}</td>
                     <td>{{ $candidate->created_at }}</td>
                     <td>{{ $candidate->name }}</td>
                     <td>{{ $candidate->email }}</td>
                     <td>{{ $candidate->phone }}</td>
-                    <td>{{ $candidate->school }}</td>
+                    <td>{{ $candidate->school->name }}</td>
                     <td>
                         <a href="{{ route('admin.candidates.show', $candidate->id) }}" >Xem CV</a>
                     </td>
@@ -85,7 +98,11 @@
                                     </div>
                                     <div class="mb-3">
                                         <label for="candidateSchool-{{ $candidate->id }}" class="form-label">Trường</label>
-                                        <input type="text" class="form-control" id="candidateSchool-{{ $candidate->id }}" name="school" value="{{ $candidate->school }}" required>
+                                        <select class="form-control mt-2" id="candidateSchool-{{ $candidate->id }}" name="school_id" required>
+                                            @foreach($schools as $school)
+                                                <option value="{{ $school->id }}" {{ $candidate->school_id == $school->id ? 'selected' : '' }}>{{ $school->name }}</option>
+                                            @endforeach
+                                        </select>
                                     </div>
                                     <div class="mb-3">
                                         <label for="candidateCV-{{ $candidate->id }}" class="form-label">CV</label>
@@ -128,11 +145,11 @@
                         </div>
                         <div class="mb-3">
                             <label for="candidateSchool" class="form-label">Trường</label>
-                            <select class="form-control mt-2" id="candidateSchool" name="school" required>
+                            <select class="form-control mt-2" id="candidateSchool" name="school_id" required>
                                 <option value="">Chọn trường</option>
-                                <option value="truong1">Trường 1</option>
-                                <option value="truong2">Trường 2</option>
-                                <option value="truong3">Trường 3</option>
+                                @foreach($schools as $school)
+                                    <option value="{{ $school->id }}">{{ $school->name }}</option>
+                                @endforeach
                             </select> 
                         </div>
                         <div class="mb-3">

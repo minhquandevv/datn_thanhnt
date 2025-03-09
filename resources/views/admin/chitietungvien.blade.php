@@ -11,7 +11,7 @@
             <p><strong>Họ và tên:</strong> {{ $candidate->name }}</p>
             <p><strong>Email:</strong> {{ $candidate->email }}</p>
             <p><strong>Số điện thoại:</strong> {{ $candidate->phone }}</p>
-            <p><strong>Trường:</strong> {{ $candidate->school }}</p>
+            <p><strong>Trường:</strong> {{ $candidate->school->name }}</p>
             <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editCandidateModal">Sửa thông tin</button>
         </div>
     </div>
@@ -31,7 +31,7 @@
     </form> 
     <h4 class="mb-3">Xem CV</h4>
     <div class="embed-responsive embed-responsive-16by9">
-        <iframe class="embed-responsive-item" src="{{ asset('storage/' . $candidate->cv) }}" width="100%" height="600px"></iframe>
+        <iframe class="embed-responsive-item" src="{{ asset($candidate->cv) }}" width="100%" height="600px"></iframe>
     </div>
 </div>
 
@@ -61,7 +61,7 @@
                     </div>
                     <div class="mb-3">
                         <label for="candidateSchool" class="form-label">Trường</label>
-                        <input type="text" class="form-control" id="candidateSchool" name="school" value="{{ $candidate->school }}" required>
+                        <input type="text" class="form-control" id="candidateSchool" name="school" value="{{ $candidate->school->name }}" required>
                     </div>
                     <div class="mb-3">
                         <label for="candidateCV" class="form-label">CV</label>

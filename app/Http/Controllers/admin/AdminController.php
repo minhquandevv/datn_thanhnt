@@ -1,29 +1,50 @@
 <?php
-
 namespace App\Http\Controllers\admin;
+
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Candidate;
+use App\Models\School;
 use Illuminate\Support\Facades\Storage;
 
 class AdminController extends Controller
 {
-    // 
     public function dashboard()
     {
-        return view('admin.dexuattuyendung'); // Gọi view admin
+        return view('admin.dexuattuyendung'); 
     }
 
-    public function candidate()
+    public function candidate(Request $request)
     {
-        $candidates = Candidate::where('active', true)->get();
-        return view('admin.quanlyungvien', compact('candidates'));
+        $query = Candidate::query()->where('active', true);
+
+        if ($request->filled('name')) {
+            $query->where('name', 'like', '%' . $request->name . '%');
+        }
+
+        if ($request->filled('email')) {
+            $query->where('email', 'like', '%' . $request->email . '%');
+        }
+
+        if ($request->filled('phone')) {
+            $query->where('phone', 'like', '%' . $request->phone . '%');
+        }
+
+        if ($request->filled('school_id')) {
+            $query->where('school_id', $request->school_id);
+        }
+
+        $candidates = $query->get();
+        $schools = School::all();
+
+        return view('admin.quanlyungvien', compact('candidates', 'schools'));
     }
 
     public function showCandidate($id)
     {
         $candidate = Candidate::findOrFail($id);
-        return view('admin.chitietungvien', compact('candidate'));
+        $schools = School::all();
+        return view('admin.chitietungvien', compact('candidate', 'schools'));
     }
 
     public function storeCandidate(Request $request)
@@ -32,19 +53,20 @@ class AdminController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:candidates',
             'phone' => 'required|string|max:15',
-            'school' => 'required|string|max:255',
+            'school_id' => 'required|integer|exists:schools,id',
             'cv' => 'required|file|mimes:pdf|max:2048',
             'status' => 'required|in:pending,approved,rejected',
         ]);
 
-        $cvPath = $request->file('cv')->store('cvs', 'public');
+        // Lưu tệp vào thư mục cố định
+        $cvPath = $request->file('cv')->move(public_path('cvs'), $request->file('cv')->getClientOriginalName());
 
         Candidate::create([
             'name' => $request->name,
             'email' => $request->email,
             'phone' => $request->phone,
-            'school' => $request->school,
-            'cv' => $cvPath,
+            'school_id' => $request->school_id,
+            'cv' => 'cvs/' . $request->file('cv')->getClientOriginalName(),
             'status' => $request->status,
             'active' => true,
         ]);
@@ -73,23 +95,23 @@ class AdminController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:candidates,email,' . $candidate->id,
             'phone' => 'required|string|max:15',
-            'school' => 'required|string|max:255',
+            'school_id' => 'required|integer|exists:schools,id',
             'cv' => 'nullable|file|mimes:pdf|max:2048',
         ]);
 
         $candidate->name = $request->name;
         $candidate->email = $request->email;
         $candidate->phone = $request->phone;
-        $candidate->school = $request->school;
+        $candidate->school_id = $request->school_id;
 
         if ($request->hasFile('cv')) {
             // Xóa CV cũ nếu có
             if ($candidate->cv) {
-                Storage::disk('public')->delete($candidate->cv);
+                unlink(public_path($candidate->cv));
             }
-            // Lưu CV mới
-            $cvPath = $request->file('cv')->store('cvs', 'public');
-            $candidate->cv = $cvPath;
+            // Lưu CV mới vào thư mục cố định
+            $cvPath = $request->file('cv')->move(public_path('cvs'), $request->file('cv')->getClientOriginalName());
+            $candidate->cv = 'cvs/' . $request->file('cv')->getClientOriginalName();
         }
 
         $candidate->save();
