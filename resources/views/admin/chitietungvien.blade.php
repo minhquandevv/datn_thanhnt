@@ -22,9 +22,9 @@
         <div class="mb-3">
             <label for="candidateStatus" class="form-label">Trạng thái</label>
             <select class="form-control" id="candidateStatus" name="status" required>
-                <option value="pending" {{ $candidate->status == 'pending' ? 'selected' : '' }}>Pending</option>
-                <option value="approved" {{ $candidate->status == 'approved' ? 'selected' : '' }}>Approved</option>
-                <option value="rejected" {{ $candidate->status == 'rejected' ? 'selected' : '' }}>Rejected</option>
+                <option value="pending" {{ $candidate->status == 'pending' ? 'selected' : '' }}>Đang chờ</option>
+                <option value="approved" {{ $candidate->status == 'approved' ? 'selected' : '' }}>Đã duyệt</option>
+                <option value="rejected" {{ $candidate->status == 'rejected' ? 'selected' : '' }}>Đã từ chối</option>
             </select>
         </div>
         <button type="submit" class="btn btn-primary">Cập nhật</button>
