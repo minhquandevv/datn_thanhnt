@@ -4,9 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Models\Candidate;
 use App\Models\JobApplication;
+use App\Models\Education;
+use App\Models\Experience;
+use App\Models\CandidateSkill;
+use App\Models\Certificate;
+use App\Models\CandidateDesires;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\Password;
 
 class CandidateController extends Controller
@@ -25,135 +31,286 @@ class CandidateController extends Controller
 
     public function profile()
     {
-        $candidate = auth()->guard('candidate')->user()->load([
-            'profile',
-            'department',
-            'skills',
-            'languages',
-            'desires',
-            'certificates',
-            'education',
-            'experience'
-        ]);
-
+        $candidate = auth()->guard('candidate')->user();
         return view('candidate.profile', compact('candidate'));
     }
 
     public function updateProfile(Request $request)
     {
         $candidate = auth()->guard('candidate')->user();
-
+        
         $request->validate([
             'fullname' => 'required|string|max:255',
             'email' => 'required|email|unique:candidates,email,' . $candidate->id,
-            'identity_number' => 'required|string|unique:candidates,identity_number,' . $candidate->id,
-            'phone_number' => 'nullable|string',
+            'password' => 'nullable|string|min:6',
+            'identity_number' => 'required|string|max:20',
+            'phone_number' => 'nullable|string|max:20',
             'gender' => 'nullable|in:male,female,other',
             'dob' => 'nullable|date',
-            'address' => 'nullable|string',
-            'experience_year' => 'nullable|string',
+            'address' => 'nullable|string|max:255',
+            'experience_year' => 'nullable|integer',
             'url_avatar' => 'nullable|image|max:2048',
             'identity_image' => 'nullable|image|max:2048',
             'image_company' => 'nullable|image|max:2048',
-            'finding_job' => 'boolean',
-            'education.*.level' => 'nullable|string',
-            'education.*.edu_type' => 'nullable|string',
-            'education.*.department' => 'nullable|string',
-            'education.*.school_name' => 'nullable|string',
-            'education.*.graduate_level' => 'nullable|string',
-            'education.*.graduate_date' => 'nullable|date',
-            'education.*.is_main' => 'boolean',
-            'experience.*.company_name' => 'nullable|string',
-            'experience.*.position' => 'nullable|string',
-            'experience.*.date_start' => 'nullable|date',
-            'experience.*.date_end' => 'nullable|date',
-            'experience.*.description' => 'nullable|string',
-            'experience.*.is_working' => 'boolean',
-            'skills.*.skill_name' => 'nullable|string',
-            'skills.*.skill_desc' => 'nullable|string',
-            'certificates.*.name' => 'nullable|string',
-            'certificates.*.date' => 'nullable|date',
-            'certificates.*.result' => 'nullable|string',
-            'certificates.*.location' => 'nullable|string',
-            'certificates.*.url_cert' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
-            'desires.pay_from' => 'nullable|numeric',
-            'desires.pay_to' => 'nullable|numeric',
-            'desires.location' => 'nullable|string'
+            'finding_job' => 'nullable|boolean'
         ]);
 
-        // Update basic info
-        $candidate->update($request->only([
-            'fullname',
-            'email',
-            'identity_number',
-            'phone_number',
-            'gender',
-            'dob',
-            'address',
-            'experience_year',
-            'finding_job'
-        ]));
+        // Update basic information
+        $candidate->fill([
+            'fullname' => $request->fullname,
+            'email' => $request->email,
+            'identity_number' => $request->identity_number,
+            'phone_number' => $request->phone_number,
+            'gender' => $request->gender,
+            'dob' => $request->dob ? date('Y-m-d', strtotime($request->dob)) : null,
+            'address' => $request->address,
+            'experience_year' => $request->experience_year,
+            'finding_job' => $request->has('finding_job')
+        ]);
 
         // Update password if provided
         if ($request->filled('password')) {
-            $candidate->update(['password' => Hash::make($request->password)]);
+            $candidate->password = Hash::make($request->password);
         }
 
-        // Handle file uploads
+        // Handle avatar upload
         if ($request->hasFile('url_avatar')) {
-            $candidate->url_avatar = $request->file('url_avatar')->store('avatars');
+            if ($candidate->url_avatar) {
+                Storage::delete($candidate->url_avatar);
+            }
+            $candidate->url_avatar = $request->file('url_avatar')->store('candidates/avatars');
         }
+
+        // Handle identity image upload
         if ($request->hasFile('identity_image')) {
-            $candidate->identity_image = $request->file('identity_image')->store('identity');
+            if ($candidate->identity_image) {
+                Storage::delete($candidate->identity_image);
+            }
+            $candidate->identity_image = $request->file('identity_image')->store('candidates/identities');
         }
+
+        // Handle company image upload
         if ($request->hasFile('image_company')) {
-            $candidate->image_company = $request->file('image_company')->store('company');
-        }
-
-        // Update education
-        $candidate->education()->delete();
-        if ($request->has('education')) {
-            foreach ($request->education as $edu) {
-                $candidate->education()->create($edu);
+            if ($candidate->image_company) {
+                Storage::delete($candidate->image_company);
             }
-        }
-
-        // Update experience
-        $candidate->experience()->delete();
-        if ($request->has('experience')) {
-            foreach ($request->experience as $exp) {
-                $candidate->experience()->create($exp);
-            }
-        }
-
-        // Update skills
-        $candidate->skills()->delete();
-        if ($request->has('skills')) {
-            foreach ($request->skills as $skill) {
-                $candidate->skills()->create($skill);
-            }
-        }
-
-        // Update certificates
-        $candidate->certificates()->delete();
-        if ($request->has('certificates')) {
-            foreach ($request->certificates as $cert) {
-                if (isset($cert['url_cert']) && $cert['url_cert']) {
-                    $cert['url_cert'] = $cert['url_cert']->store('certificates');
-                }
-                $candidate->certificates()->create($cert);
-            }
-        }
-
-        // Update desires
-        $candidate->desires()->delete();
-        if ($request->has('desires')) {
-            $candidate->desires()->create($request->desires);
+            $candidate->image_company = $request->file('image_company')->store('candidates/companies');
         }
 
         $candidate->save();
 
-        return redirect()->route('candidate.profile')->with('success', 'Thông tin đã được cập nhật thành công.');
+        return redirect()->back()->with('success', 'Cập nhật thông tin thành công');
+    }
+
+    public function storeEducation(Request $request)
+    {
+        $request->validate([
+            'level' => 'required|string|max:255',
+            'edu_type' => 'required|string|max:255',
+            'department' => 'required|string|max:255',
+            'school_name' => 'required|string|max:255',
+            'graduate_level' => 'required|string|max:255',
+            'graduate_date' => 'required|date',
+            'is_main' => 'nullable|boolean'
+        ]);
+
+        $candidate = auth()->guard('candidate')->user();
+        $education = new Education($request->all());
+        $education->candidate_id = $candidate->id;
+        $education->save();
+
+        return redirect()->back()->with('success', 'Thêm học vấn thành công');
+    }
+
+    public function updateEducation(Request $request, $id)
+    {
+        $request->validate([
+            'level' => 'required|string|max:255',
+            'edu_type' => 'required|string|max:255',
+            'department' => 'required|string|max:255',
+            'school_name' => 'required|string|max:255',
+            'graduate_level' => 'required|string|max:255',
+            'graduate_date' => 'required|date',
+            'is_main' => 'nullable|boolean'
+        ]);
+
+        $candidate = auth()->guard('candidate')->user();
+        $education = CandidateEducation::where('candidate_id', $candidate->id)->findOrFail($id);
+        $education->update($request->all());
+
+        return redirect()->back()->with('success', 'Cập nhật học vấn thành công');
+    }
+
+    public function deleteEducation($id)
+    {
+        $candidate = auth()->guard('candidate')->user();
+        $education = CandidateEducation::where('candidate_id', $candidate->id)->findOrFail($id);
+        $education->delete();
+
+        return response()->json(['message' => 'Xóa học vấn thành công']);
+    }
+
+    public function storeExperience(Request $request)
+    {
+        $request->validate([
+            'company_name' => 'required|string|max:255',
+            'position' => 'required|string|max:255',
+            'date_start' => 'required|date',
+            'date_end' => 'nullable|date|after:date_start',
+            'description' => 'required|string',
+            'is_working' => 'nullable|boolean'
+        ]);
+
+        $candidate = auth()->guard('candidate')->user();
+        $experience = new Experience($request->all());
+        $experience->candidate_id = $candidate->id;
+        $experience->save();
+
+        return redirect()->back()->with('success', 'Thêm kinh nghiệm thành công');
+    }
+
+    public function updateExperience(Request $request, $id)
+    {
+        $request->validate([
+            'company_name' => 'required|string|max:255',
+            'position' => 'required|string|max:255',
+            'date_start' => 'required|date',
+            'date_end' => 'nullable|date|after:date_start',
+            'description' => 'required|string',
+            'is_working' => 'nullable|boolean'
+        ]);
+
+        $candidate = auth()->guard('candidate')->user();
+        $experience = CandidateExperience::where('candidate_id', $candidate->id)->findOrFail($id);
+        $experience->update($request->all());
+
+        return redirect()->back()->with('success', 'Cập nhật kinh nghiệm thành công');
+    }
+
+    public function deleteExperience($id)
+    {
+        $candidate = auth()->guard('candidate')->user();
+        $experience = CandidateExperience::where('candidate_id', $candidate->id)->findOrFail($id);
+        $experience->delete();
+
+        return response()->json(['message' => 'Xóa kinh nghiệm thành công']);
+    }
+
+    public function storeSkill(Request $request)
+    {
+        $request->validate([
+            'skill_name' => 'required|string|max:255',
+            'skill_desc' => 'required|string'
+        ]);
+
+        $candidate = auth()->guard('candidate')->user();
+        $skill = new CandidateSkill($request->all());
+        $skill->candidate_id = $candidate->id;
+        $skill->save();
+
+        return redirect()->back()->with('success', 'Thêm kỹ năng thành công');
+    }
+
+    public function updateSkill(Request $request, $id)
+    {
+        $request->validate([
+            'skill_name' => 'required|string|max:255',
+            'skill_desc' => 'required|string'
+        ]);
+
+        $candidate = auth()->guard('candidate')->user();
+        $skill = CandidateSkill::where('candidate_id', $candidate->id)->findOrFail($id);
+        $skill->update($request->all());
+
+        return redirect()->back()->with('success', 'Cập nhật kỹ năng thành công');
+    }
+
+    public function deleteSkill($id)
+    {
+        $candidate = auth()->guard('candidate')->user();
+        $skill = CandidateSkill::where('candidate_id', $candidate->id)->findOrFail($id);
+        $skill->delete();
+
+        return response()->json(['message' => 'Xóa kỹ năng thành công']);
+    }
+
+    public function storeCertificate(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'date' => 'required|date',
+            'result' => 'required|string|max:255',
+            'location' => 'required|string|max:255',
+            'url_cert' => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048'
+        ]);
+
+        $candidate = auth()->guard('candidate')->user();
+        $certificate = new Certificate($request->except('url_cert'));
+        $certificate->candidate_id = $candidate->id;
+        
+        if ($request->hasFile('url_cert')) {
+            $certificate->url_cert = $request->file('url_cert')->store('candidates/certificates');
+        }
+        
+        $certificate->save();
+
+        return redirect()->back()->with('success', 'Thêm chứng chỉ thành công');
+    }
+
+    public function updateCertificate(Request $request, $id)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'date' => 'required|date',
+            'result' => 'required|string|max:255',
+            'location' => 'required|string|max:255',
+            'url_cert' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048'
+        ]);
+
+        $candidate = auth()->guard('candidate')->user();
+        $certificate = Certificate::where('candidate_id', $candidate->id)->findOrFail($id);
+        
+        if ($request->hasFile('url_cert')) {
+            if ($certificate->url_cert) {
+                Storage::delete($certificate->url_cert);
+            }
+            $certificate->url_cert = $request->file('url_cert')->store('candidates/certificates');
+        }
+        
+        $certificate->update($request->except('url_cert'));
+
+        return redirect()->back()->with('success', 'Cập nhật chứng chỉ thành công');
+    }
+
+    public function deleteCertificate($id)
+    {
+        $candidate = auth()->guard('candidate')->user();
+        $certificate = Certificate::where('candidate_id', $candidate->id)->findOrFail($id);
+        
+        if ($certificate->url_cert) {
+            Storage::delete($certificate->url_cert);
+        }
+        
+        $certificate->delete();
+
+        return response()->json(['message' => 'Xóa chứng chỉ thành công']);
+    }
+
+    public function updateDesires(Request $request)
+    {
+        $request->validate([
+            'pay_from' => 'nullable|integer|min:0',
+            'pay_to' => 'nullable|integer|min:0|gte:pay_from',
+            'location' => 'nullable|string|max:255'
+        ]);
+
+        $candidate = auth()->guard('candidate')->user();
+        $desires = $candidate->desires ?? new CandidateDesires();
+        $desires->candidate_id = $candidate->id;
+        $desires->fill($request->all());
+        $desires->save();
+
+        return redirect()->back()->with('success', 'Cập nhật mong muốn thành công');
     }
 
     public function applications()

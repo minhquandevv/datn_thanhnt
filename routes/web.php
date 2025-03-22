@@ -39,6 +39,35 @@ Route::middleware(['auth:candidate', 'candidate'])->group(function () {
     });
 });
 
+//Candidate routes
+Route::middleware(['auth:candidate'])->group(function () {
+    Route::get('/candidate/profile', [CandidateController::class, 'profile'])->name('candidate.profile');
+    Route::put('/candidate/profile', [CandidateController::class, 'updateProfile'])->name('candidate.profile.update');
+    
+    // Education routes
+    Route::post('/candidate/education', [CandidateController::class, 'storeEducation'])->name('candidate.education.store');
+    Route::put('/candidate/education/{id}', [CandidateController::class, 'updateEducation'])->name('candidate.education.update');
+    Route::delete('/candidate/education/{id}', [CandidateController::class, 'deleteEducation'])->name('candidate.education.delete');
+    
+    // Experience routes
+    Route::post('/candidate/experience', [CandidateController::class, 'storeExperience'])->name('candidate.experience.store');
+    Route::put('/candidate/experience/{id}', [CandidateController::class, 'updateExperience'])->name('candidate.experience.update');
+    Route::delete('/candidate/experience/{id}', [CandidateController::class, 'deleteExperience'])->name('candidate.experience.delete');
+    
+    // Skill routes
+    Route::post('/candidate/skill', [CandidateController::class, 'storeSkill'])->name('candidate.skill.store');
+    Route::put('/candidate/skill/{id}', [CandidateController::class, 'updateSkill'])->name('candidate.skill.update');
+    Route::delete('/candidate/skill/{id}', [CandidateController::class, 'deleteSkill'])->name('candidate.skill.delete');
+    
+    // Certificate routes
+    Route::post('/candidate/certificate', [CandidateController::class, 'storeCertificate'])->name('candidate.certificate.store');
+    Route::put('/candidate/certificate/{id}', [CandidateController::class, 'updateCertificate'])->name('candidate.certificate.update');
+    Route::delete('/candidate/certificate/{id}', [CandidateController::class, 'deleteCertificate'])->name('candidate.certificate.delete');
+    
+    // Desires routes
+    Route::put('/candidate/desires', [CandidateController::class, 'updateDesires'])->name('candidate.desires.update');
+});
+
 //Admin routes
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::prefix('admin')->group(function () {
