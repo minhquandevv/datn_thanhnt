@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Candidate;
 use App\Models\School;
 use Illuminate\Support\Facades\Storage;
+use App\Models\JobApplication;
 
 class AdminController extends Controller
 {
@@ -34,7 +35,16 @@ class AdminController extends Controller
             $query->where('school_id', $request->school_id);
         }
 
-        $candidates = $query->with('school')->get();
+        $candidates = $query->with([
+            'school', 
+            'jobApplications.jobOffer.company',
+            'education',
+            'experience',
+            'skills',
+            'certificates',
+            'desires'
+        ])->get();
+        
         $schools = School::all();
 
         return view('admin.quanlyungvien', compact('candidates', 'schools'));
@@ -160,5 +170,21 @@ class AdminController extends Controller
         $candidate->save();
 
         return redirect()->route('admin.candidates')->with('success', 'Xóa ứng viên thành công.');
+    }
+
+    public function updateApplication(Request $request, $id)
+    {
+        $request->validate([
+            'status' => 'required|in:submitted,pending_review,interview_scheduled,result_pending,approved,rejected',
+            'feedback' => 'nullable|string'
+        ]);
+
+        $application = JobApplication::findOrFail($id);
+        $application->status = $request->status;
+        $application->feedback = $request->feedback;
+        $application->reviewed_at = now();
+        $application->save();
+
+        return redirect()->back()->with('success', 'Cập nhật trạng thái đơn ứng tuyển thành công.');
     }
 }

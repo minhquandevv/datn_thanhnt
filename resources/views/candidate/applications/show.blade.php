@@ -5,68 +5,141 @@
 @section('content')
 <div class="card">
     <div class="card-header">
-        <h5 class="card-title mb-0">Chi tiết đơn ứng tuyển</h5>
+        <h5 class="card-title mb-0">
+            <i class="bi bi-file-earmark-text me-2"></i>Chi tiết đơn ứng tuyển
+        </h5>
     </div>
     <div class="card-body">
-        <div class="row">
+        <div class="row mb-4">
             <div class="col-md-6">
-                <h6>Thông tin vị trí</h6>
-                <table class="table">
-                    <tr>
-                        <th>Vị trí:</th>
-                        <td>{{ $application->jobOffer->position }}</td>
-                    </tr>
-                    <tr>
-                        <th>Công ty:</th>
-                        <td>{{ $application->jobOffer->company->name }}</td>
-                    </tr>
-                    <tr>
-                        <th>Mô tả công việc:</th>
-                        <td>{!! nl2br(e($application->jobOffer->description)) !!}</td>
-                    </tr>
-                    <tr>
-                        <th>Yêu cầu:</th>
-                        <td>{!! nl2br(e($application->jobOffer->requirements)) !!}</td>
-                    </tr>
-                </table>
+                <h6 class="fw-bold"><i class="bi bi-briefcase me-2"></i>Thông tin vị trí</h6>
+                <div class="border rounded p-3 bg-light">
+                    <p>
+                        <i class="bi bi-person-badge me-2"></i><strong>Vị trí:</strong><br>
+                        @if($application->jobOffer)
+                            {{ $application->jobOffer->job_name }}
+                            @if($application->jobOffer->job_position)
+                                <br><small class="text-muted ms-4">{{ $application->jobOffer->job_position }}</small>
+                            @endif
+                        @else
+                            <span class="text-muted">Vị trí không tồn tại</span>
+                        @endif
+                    </p>
+                    
+                    <p>
+                        <i class="bi bi-building me-2"></i><strong>Công ty:</strong><br>
+                        @if($application->jobOffer && $application->jobOffer->company)
+                            {{ $application->jobOffer->company->title }}
+                            @if($application->jobOffer->company->location)
+                                <br><small class="text-muted ms-4"><i class="bi bi-geo-alt"></i> {{ $application->jobOffer->company->location }}</small>
+                            @endif
+                        @else
+                            <span class="text-muted">Công ty không tồn tại</span>
+                        @endif
+                    </p>
+
+                    <p>
+                        <i class="bi bi-cash-stack me-2"></i><strong>Mức lương:</strong><br>
+                        <span class="ms-4">{{ number_format($application->jobOffer->job_salary) }} VNĐ</span>
+                    </p>
+
+                    <p class="mb-0">
+                        <i class="bi bi-calendar-event me-2"></i><strong>Hạn nộp:</strong><br>
+                        <span class="ms-4">{{ \Carbon\Carbon::parse($application->jobOffer->expiration_date)->format('d/m/Y') }}</span>
+                    </p>
+                </div>
+
+                <h6 class="fw-bold mt-4"><i class="bi bi-file-text me-2"></i>Mô tả công việc</h6>
+                <div class="border rounded p-3 bg-light">
+                    {!! nl2br(e($application->jobOffer->job_description)) !!}
+                </div>
+
+                <h6 class="fw-bold mt-4"><i class="bi bi-list-check me-2"></i>Yêu cầu công việc</h6>
+                <div class="border rounded p-3 bg-light">
+                    {!! nl2br(e($application->jobOffer->job_requirement)) !!}
+                </div>
             </div>
 
             <div class="col-md-6">
-                <h6>Thông tin đơn ứng tuyển</h6>
-                <table class="table">
-                    <tr>
-                        <th>Ngày nộp:</th>
-                        <td>{{ $application->created_at->format('d/m/Y H:i') }}</td>
-                    </tr>
-                    <tr>
-                        <th>Trạng thái:</th>
-                        <td>
-                            @switch($application->status)
-                                @case('pending')
-                                    <span class="badge bg-warning">Chờ xử lý</span>
-                                    @break
-                                @case('approved')
-                                    <span class="badge bg-success">Đã duyệt</span>
-                                    @break
-                                @case('rejected')
-                                    <span class="badge bg-danger">Từ chối</span>
-                                    @break
-                            @endswitch
-                        </td>
-                    </tr>
-                    @if($application->notes)
-                        <tr>
-                            <th>Ghi chú:</th>
-                            <td>{{ $application->notes }}</td>
-                        </tr>
+                <h6 class="fw-bold"><i class="bi bi-info-circle me-2"></i>Thông tin ứng tuyển</h6>
+                <div class="border rounded p-3 bg-light">
+                    <p>
+                        <i class="bi bi-calendar-check me-2"></i><strong>Ngày nộp:</strong><br>
+                        <span class="ms-4">{{ $application->created_at->format('d/m/Y H:i:s') }}</span>
+                    </p>
+
+                    <p>
+                        <i class="bi bi-calendar2-check me-2"></i><strong>Ngày xem xét:</strong><br>
+                        <span class="ms-4">{{ $application->reviewed_at ? \Carbon\Carbon::parse($application->reviewed_at)->format('d/m/Y H:i:s') : 'Chưa xem xét' }}</span>
+                    </p>
+
+                    <p class="mb-0">
+                        <i class="bi bi-check-circle me-2"></i><strong>Trạng thái:</strong><br>
+                        <span class="ms-4">
+                            @php
+                                $statusIcons = [
+                                    'submitted' => 'send',
+                                    'pending_review' => 'hourglass-split',
+                                    'interview_scheduled' => 'calendar-check',
+                                    'result_pending' => 'hourglass',
+                                    'approved' => 'check-circle-fill',
+                                    'rejected' => 'x-circle-fill'
+                                ];
+                                $statusColors = [
+                                    'submitted' => 'info',
+                                    'pending_review' => 'warning',
+                                    'interview_scheduled' => 'primary',
+                                    'result_pending' => 'secondary',
+                                    'approved' => 'success',
+                                    'rejected' => 'danger'
+                                ];
+                                $statusTexts = [
+                                    'submitted' => 'Đã nộp',
+                                    'pending_review' => 'Chờ xem xét',
+                                    'interview_scheduled' => 'Đã lên lịch PV',
+                                    'result_pending' => 'Chờ kết quả',
+                                    'approved' => 'Đã duyệt',
+                                    'rejected' => 'Từ chối'
+                                ];
+                            @endphp
+                            <span class="badge bg-{{ $statusColors[$application->status] }}">
+                                <i class="bi bi-{{ $statusIcons[$application->status] }} me-1"></i>
+                                {{ $statusTexts[$application->status] }}
+                            </span>
+                        </span>
+                    </p>
+                </div>
+
+                <h6 class="fw-bold mt-4"><i class="bi bi-envelope me-2"></i>Thư xin việc</h6>
+                <div class="border rounded p-3 bg-light">
+                    {!! nl2br(e($application->cover_letter)) !!}
+                </div>
+
+                <h6 class="fw-bold mt-4"><i class="bi bi-file-earmark-pdf me-2"></i>CV đã nộp</h6>
+                <div class="border rounded p-3 bg-light">
+                    @if($application->cv_path)
+                        <a href="{{ Storage::url($application->cv_path) }}" class="btn btn-info" target="_blank">
+                            <i class="bi bi-file-earmark-pdf-fill me-1"></i> Xem CV
+                        </a>
+                    @else
+                        <p class="text-muted mb-0">
+                            <i class="bi bi-exclamation-circle me-2"></i>Không có file CV
+                        </p>
                     @endif
-                </table>
+                </div>
+
+                @if($application->feedback)
+                    <h6 class="fw-bold mt-4"><i class="bi bi-chat-left-quote me-2"></i>Phản hồi từ nhà tuyển dụng</h6>
+                    <div class="border rounded p-3 bg-light">
+                        {!! nl2br(e($application->feedback)) !!}
+                    </div>
+                @endif
             </div>
         </div>
 
         <div class="mt-3">
             <a href="{{ route('candidate.applications') }}" class="btn btn-secondary">
-                <i class="bi bi-arrow-left"></i> Quay lại
+                <i class="bi bi-arrow-left me-1"></i> Quay lại danh sách
             </a>
         </div>
     </div>

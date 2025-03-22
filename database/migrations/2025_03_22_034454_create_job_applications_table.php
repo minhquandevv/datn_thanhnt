@@ -10,7 +10,6 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        // Bảng job_applications: Lưu thông tin ứng tuyển
         Schema::create('job_applications', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('candidate_id');
