@@ -53,36 +53,40 @@
                                 @php
                                     $statusMap = [
                                         'pending' => 0,
-                                        'reviewing' => 1,
-                                        'interview' => 2,
-                                        'waiting' => 3,
-                                        'approved' => 4,
-                                        'rejected' => 5
+                                        'submitted' => 1,
+                                        'pending_review' => 2,
+                                        'interview_scheduled' => 3,
+                                        'result_pending' => 4,
+                                        'approved' => 5,
+                                        'rejected' => 6
                                     ];
 
                                     $statusIcons = [
-                                        0 => 'send',
-                                        1 => 'hourglass-split',
-                                        2 => 'calendar-check',
-                                        3 => 'hourglass',
-                                        4 => 'check-circle-fill',
-                                        5 => 'x-circle-fill'
+                                        0 => 'hourglass-split',
+                                        1 => 'send',
+                                        2 => 'hourglass-split',
+                                        3 => 'calendar-check',
+                                        4 => 'hourglass',
+                                        5 => 'check-circle-fill',
+                                        6 => 'x-circle-fill'
                                     ];
                                     $statusColors = [
-                                        0 => 'info',
-                                        1 => 'warning',
-                                        2 => 'primary',
-                                        3 => 'secondary',
-                                        4 => 'success',
-                                        5 => 'danger'
+                                        0 => 'warning',
+                                        1 => 'info',
+                                        2 => 'warning',
+                                        3 => 'primary',
+                                        4 => 'secondary',
+                                        5 => 'success',
+                                        6 => 'danger'
                                     ];
                                     $statusTexts = [
-                                        0 => 'Đã nộp',
-                                        1 => 'Chờ xem xét',
-                                        2 => 'Đã lên lịch PV',
-                                        3 => 'Chờ kết quả',
-                                        4 => 'Đã duyệt',
-                                        5 => 'Từ chối'
+                                        0 => 'Chờ xử lý',
+                                        1 => 'Đã nộp',
+                                        2 => 'Chờ xem xét',
+                                        3 => 'Đã lên lịch PV',
+                                        4 => 'Chờ kết quả',
+                                        5 => 'Đã duyệt',
+                                        6 => 'Từ chối'
                                     ];
 
                                     $numericStatus = isset($statusMap[$application->status]) ? $statusMap[$application->status] : 0;
@@ -177,9 +181,50 @@
                         <p><strong><i class="bi bi-calendar-check me-2"></i>Ngày ứng tuyển:</strong> {{ \Carbon\Carbon::parse($application->applied_at)->format('d/m/Y H:i:s') }}</p>
                         <p><strong><i class="bi bi-calendar2-check me-2"></i>Ngày xem xét:</strong> {{ $application->reviewed_at ? \Carbon\Carbon::parse($application->reviewed_at)->format('d/m/Y H:i:s') : 'Chưa xem xét' }}</p>
                         <p><strong><i class="bi bi-check-circle me-2"></i>Trạng thái:</strong> 
-                            <span class="badge bg-{{ $statusColors[$numericStatus] }}">
-                                <i class="bi bi-{{ $statusIcons[$numericStatus] }} me-1"></i>
-                                {{ $statusTexts[$numericStatus] }}
+                            @php
+                                $modalStatusMap = [
+                                    'pending' => 0,
+                                    'submitted' => 1,
+                                    'pending_review' => 2,
+                                    'interview_scheduled' => 3,
+                                    'result_pending' => 4,
+                                    'approved' => 5,
+                                    'rejected' => 6
+                                ];
+
+                                $modalStatusIcons = [
+                                    0 => 'hourglass-split',
+                                    1 => 'send',
+                                    2 => 'hourglass-split',
+                                    3 => 'calendar-check',
+                                    4 => 'hourglass',
+                                    5 => 'check-circle-fill',
+                                    6 => 'x-circle-fill'
+                                ];
+                                $modalStatusColors = [
+                                    0 => 'warning',
+                                    1 => 'info',
+                                    2 => 'warning',
+                                    3 => 'primary',
+                                    4 => 'secondary',
+                                    5 => 'success',
+                                    6 => 'danger'
+                                ];
+                                $modalStatusTexts = [
+                                    0 => 'Chờ xử lý',
+                                    1 => 'Đã nộp',
+                                    2 => 'Chờ xem xét',
+                                    3 => 'Đã lên lịch PV',
+                                    4 => 'Chờ kết quả',
+                                    5 => 'Đã duyệt',
+                                    6 => 'Từ chối'
+                                ];
+
+                                $modalNumericStatus = isset($modalStatusMap[$application->status]) ? $modalStatusMap[$application->status] : 0;
+                            @endphp
+                            <span class="badge bg-{{ $modalStatusColors[$modalNumericStatus] }}">
+                                <i class="bi bi-{{ $modalStatusIcons[$modalNumericStatus] }} me-1"></i>
+                                {{ $modalStatusTexts[$modalNumericStatus] }}
                             </span>
                         </p>
                     </div>

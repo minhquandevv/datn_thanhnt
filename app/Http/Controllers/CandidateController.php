@@ -22,7 +22,7 @@ class CandidateController extends Controller
         $candidate = Auth::user();
         $recentApplications = JobApplication::where('candidate_id', $candidate->id)
             ->with(['jobOffer.company'])
-            ->latest()
+            ->orderBy('created_at', 'desc')
             ->take(5)
             ->get();
 

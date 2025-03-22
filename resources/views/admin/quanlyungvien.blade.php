@@ -342,7 +342,7 @@
                                                 <td>{{ \Carbon\Carbon::parse($application->applied_at)->format('d/m/Y H:i:s') }}</td>
                                                 <td>
                                                     @php
-                                                        $statusColors = [
+                                                        $modalStatusColors = [
                                                             'pending' => 'warning',
                                                             'submitted' => 'info',
                                                             'pending_review' => 'warning',
@@ -351,7 +351,16 @@
                                                             'approved' => 'success',
                                                             'rejected' => 'danger'
                                                         ];
-                                                        $statusTexts = [
+                                                        $modalStatusIcons = [
+                                                            'pending' => 'hourglass-split',
+                                                            'submitted' => 'send',
+                                                            'pending_review' => 'hourglass-split',
+                                                            'interview_scheduled' => 'calendar-check',
+                                                            'result_pending' => 'hourglass',
+                                                            'approved' => 'check-circle-fill',
+                                                            'rejected' => 'x-circle-fill'
+                                                        ];
+                                                        $modalStatusTexts = [
                                                             'pending' => 'Chờ xử lý',
                                                             'submitted' => 'Đã nộp',
                                                             'pending_review' => 'Chờ xem xét',
@@ -360,10 +369,11 @@
                                                             'approved' => 'Đã duyệt',
                                                             'rejected' => 'Từ chối'
                                                         ];
-                                                        $status = $application->status ?? 'pending';
+                                                        $currentStatus = $application->status ?? 'pending';
                                                     @endphp
-                                                    <span class="badge bg-{{ $statusColors[$status] ?? 'secondary' }}">
-                                                        {{ $statusTexts[$status] ?? 'Không xác định' }}
+                                                    <span class="badge bg-{{ $modalStatusColors[$currentStatus] }}">
+                                                        <i class="bi bi-{{ $modalStatusIcons[$currentStatus] }} me-1"></i>
+                                                        {{ $modalStatusTexts[$currentStatus] }}
                                                     </span>
                                                 </td>
                                                 <td>{{ Str::limit($application->feedback, 30) }}</td>
@@ -445,8 +455,39 @@
                                     <p><strong>Ngày ứng tuyển:</strong> {{ \Carbon\Carbon::parse($application->applied_at)->format('d/m/Y H:i:s') }}</p>
                                     <p><strong>Ngày xem xét:</strong> {{ $application->reviewed_at ? \Carbon\Carbon::parse($application->reviewed_at)->format('d/m/Y H:i:s') : 'Chưa xem xét' }}</p>
                                     <p><strong>Trạng thái:</strong> 
-                                        <span class="badge bg-{{ $statusColors[$status] ?? 'secondary' }}">
-                                            {{ $statusTexts[$status] ?? 'Không xác định' }}
+                                        @php
+                                            $modalStatusColors = [
+                                                'pending' => 'warning',
+                                                'submitted' => 'info',
+                                                'pending_review' => 'warning',
+                                                'interview_scheduled' => 'primary',
+                                                'result_pending' => 'secondary',
+                                                'approved' => 'success',
+                                                'rejected' => 'danger'
+                                            ];
+                                            $modalStatusIcons = [
+                                                'pending' => 'hourglass-split',
+                                                'submitted' => 'send',
+                                                'pending_review' => 'hourglass-split',
+                                                'interview_scheduled' => 'calendar-check',
+                                                'result_pending' => 'hourglass',
+                                                'approved' => 'check-circle-fill',
+                                                'rejected' => 'x-circle-fill'
+                                            ];
+                                            $modalStatusTexts = [
+                                                'pending' => 'Chờ xử lý',
+                                                'submitted' => 'Đã nộp',
+                                                'pending_review' => 'Chờ xem xét',
+                                                'interview_scheduled' => 'Đã lên lịch PV',
+                                                'result_pending' => 'Chờ kết quả',
+                                                'approved' => 'Đã duyệt',
+                                                'rejected' => 'Từ chối'
+                                            ];
+                                            $currentStatus = $application->status ?? 'pending';
+                                        @endphp
+                                        <span class="badge bg-{{ $modalStatusColors[$currentStatus] }}">
+                                            <i class="bi bi-{{ $modalStatusIcons[$currentStatus] }} me-1"></i>
+                                            {{ $modalStatusTexts[$currentStatus] }}
                                         </span>
                                     </p>
                                 </div>
@@ -476,7 +517,7 @@
                                 <div class="mb-3">
                                     <label class="form-label fw-bold">Cập nhật trạng thái</label>
                                     <select class="form-select" name="status">
-                                        @foreach($statusTexts as $value => $text)
+                                        @foreach($modalStatusTexts as $value => $text)
                                             <option value="{{ $value }}" {{ $application->status == $value ? 'selected' : '' }}>
                                                 {{ $text }}
                                             </option>
