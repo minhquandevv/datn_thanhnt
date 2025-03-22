@@ -12,7 +12,7 @@ class School extends Model
     protected $fillable = [
         'name',
         'short_name',
-        'address',
+        'address'
     ];
 
     public function candidates()

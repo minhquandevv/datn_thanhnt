@@ -23,8 +23,9 @@
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('admin.job-offers') ? 'active text-bg-light' : '' }}" href="{{ route('admin.job-offers') }}">Quản lý tin tuyển dụng</a>
                 </li>
-
-                
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('admin.schools.*') ? 'active text-bg-light' : '' }}" href="{{ route('admin.schools.index') }}">Quản lý trường học</a>
+                </li>
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('admin.candidates') ? 'active text-bg-light' : '' }}" href="{{ route('admin.candidates') }}">Hồ sơ ứng viên</a>
                 </li>

@@ -7,6 +7,7 @@ use App\Http\Controllers\admin\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\public\HomeController;
 use App\Http\Controllers\JobApplicationController;
+use App\Http\Controllers\admin\SchoolController;
 
 //Auth routes (only for guests)
 Route::middleware(['guest'])->group(function () {
@@ -43,6 +44,16 @@ Route::middleware(['auth', 'admin'])->group(function () {
         Route::get('/job-offers/{id}', [JobOfferController::class, 'show'])->name('admin.job-offers.show');
         Route::put('/job-offers/{id}', [JobOfferController::class, 'update'])->name('admin.job-offers.update');
         Route::delete('/job-offers/{id}', [JobOfferController::class, 'destroy'])->name('admin.job-offers.destroy');
+        
+        // School routes
+        Route::resource('schools', SchoolController::class)->names([
+            'index' => 'admin.schools.index',
+            'create' => 'admin.schools.create',
+            'store' => 'admin.schools.store',
+            'edit' => 'admin.schools.edit',
+            'update' => 'admin.schools.update',
+            'destroy' => 'admin.schools.destroy'
+        ]);
     });
 });
 

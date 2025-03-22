@@ -1,28 +1,51 @@
 <?php
-
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Candidate extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
-        'name',
-        'email',
-        'phone',
-        'gender',
-        'dob',
-        'address',
-        'school_id',
-        'experience_year',
-        'cv',
-        'status',
-        'is_finding_job',
-        'avatar',
+        'email', 'identity_number', 'fullname', 'password', 'dob', 'location', 'image_company',
+        'identity_image', 'gender', 'phone_number', 'address', 'experience_year', 'department_id',
+        'candidate_profile_id', 'reference_name', 'reference_number', 'r_email', 'r_relate',
+        'r_position', 't_company', 'url_avatar', 'finding_job'
     ];
+
+    public function profile()
+    {
+        return $this->belongsTo(CandidateProfile::class, 'candidate_profile_id');
+    }
+
+    public function skills()
+    {
+        return $this->hasMany(CandidateSkill::class);
+    }
+
+    public function languages()
+    {
+        return $this->hasMany(CandidateLanguage::class);
+    }
+
+    public function desires()
+    {
+        return $this->hasOne(CandidateDesire::class);
+    }
+
+    public function certificates()
+    {
+        return $this->hasMany(Certificate::class);
+    }
+
+    public function educations()
+    {
+        return $this->hasMany(Education::class);
+    }
+
+    public function experiences()
+    {
+        return $this->hasMany(Experience::class);
+    }
 
     public function school()
     {
