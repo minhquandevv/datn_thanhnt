@@ -47,38 +47,49 @@
                             </td>
                             <td>
                                 <i class="bi bi-clock-history text-secondary me-1"></i>
-                                {{ \Carbon\Carbon::parse($application->applied_at)->format('d/m/Y H:i:s') }}
+                                {{ $application->created_at->format('d/m/Y H:i:s') }}
                             </td>
                             <td>
                                 @php
+                                    $statusMap = [
+                                        'pending' => 0,
+                                        'reviewing' => 1,
+                                        'interview' => 2,
+                                        'waiting' => 3,
+                                        'approved' => 4,
+                                        'rejected' => 5
+                                    ];
+
                                     $statusIcons = [
-                                        'submitted' => 'send',
-                                        'pending_review' => 'hourglass-split',
-                                        'interview_scheduled' => 'calendar-check',
-                                        'result_pending' => 'hourglass',
-                                        'approved' => 'check-circle-fill',
-                                        'rejected' => 'x-circle-fill'
+                                        0 => 'send',
+                                        1 => 'hourglass-split',
+                                        2 => 'calendar-check',
+                                        3 => 'hourglass',
+                                        4 => 'check-circle-fill',
+                                        5 => 'x-circle-fill'
                                     ];
                                     $statusColors = [
-                                        'submitted' => 'info',
-                                        'pending_review' => 'warning',
-                                        'interview_scheduled' => 'primary',
-                                        'result_pending' => 'secondary',
-                                        'approved' => 'success',
-                                        'rejected' => 'danger'
+                                        0 => 'info',
+                                        1 => 'warning',
+                                        2 => 'primary',
+                                        3 => 'secondary',
+                                        4 => 'success',
+                                        5 => 'danger'
                                     ];
                                     $statusTexts = [
-                                        'submitted' => 'Đã nộp',
-                                        'pending_review' => 'Chờ xem xét',
-                                        'interview_scheduled' => 'Đã lên lịch PV',
-                                        'result_pending' => 'Chờ kết quả',
-                                        'approved' => 'Đã duyệt',
-                                        'rejected' => 'Từ chối'
+                                        0 => 'Đã nộp',
+                                        1 => 'Chờ xem xét',
+                                        2 => 'Đã lên lịch PV',
+                                        3 => 'Chờ kết quả',
+                                        4 => 'Đã duyệt',
+                                        5 => 'Từ chối'
                                     ];
+
+                                    $numericStatus = isset($statusMap[$application->status]) ? $statusMap[$application->status] : 0;
                                 @endphp
-                                <span class="badge bg-{{ $statusColors[$application->status] }}">
-                                    <i class="bi bi-{{ $statusIcons[$application->status] }} me-1"></i>
-                                    {{ $statusTexts[$application->status] }}
+                                <span class="badge bg-{{ $statusColors[$numericStatus] }}">
+                                    <i class="bi bi-{{ $statusIcons[$numericStatus] }} me-1"></i>
+                                    {{ $statusTexts[$numericStatus] }}
                                 </span>
                             </td>
                             <td>
@@ -166,9 +177,9 @@
                         <p><strong><i class="bi bi-calendar-check me-2"></i>Ngày ứng tuyển:</strong> {{ \Carbon\Carbon::parse($application->applied_at)->format('d/m/Y H:i:s') }}</p>
                         <p><strong><i class="bi bi-calendar2-check me-2"></i>Ngày xem xét:</strong> {{ $application->reviewed_at ? \Carbon\Carbon::parse($application->reviewed_at)->format('d/m/Y H:i:s') : 'Chưa xem xét' }}</p>
                         <p><strong><i class="bi bi-check-circle me-2"></i>Trạng thái:</strong> 
-                            <span class="badge bg-{{ $statusColors[$application->status] }}">
-                                <i class="bi bi-{{ $statusIcons[$application->status] }} me-1"></i>
-                                {{ $statusTexts[$application->status] }}
+                            <span class="badge bg-{{ $statusColors[$numericStatus] }}">
+                                <i class="bi bi-{{ $statusIcons[$numericStatus] }} me-1"></i>
+                                {{ $statusTexts[$numericStatus] }}
                             </span>
                         </p>
                     </div>
@@ -184,7 +195,7 @@
                 <div class="mb-4">
                     <h6 class="fw-bold"><i class="bi bi-file-earmark-pdf me-2"></i>CV đã nộp</h6>
                     @if($application->cv_path)
-                        <a href="{{ Storage::url($application->cv_path) }}" class="btn btn-sm btn-info" target="_blank">
+                        <a href="{{ asset('uploads/cv/' . basename($application->cv_path)) }}" class="btn btn-sm btn-info" target="_blank">
                             <i class="bi bi-file-earmark-pdf-fill"></i> Xem CV
                         </a>
                     @else

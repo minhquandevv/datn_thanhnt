@@ -32,7 +32,10 @@ class Candidate extends Authenticatable
         'r_position',
         'r_company',
         'url_avatar',
-        'finding_job'
+        'finding_job',
+        'avatar',
+        'id_card_front',
+        'id_card_back',
     ];
 
     protected $hidden = [

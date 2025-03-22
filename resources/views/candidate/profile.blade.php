@@ -11,6 +11,12 @@
             </div>
         @endif
 
+        @if (session('error'))
+            <div class="alert alert-danger">
+                {{ session('error') }}
+            </div>
+        @endif
+
         <form action="{{ route('candidate.profile.update') }}" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PUT')
@@ -37,121 +43,123 @@
             <div class="tab-content mt-3" id="profileTabContent">
                 <!-- Thông tin cơ bản -->
                 <div class="tab-pane fade show active" id="basic" role="tabpanel">
-                    <form action="{{ route('candidate.profile.update') }}" method="POST" enctype="multipart/form-data">
-                        @csrf
-                        @method('PUT')
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Họ và tên</label>
-                                <input type="text" class="form-control" name="fullname" value="{{ old('fullname', $candidate->fullname) }}" required>
-                                @error('fullname')
-                                    <div class="text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Email</label>
-                                <input type="email" class="form-control" name="email" value="{{ old('email', $candidate->email) }}" required>
-                                @error('email')
-                                    <div class="text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Mật khẩu</label>
-                                <input type="password" class="form-control" name="password">
-                                <small class="form-text text-muted">Để trống nếu không muốn thay đổi mật khẩu</small>
-                                @error('password')
-                                    <div class="text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Số CCCD/CMND</label>
-                                <input type="text" class="form-control" name="identity_number" value="{{ old('identity_number', $candidate->identity_number) }}" required>
-                                @error('identity_number')
-                                    <div class="text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Số điện thoại</label>
-                                <input type="text" class="form-control" name="phone_number" value="{{ old('phone_number', $candidate->phone_number) }}">
-                                @error('phone_number')
-                                    <div class="text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Giới tính</label>
-                                <select class="form-control" name="gender">
-                                    <option value="">Chọn giới tính</option>
-                                    <option value="male" {{ old('gender', $candidate->gender) == 'male' ? 'selected' : '' }}>Nam</option>
-                                    <option value="female" {{ old('gender', $candidate->gender) == 'female' ? 'selected' : '' }}>Nữ</option>
-                                    <option value="other" {{ old('gender', $candidate->gender) == 'other' ? 'selected' : '' }}>Khác</option>
-                                </select>
-                                @error('gender')
-                                    <div class="text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Ngày sinh</label>
-                                <input type="date" class="form-control" name="dob" value="{{ old('dob', $candidate->dob) }}">
-                                @error('dob')
-                                    <div class="text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Địa chỉ</label>
-                                <input type="text" class="form-control" name="address" value="{{ old('address', $candidate->address) }}">
-                                @error('address')
-                                    <div class="text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Kinh nghiệm (năm)</label>
-                                <input type="number" class="form-control" name="experience_year" value="{{ old('experience_year', $candidate->experience_year) }}">
-                                @error('experience_year')
-                                    <div class="text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Ảnh đại diện</label>
-                                <input type="file" class="form-control" name="url_avatar" accept="image/*">
-                                @if($candidate->url_avatar)
-                                    <img src="{{ Storage::url($candidate->url_avatar) }}" alt="Current avatar" class="mt-2" width="50">
-                                @endif
-                                @error('url_avatar')
-                                    <div class="text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Ảnh CCCD/CMND</label>
-                                <input type="file" class="form-control" name="identity_image" accept="image/*">
-                                @if($candidate->identity_image)
-                                    <img src="{{ Storage::url($candidate->identity_image) }}" alt="Current identity image" class="mt-2" width="50">
-                                @endif
-                                @error('identity_image')
-                                    <div class="text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Ảnh công ty</label>
-                                <input type="file" class="form-control" name="image_company" accept="image/*">
-                                @if($candidate->image_company)
-                                    <img src="{{ Storage::url($candidate->image_company) }}" alt="Current company image" class="mt-2" width="50">
-                                @endif
-                                @error('image_company')
-                                    <div class="text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <div class="form-check">
-                                    <input type="checkbox" class="form-check-input" name="finding_job" value="1" {{ old('finding_job', $candidate->finding_job) ? 'checked' : '' }}>
-                                    <label class="form-check-label">Đang tìm việc</label>
-                                </div>
-                                @error('finding_job')
-                                    <div class="text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Họ và tên</label>
+                            <input type="text" class="form-control" name="fullname" value="{{ old('fullname', $candidate->fullname) }}" required>
+                            @error('fullname')
+                                <div class="text-danger">{{ $message }}</div>
+                            @enderror
                         </div>
-                        <button type="submit" class="btn btn-primary">Cập nhật thông tin cơ bản</button>
-                    </form>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" name="email" value="{{ old('email', $candidate->email) }}" required>
+                            @error('email')
+                                <div class="text-danger">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Mật khẩu</label>
+                            <input type="password" class="form-control" name="password">
+                            <small class="form-text text-muted">Để trống nếu không muốn thay đổi mật khẩu</small>
+                            @error('password')
+                                <div class="text-danger">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Số CCCD/CMND</label>
+                            <input type="text" class="form-control" name="identity_number" value="{{ old('identity_number', $candidate->identity_number) }}" required>
+                            @error('identity_number')
+                                <div class="text-danger">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Số điện thoại</label>
+                            <input type="text" class="form-control" name="phone_number" value="{{ old('phone_number', $candidate->phone_number) }}">
+                            @error('phone_number')
+                                <div class="text-danger">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Giới tính</label>
+                            <select class="form-control" name="gender">
+                                <option value="">Chọn giới tính</option>
+                                <option value="male" {{ old('gender', $candidate->gender) == 'male' ? 'selected' : '' }}>Nam</option>
+                                <option value="female" {{ old('gender', $candidate->gender) == 'female' ? 'selected' : '' }}>Nữ</option>
+                                <option value="other" {{ old('gender', $candidate->gender) == 'other' ? 'selected' : '' }}>Khác</option>
+                            </select>
+                            @error('gender')
+                                <div class="text-danger">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Ngày sinh</label>
+                            <input type="date" class="form-control" name="dob" value="{{ old('dob', $candidate->dob) }}">
+                            @error('dob')
+                                <div class="text-danger">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Địa chỉ</label>
+                            <input type="text" class="form-control" name="address" value="{{ old('address', $candidate->address) }}">
+                            @error('address')
+                                <div class="text-danger">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Kinh nghiệm (năm)</label>
+                            <input type="number" class="form-control" name="experience_year" value="{{ old('experience_year', $candidate->experience_year) }}">
+                            @error('experience_year')
+                                <div class="text-danger">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Ảnh đại diện</label>
+                            @if($candidate->url_avatar)
+                                <div class="mb-2">
+                                    <img src="{{ asset('uploads/' . $candidate->url_avatar) }}" alt="Current avatar" class="img-thumbnail" style="max-height: 100px;">
+                                </div>
+                            @endif
+                            <input type="file" class="form-control" name="url_avatar" accept="image/*">
+                            @error('url_avatar')
+                                <div class="text-danger">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Ảnh CCCD/CMND</label>
+                            @if($candidate->identity_image)
+                                <div class="mb-2">
+                                    <img src="{{ asset('uploads/' . $candidate->identity_image) }}" alt="Current identity image" class="img-thumbnail" style="max-height: 100px;">
+                                </div>
+                            @endif
+                            <input type="file" class="form-control" name="identity_image" accept="image/*">
+                            @error('identity_image')
+                                <div class="text-danger">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Ảnh công ty</label>
+                            @if($candidate->image_company)
+                                <div class="mb-2">
+                                    <img src="{{ asset('uploads/' . $candidate->image_company) }}" alt="Current company image" class="img-thumbnail" style="max-height: 100px;">
+                                </div>
+                            @endif
+                            <input type="file" class="form-control" name="image_company" accept="image/*">
+                            @error('image_company')
+                                <div class="text-danger">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" name="finding_job" value="1" {{ old('finding_job', $candidate->finding_job) ? 'checked' : '' }}>
+                                <label class="form-check-label">Đang tìm việc</label>
+                            </div>
+                            @error('finding_job')
+                                <div class="text-danger">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Cập nhật thông tin cơ bản</button>
                 </div>
 
                 <!-- Học vấn -->

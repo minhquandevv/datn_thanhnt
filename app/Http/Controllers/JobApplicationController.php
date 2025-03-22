@@ -19,42 +19,28 @@ class JobApplicationController extends Controller
     {
         $request->validate([
             'job_offer_id' => 'required|exists:job_offers,id',
-            'candidate_id' => 'required|exists:candidates,id',
             'cover_letter' => 'required|string',
-            'cv' => 'nullable|file|mimes:pdf,doc,docx|max:2048'
+            'cv' => 'required|file|mimes:pdf,doc,docx|max:2048',
         ]);
 
-        // Kiểm tra xem candidate đã ứng tuyển chưa
-        $existingApplication = JobApplication::where('job_offer_id', $request->job_offer_id)
-            ->where('candidate_id', $request->candidate_id)
-            ->first();
+        try {
+            if ($request->hasFile('cv')) {
+                $cv = $request->file('cv');
+                $cvName = time() . '_' . $cv->getClientOriginalName();
+                $cv->move(public_path('uploads/cv'), $cvName);
+                
+                $application = JobApplication::create([
+                    'candidate_id' => auth()->user()->id,
+                    'job_offer_id' => $request->job_offer_id,
+                    'cover_letter' => $request->cover_letter,
+                    'cv_path' => 'cv/' . $cvName,
+                    'status' => 0, // Đã nộp
+                ]);
 
-        if ($existingApplication) {
-            return back()->with('error', 'Bạn đã nộp đơn ứng tuyển cho vị trí này.');
+                return redirect()->route('candidate.applications')->with('success', 'Nộp đơn ứng tuyển thành công!');
+            }
+        } catch (\Exception $e) {
+            return back()->with('error', 'Có lỗi xảy ra khi nộp đơn ứng tuyển: ' . $e->getMessage());
         }
-
-        // Lấy thông tin candidate
-        $candidate = Candidate::findOrFail($request->candidate_id);
-
-        // Xử lý upload CV
-        $cvPath = null;
-        if ($request->hasFile('cv')) {
-            $cvPath = $request->file('cv')->store('cvs');
-        } else {
-            // Sử dụng CV đã lưu trong profile
-            $cvPath = $candidate->profile->url_cv;
-        }
-
-        // Tạo đơn ứng tuyển mới
-        $application = JobApplication::create([
-            'job_offer_id' => $request->job_offer_id,
-            'candidate_id' => $request->candidate_id,
-            'cover_letter' => $request->cover_letter,
-            'cv_path' => $cvPath,
-            'status' => 'pending',
-            'applied_at' => now()
-        ]);
-
-        return back()->with('success', 'Đơn ứng tuyển của bạn đã được gửi thành công.');
     }
 }

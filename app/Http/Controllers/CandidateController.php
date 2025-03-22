@@ -31,75 +31,49 @@ class CandidateController extends Controller
 
     public function profile()
     {
-        $candidate = auth()->guard('candidate')->user();
+        $candidate = Auth::user();
         return view('candidate.profile', compact('candidate'));
     }
 
     public function updateProfile(Request $request)
     {
-        $candidate = auth()->guard('candidate')->user();
-        
         $request->validate([
             'fullname' => 'required|string|max:255',
-            'email' => 'required|email|unique:candidates,email,' . $candidate->id,
-            'password' => 'nullable|string|min:6',
-            'identity_number' => 'required|string|max:20',
-            'phone_number' => 'nullable|string|max:20',
-            'gender' => 'nullable|in:male,female,other',
-            'dob' => 'nullable|date',
-            'address' => 'nullable|string|max:255',
-            'experience_year' => 'nullable|integer',
-            'url_avatar' => 'nullable|image|max:2048',
-            'identity_image' => 'nullable|image|max:2048',
-            'image_company' => 'nullable|image|max:2048',
-            'finding_job' => 'nullable|boolean'
+            'phone_number' => 'required|string|max:20',
+            'address' => 'required|string|max:255',
+            'url_avatar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'identity_image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
-        // Update basic information
-        $candidate->fill([
-            'fullname' => $request->fullname,
-            'email' => $request->email,
-            'identity_number' => $request->identity_number,
-            'phone_number' => $request->phone_number,
-            'gender' => $request->gender,
-            'dob' => $request->dob ? date('Y-m-d', strtotime($request->dob)) : null,
-            'address' => $request->address,
-            'experience_year' => $request->experience_year,
-            'finding_job' => $request->has('finding_job')
-        ]);
-
-        // Update password if provided
-        if ($request->filled('password')) {
-            $candidate->password = Hash::make($request->password);
-        }
-
-        // Handle avatar upload
-        if ($request->hasFile('url_avatar')) {
-            if ($candidate->url_avatar) {
-                Storage::delete($candidate->url_avatar);
+        try {
+            $candidate = Auth::user();
+            
+            // Xử lý upload ảnh đại diện
+            if ($request->hasFile('url_avatar')) {
+                $avatar = $request->file('url_avatar');
+                $avatarName = time() . '_avatar_' . $avatar->getClientOriginalName();
+                $avatar->move(public_path('uploads/images'), $avatarName);
+                $candidate->url_avatar = 'images/' . $avatarName;
             }
-            $candidate->url_avatar = $request->file('url_avatar')->store('candidates/avatars');
-        }
 
-        // Handle identity image upload
-        if ($request->hasFile('identity_image')) {
-            if ($candidate->identity_image) {
-                Storage::delete($candidate->identity_image);
+            // Xử lý upload ảnh CCCD
+            if ($request->hasFile('identity_image')) {
+                $idImage = $request->file('identity_image');
+                $idName = time() . '_id_' . $idImage->getClientOriginalName();
+                $idImage->move(public_path('uploads/images'), $idName);
+                $candidate->identity_image = 'images/' . $idName;
             }
-            $candidate->identity_image = $request->file('identity_image')->store('candidates/identities');
+
+            // Cập nhật thông tin cơ bản
+            $candidate->fullname = $request->fullname;
+            $candidate->phone_number = $request->phone_number;
+            $candidate->address = $request->address;
+            $candidate->save();
+
+            return redirect()->route('candidate.profile')->with('success', 'Cập nhật thông tin thành công!');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Có lỗi xảy ra khi cập nhật thông tin: ' . $e->getMessage());
         }
-
-        // Handle company image upload
-        if ($request->hasFile('image_company')) {
-            if ($candidate->image_company) {
-                Storage::delete($candidate->image_company);
-            }
-            $candidate->image_company = $request->file('image_company')->store('candidates/companies');
-        }
-
-        $candidate->save();
-
-        return redirect()->back()->with('success', 'Cập nhật thông tin thành công');
     }
 
     public function storeEducation(Request $request)
