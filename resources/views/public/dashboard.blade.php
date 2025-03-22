@@ -170,6 +170,10 @@
                                                 @endif
                                             </button>
                                         @endif
+                                    @elseif(Auth::check() && (Auth::user()->role === 'admin' || Auth::user()->role === 'hr'))
+                                        <a href="{{ route('public.show', $job->id) }}" class="btn btn-primary">
+                                            <i class="bi bi-eye me-2"></i>Xem chi tiết
+                                        </a>
                                     @else
                                         @if($job->job_quantity > 0 && \Carbon\Carbon::parse($job->expiration_date)->isFuture())
                                             <a href="{{ route('public.show', $job->id) }}" class="btn btn-primary">
