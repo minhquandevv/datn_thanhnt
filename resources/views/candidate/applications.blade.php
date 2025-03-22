@@ -278,10 +278,51 @@
                                         <i class="bi bi-check-circle text-primary me-2 mt-1"></i>
                                         <div>
                                             <div class="fw-medium">Trạng thái:</div>
-                                            <span class="badge bg-{{ $status['color'] }} d-inline-flex align-items-center">
-                                                <i class="bi bi-{{ $status['icon'] }} me-1"></i>
-                                                {{ $status['text'] }}
-                                            </span>
+                                            @php
+                                        $statusMap = [
+                                            'pending' => [
+                                                'icon' => 'hourglass-split',
+                                                'color' => 'warning',
+                                                'text' => 'Chờ xử lý'
+                                            ],
+                                            'submitted' => [
+                                                'icon' => 'send',
+                                                'color' => 'info',
+                                                'text' => 'Đã nộp'
+                                            ],
+                                            'pending_review' => [
+                                                'icon' => 'hourglass-split',
+                                                'color' => 'warning',
+                                                'text' => 'Chờ xem xét'
+                                            ],
+                                            'interview_scheduled' => [
+                                                'icon' => 'calendar-check',
+                                                'color' => 'primary',
+                                                'text' => 'Đã lên lịch PV'
+                                            ],
+                                            'result_pending' => [
+                                                'icon' => 'hourglass',
+                                                'color' => 'secondary',
+                                                'text' => 'Chờ kết quả'
+                                            ],
+                                            'approved' => [
+                                                'icon' => 'check-circle-fill',
+                                                'color' => 'success',
+                                                'text' => 'Đã duyệt'
+                                            ],
+                                            'rejected' => [
+                                                'icon' => 'x-circle-fill',
+                                                'color' => 'danger',
+                                                'text' => 'Từ chối'
+                                            ]
+                                        ];
+
+                                        $status = $statusMap[$application->status] ?? $statusMap['pending'];
+                                    @endphp
+                                    <span class="badge bg-{{ $status['color'] }} d-inline-flex align-items-center">
+                                        <i class="bi bi-{{ $status['icon'] }} me-1"></i>
+                                        {{ $status['text'] }}
+                                    </span>
                                         </div>
                                     </div>
                                 </div>

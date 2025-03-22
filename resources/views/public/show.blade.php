@@ -120,6 +120,14 @@
                         <button class="btn btn-secondary fw-bold px-4 py-2 rounded-pill shadow-sm" disabled>
                             ĐÃ ỨNG TUYỂN <i class="bi bi-check-circle"></i>
                         </button>
+                    @elseif($jobOffer->job_quantity <= 0)
+                        <button class="btn btn-secondary fw-bold px-4 py-2 rounded-pill shadow-sm" disabled>
+                            ĐÃ ĐỦ ỨNG VIÊN <i class="bi bi-x-circle"></i>
+                        </button>
+                    @elseif(!\Carbon\Carbon::parse($jobOffer->expiration_date)->isFuture())
+                        <button class="btn btn-secondary fw-bold px-4 py-2 rounded-pill shadow-sm" disabled>
+                            ĐÃ HẾT HẠN <i class="bi bi-clock"></i>
+                        </button>
                     @else
                         <button class="btn btn-danger fw-bold px-4 py-2 rounded-pill shadow-sm"
                             data-bs-toggle="modal" data-bs-target="#applyJobModal">
@@ -198,7 +206,29 @@
             </ul>
 
             <div class="mt-4 d-flex gap-3">
-                <button class="btn btn-danger px-4 py-2 shadow-sm">ỨNG TUYỂN NGAY <i class="bi bi-arrow-right"></i></button>
+                @if(Auth::guard('candidate')->check())
+                    @if($hasApplied)
+                        <button class="btn btn-secondary px-4 py-2 shadow-sm" disabled>
+                            ĐÃ ỨNG TUYỂN <i class="bi bi-check-circle"></i>
+                        </button>
+                    @elseif($jobOffer->job_quantity <= 0)
+                        <button class="btn btn-secondary px-4 py-2 shadow-sm" disabled>
+                            ĐÃ ĐỦ ỨNG VIÊN <i class="bi bi-x-circle"></i>
+                        </button>
+                    @elseif(!\Carbon\Carbon::parse($jobOffer->expiration_date)->isFuture())
+                        <button class="btn btn-secondary px-4 py-2 shadow-sm" disabled>
+                            ĐÃ HẾT HẠN <i class="bi bi-clock"></i>
+                        </button>
+                    @else
+                        <button class="btn btn-danger px-4 py-2 shadow-sm" data-bs-toggle="modal" data-bs-target="#applyJobModal">
+                            ỨNG TUYỂN NGAY <i class="bi bi-arrow-right"></i>
+                        </button>
+                    @endif
+                @else
+                    <a href="{{ route('login') }}" class="btn btn-danger px-4 py-2 shadow-sm">
+                        ĐĂNG NHẬP ĐỂ ỨNG TUYỂN <i class="bi bi-arrow-right"></i>
+                    </a>
+                @endif
                 <button class="btn btn-secondary px-4 py-2 shadow-sm">LƯU TIN <i class="bi bi-bookmark"></i></button>
             </div>
 

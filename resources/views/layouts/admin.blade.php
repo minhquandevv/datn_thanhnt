@@ -334,6 +334,12 @@
                             Hồ sơ ứng viên
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}" href="{{ route('admin.users.index') }}">
+                            <i class="bi bi-person-gear"></i>
+                            Quản lý người dùng
+                        </a>
+                    </li>
                 </ul>
             </div>
 

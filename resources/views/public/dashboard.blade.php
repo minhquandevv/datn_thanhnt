@@ -143,19 +143,48 @@
                                 </div>
                                 
                                 <div class="d-grid gap-2 mt-3">
-                                    @if($job->job_quantity > 0 && \Carbon\Carbon::parse($job->expiration_date)->isFuture())
+                                    @if(Auth::guard('candidate')->check())
+                                        @php
+                                            $candidate = Auth::guard('candidate')->user();
+                                            $hasApplied = $job->applications()->where('candidate_id', $candidate->id)->exists();
+                                        @endphp
+
                                         <a href="{{ route('public.show', $job->id) }}" class="btn btn-primary">
                                             <i class="bi bi-eye me-2"></i>Xem chi tiết
                                         </a>
+                                        @if($hasApplied)
+                                            <button class="btn btn-secondary" disabled>
+                                                <i class="bi bi-check-circle me-2"></i>Đã ứng tuyển
+                                            </button>
+                                        @elseif($job->job_quantity > 0 && \Carbon\Carbon::parse($job->expiration_date)->isFuture())
+                                            <a href="{{ route('public.show', $job->id) }}" class="btn btn-success">
+                                                <i class="bi bi-send me-2"></i>Ứng tuyển
+                                            </a>
+                                        @else
+                                            <button class="btn btn-secondary" disabled>
+                                                <i class="bi bi-clock me-2"></i>
+                                                @if($job->job_quantity <= 0)
+                                                    Đã đủ ứng viên
+                                                @else
+                                                    Đã hết hạn
+                                                @endif
+                                            </button>
+                                        @endif
                                     @else
-                                        <button class="btn btn-secondary" disabled>
-                                            <i class="bi bi-eye me-2"></i>
-                                            @if($job->job_quantity <= 0)
-                                                Đã đủ ứng viên
-                                            @else
-                                                Đã hết hạn
-                                            @endif
-                                        </button>
+                                        @if($job->job_quantity > 0 && \Carbon\Carbon::parse($job->expiration_date)->isFuture())
+                                            <a href="{{ route('public.show', $job->id) }}" class="btn btn-primary">
+                                                <i class="bi bi-eye me-2"></i>Xem chi tiết
+                                            </a>
+                                        @else
+                                            <button class="btn btn-secondary" disabled>
+                                                <i class="bi bi-eye me-2"></i>
+                                                @if($job->job_quantity <= 0)
+                                                    Đã đủ ứng viên
+                                                @else
+                                                    Đã hết hạn
+                                                @endif
+                                            </button>
+                                        @endif
                                     @endif
                                 </div>
                             </div>
