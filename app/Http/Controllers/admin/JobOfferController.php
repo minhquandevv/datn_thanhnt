@@ -8,6 +8,7 @@ use App\Models\JobOffer;
 use App\Models\Company;
 use App\Models\Skill;
 use App\Models\Benefit;
+use App\Models\JobCategory;
 
 class JobOfferController extends Controller
 {
@@ -25,30 +26,35 @@ class JobOfferController extends Controller
 
         $jobOffers = $query->latest()->get();
         $companies = Company::all();
-        
-        return view('admin.quanlytintuyendung', compact('jobOffers', 'companies'));
+        $jobCategories = JobCategory::all();
+
+        return view('admin.quanlytintuyendung', compact('jobOffers', 'companies', 'jobCategories'));
     }
 
     public function store(Request $request)
     {
-        $request->validate([
+        $data = $request->validate([
             'job_name' => 'required|string|max:255',
             'company_id' => 'required|exists:companies,id',
+            'job_category_id' => 'nullable|exists:job_categories,id',
+            'job_position' => 'nullable|string|max:255',
+            'job_salary' => 'nullable|numeric|min:0',
+            'job_quantity' => 'required|integer|min:1',
+            'expiration_date' => 'required|date',
             'job_detail' => 'required|string',
             'job_description' => 'required|string',
             'job_requirement' => 'required|string',
-            'expiration_date' => 'required|date',
+            'job_skills' => 'nullable|array',
+            'job_skills.*' => 'exists:job_skills,id',
+            'job_benefits' => 'nullable|array',
+            'job_benefits.*' => 'exists:job_benefits,id',
         ]);
 
-        // Tạo job offer mới
-        $jobOffer = new JobOffer();
-        $jobOffer->job_name = $request->job_name;
-        $jobOffer->company_id = $request->company_id;
-        $jobOffer->job_detail = $request->job_detail;
-        $jobOffer->job_description = $request->job_description;
-        $jobOffer->job_requirement = $request->job_requirement;
-        $jobOffer->expiration_date = $request->expiration_date;
-        $jobOffer->save();
+        $jobOffer = JobOffer::create($data);
+
+        // Gắn kỹ năng và phúc lợi (nếu có)
+        $jobOffer->skills()->sync($request->input('job_skills', []));
+        $jobOffer->benefits()->sync($request->input('job_benefits', []));
 
         return redirect()->route('admin.job-offers')->with('success', 'Thêm tin tuyển dụng thành công.');
     }
@@ -57,36 +63,56 @@ class JobOfferController extends Controller
     {
         $jobOffer = JobOffer::with(['company', 'skills', 'benefits'])->findOrFail($id);
         $companies = Company::all();
-        return view('admin.chitiettintuyendung', compact('jobOffer', 'companies'));
+        $jobCategories = JobCategory::all();
+        return view('admin.chitiettintuyendung', compact('jobOffer', 'companies', 'jobCategories'));
     }
 
     public function edit($id)
     {
         $jobOffer = JobOffer::with(['company', 'skills', 'benefits'])->findOrFail($id);
         $companies = Company::all();
-        return view('admin.chitiettintuyendung', compact('jobOffer', 'companies'));
+        $jobCategories = JobCategory::all();
+        return view('admin.chitiettintuyendung', compact('jobOffer', 'companies', 'jobCategories'));
     }
 
     public function update(Request $request, $id)
     {
         $jobOffer = JobOffer::findOrFail($id);
-        
+
         $data = $request->validate([
-            'job_name' => 'sometimes|required|string|max:255',
-            'company_id' => 'sometimes|required|exists:companies,id',
-            'job_detail' => 'sometimes|required|string',
-            'job_description' => 'sometimes|required|string',
-            'job_requirement' => 'sometimes|required|string',
-            'expiration_date' => 'sometimes|required|date',
+            'job_name' => 'required|string|max:255',
+            'company_id' => 'required|exists:companies,id',
+            'job_category_id' => 'nullable|exists:job_categories,id',
+            'job_position' => 'nullable|string|max:255',
+            'job_salary' => 'nullable|numeric|min:0',
+            'job_quantity' => 'required|integer|min:1',
+            'expiration_date' => 'required|date',
+            'job_detail' => 'required|string',
+            'job_description' => 'required|string',
+            'job_requirement' => 'required|string',
+            'job_skills' => 'nullable|array',
+            'job_skills.*' => 'exists:job_skills,id',
+            'job_benefits' => 'nullable|array',
+            'job_benefits.*' => 'exists:job_benefits,id',
         ]);
 
-        $jobOffer->update($data);
+        // Cập nhật thông tin jobOffer
+        $jobOfferData = array_diff_key($data, array_flip(['job_skills', 'job_benefits']));
+        $jobOffer->update($jobOfferData);
+
+        // Cập nhật kỹ năng và phúc lợi
+        $jobOffer->skills()->sync($request->input('job_skills', []));
+        $jobOffer->benefits()->sync($request->input('job_benefits', []));
 
         if ($request->ajax()) {
-            return response()->json(['success' => true]);
+            return response()->json([
+                'success' => true,
+                'message' => 'Cập nhật tin tuyển dụng thành công.'
+            ]);
         }
 
-        return redirect()->route('admin.job-offers')->with('success', 'Cập nhật tin tuyển dụng thành công.');
+        return redirect()->route('admin.job-offers.show', $jobOffer->id)
+                         ->with('success', 'Cập nhật tin tuyển dụng thành công.');
     }
 
     public function destroy($id)
@@ -96,4 +122,4 @@ class JobOfferController extends Controller
 
         return redirect()->route('admin.job-offers')->with('success', 'Xóa tin tuyển dụng thành công.');
     }
-} 
+}
