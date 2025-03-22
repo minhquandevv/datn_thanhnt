@@ -198,10 +198,38 @@
                                 <div class="user-role">Ứng viên</div>
                             </div>
                         </div>
-                        <form action="{{ route('logout') }}" method="POST" style="display: inline; margin-left: 10px;">
-                            @csrf
-                            <button type="submit" class="btn btn-outline-danger btn-apply">Đăng xuất</button>
-                        </form>
+                        <div class="d-flex gap-2 mt-2">
+                            <a href="{{ route('candidate.profile') }}" class="btn btn-outline-primary btn-sm">
+                                <i class="bi bi-person-badge me-1"></i>Quản lý thông tin
+                            </a>
+                            <form action="{{ route('logout') }}" method="POST" style="display: inline;">
+                                @csrf
+                                <button type="submit" class="btn btn-outline-danger btn-sm">Đăng xuất</button>
+                            </form>
+                        </div>
+                    @elseif(Auth::check() && (Auth::user()->role === 'admin' || Auth::user()->role === 'hr'))
+                        <div class="d-flex align-items-center">
+                            @if(Auth::user()->url_avatar)
+                                <img src="{{ asset('uploads/' . Auth::user()->url_avatar) }}" alt="Avatar" class="user-avatar">
+                            @else
+                                <div class="user-avatar bg-secondary text-white d-flex align-items-center justify-content-center">
+                                    {{ substr(Auth::user()->fullname, 0, 1) }}
+                                </div>
+                            @endif
+                            <div class="user-info">
+                                <div class="user-name">{{ Auth::user()->fullname }}</div>
+                                <div class="user-role">{{ ucfirst(Auth::user()->role) }}</div>
+                            </div>
+                        </div>
+                        <div class="d-flex gap-2 mt-2">
+                            <a href="{{ route('admin.job-offers') }}" class="btn btn-outline-primary btn-sm">
+                                <i class="bi bi-briefcase me-1"></i>Quản lý tuyển dụng
+                            </a>
+                            <form action="{{ route('logout') }}" method="POST" style="display: inline;">
+                                @csrf
+                                <button type="submit" class="btn btn-outline-danger btn-sm">Đăng xuất</button>
+                            </form>
+                        </div>
                     @else
                         <a href="{{ route('login') }}" class="btn btn-primary btn-apply">Đăng nhập</a>
                     @endauth

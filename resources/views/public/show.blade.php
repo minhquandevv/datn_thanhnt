@@ -111,7 +111,11 @@
         <div class="card shadow-lg p-4 border-0 rounded-4 bg-white">
             <div class="d-flex justify-content-between align-items-center border-bottom pb-3">
                 <h2 class="fw-bold text-danger"><i class="bi bi-briefcase me-2"></i>{{ $jobOffer->job_name }}</h2>
-                @auth('candidate')
+                @if($isAdmin)
+                    <a href="{{ route('admin.job-offers.edit', $jobOffer->id) }}" class="btn btn-primary fw-bold px-4 py-2 rounded-pill shadow-sm">
+                        <i class="bi bi-pencil-square me-2"></i>Chỉnh sửa tin tuyển dụng
+                    </a>
+                @elseif(Auth::guard('candidate')->check())
                     @if($hasApplied)
                         <button class="btn btn-secondary fw-bold px-4 py-2 rounded-pill shadow-sm" disabled>
                             ĐÃ ỨNG TUYỂN <i class="bi bi-check-circle"></i>
@@ -126,7 +130,7 @@
                     <a href="{{ route('login') }}" class="btn btn-danger fw-bold px-4 py-2 rounded-pill shadow-sm">
                         ĐĂNG NHẬP ĐỂ ỨNG TUYỂN <i class="bi bi-arrow-right"></i>
                     </a>
-                @endauth
+                @endif
             </div>
             <p class="text-muted mt-2"><i class="bi bi-building me-1"></i> {{ $jobOffer->company->title }}</p>
             <p class="text-muted">

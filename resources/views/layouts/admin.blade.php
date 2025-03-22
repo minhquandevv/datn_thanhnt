@@ -305,6 +305,12 @@
                 <div class="nav-section-title">Quản lý</div>
                 <ul class="nav flex-column">
                     <li class="nav-item">
+                        <a class="nav-link" href="{{ route('home') }}">
+                            <i class="bi bi-house"></i>
+                            Quay về trang chủ
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}" href="{{ route('admin.dashboard') }}">
                             <i class="bi bi-speedometer2"></i>
                             Đề xuất tuyển dụng

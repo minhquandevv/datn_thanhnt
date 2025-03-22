@@ -18,33 +18,30 @@ class HomeController extends Controller
 
     public function show($id)
     {
-        Log::info("Fetching job offer with ID: " . $id);
-
-        // Lấy job offer theo ID
         $jobOffer = JobOffer::findOrFail($id);
+        $hasApplied = false;
+        $isAdmin = false;
 
-        // Kiểm tra user có đăng nhập không
         if (Auth::check()) {
             $userId = Auth::id();
             Log::info("User is authenticated, checking application status for User ID: $userId");
 
-            // Kiểm tra user đã ứng tuyển chưa
-            $hasApplied = JobApplication::where('user_id', Auth::id())
-            ->where('job_offer_id', $id)
-            ->count() > 0;
-
-            Log::info("User ID: $userId - hasApplied: " . ($hasApplied ? 'Yes' : 'No'));
+            // Kiểm tra nếu là admin
+            if (Auth::user()->role === 'admin' || Auth::user()->role === 'hr') {
+                $isAdmin = true;
+                Log::info("User is admin/hr");
+            } else {
+                // Kiểm tra user đã ứng tuyển chưa (sử dụng candidate_id thay vì user_id)
+                $hasApplied = JobApplication::where('candidate_id', Auth::guard('candidate')->id())
+                    ->where('job_offer_id', $id)
+                    ->count() > 0;
+                Log::info("User ID: $userId - hasApplied: " . ($hasApplied ? 'Yes' : 'No'));
+            }
         } else {
             Log::info("User is not authenticated.");
-            $hasApplied = false;
         }
 
-        // Log kiểm tra nếu biến không được truyền vào view
-        if (!isset($hasApplied)) {
-            Log::error("Variable \$hasApplied is not set before returning view.");
-        }
-
-        return view('public.show', compact('jobOffer', 'hasApplied'));
+        return view('public.show', compact('jobOffer', 'hasApplied', 'isAdmin'));
     }
 
 }

@@ -11,7 +11,7 @@
         <!-- Form tìm kiếm -->
         <div class="card mb-4">
             <div class="card-body">
-                <form method="GET" action="{{ route('admin.candidates') }}" id="searchForm">
+        <form method="GET" action="{{ route('admin.candidates') }}" id="searchForm">
                     <div class="row g-3">
                         <div class="col-md-3">
                             <div class="form-group">
@@ -29,18 +29,18 @@
                             <div class="form-group">
                                 <label class="form-label text-muted mb-2">Số điện thoại</label>
                                 <input type="text" class="form-control" name="phone_number" placeholder="Tìm SĐT" value="{{ request('phone_number') }}">
-                            </div>
-                        </div>
+                </div>
+                </div>
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label class="form-label text-muted mb-2">&nbsp;</label>
                                 <button type="submit" class="btn btn-primary w-100">
                                     <i class="bi bi-search me-2"></i>Tìm kiếm
                                 </button>
-                            </div>
-                        </div>
-                    </div>
-                </form>
+                </div>
+                </div>
+            </div>
+        </form>
             </div>
         </div>
 
@@ -58,11 +58,11 @@
                                 <th style="min-width: 200px">Thông tin khác</th>
                                 <th class="text-center" style="width: 120px">Trạng thái</th>
                                 <th class="text-center" style="width: 120px">Thao tác</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($candidates as $candidate)
-                                <tr>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($candidates as $candidate)
+                    <tr>
                                     <td class="text-center">{{ $candidate->id }}</td>
                                     <td class="text-center">
                                         @if($candidate->url_avatar)
@@ -84,12 +84,12 @@
                                                 <i class="bi bi-gender-trans text-secondary"></i> Khác
                                             @endif
                                         </div>
-                                    </td>
+                        </td>
                                     <td>
                                         <div class="mb-1">
                                             <i class="bi bi-envelope text-primary me-2"></i>
                                             <span class="text-muted">{{ $candidate->email }}</span>
-                                        </div>
+                                </div>
                                         <div class="mb-1">
                                             <i class="bi bi-phone text-success me-2"></i>
                                             <span class="text-muted">{{ $candidate->phone_number }}</span>
@@ -138,13 +138,13 @@
                                                         title="{{ $candidate->active ? 'Ẩn ứng viên' : 'Hiện ứng viên' }}">
                                                     <i class="bi {{ $candidate->active ? 'bi-eye-slash' : 'bi-eye' }}"></i>
                                                 </button>
-                                            </form>
-                                        </div>
+                                    </form>
+                                </div>
                                     </td>
                                 </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                @endforeach
+            </tbody>
+        </table>
                 </div>
             </div>
         </div>
@@ -558,24 +558,24 @@
                             <form action="{{ route('admin.applications.update', $application->id) }}" method="POST">
                                 @csrf
                                 @method('PUT')
-                                <div class="mb-3">
+                        <div class="mb-3">
                                     <label class="form-label fw-bold">Cập nhật trạng thái</label>
                                     <select class="form-select" name="status">
                                         @foreach($modalStatusTexts as $value => $text)
                                             <option value="{{ $value }}" {{ $application->status == $value ? 'selected' : '' }}>
                                                 {{ $text }}
                                             </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div class="mb-3">
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="mb-3">
                                     <label class="form-label fw-bold">Phản hồi</label>
                                     <textarea class="form-control" name="feedback" rows="3">{{ $application->feedback }}</textarea>
                                 </div>
                                 <button type="submit" class="btn btn-primary">Cập nhật</button>
                             </form>
                         </div>
-                    </div>
+                        </div>
                 </div>
             </div>
             @endforeach

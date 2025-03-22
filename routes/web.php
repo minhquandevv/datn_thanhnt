@@ -82,6 +82,7 @@ Route::middleware(['auth:web', 'admin'])->prefix('admin')->name('admin.')->group
     Route::get('/job-offers', [JobOfferController::class, 'index'])->name('job-offers');
     Route::post('/job-offers', [JobOfferController::class, 'store'])->name('job-offers.store');
     Route::get('/job-offers/{id}', [JobOfferController::class, 'show'])->name('job-offers.show');
+    Route::get('/job-offers/{id}/edit', [JobOfferController::class, 'edit'])->name('job-offers.edit');
     Route::put('/job-offers/{id}', [JobOfferController::class, 'update'])->name('job-offers.update');
     Route::delete('/job-offers/{id}', [JobOfferController::class, 'destroy'])->name('job-offers.destroy');
     

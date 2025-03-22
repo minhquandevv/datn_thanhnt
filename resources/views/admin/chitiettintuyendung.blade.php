@@ -30,6 +30,9 @@
                     <button class="btn btn-primary" id="saveChanges" style="display: none;">
                         <i class="bi bi-save me-2"></i>Lưu thay đổi
                     </button>
+                    <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editJobModal">
+                        <i class="bi bi-pencil-square me-2"></i>Sửa thông tin
+                    </button>
                     <form action="{{ route('admin.job-offers.destroy', $jobOffer->id) }}" method="POST" class="d-inline">
                         @csrf
                         @method('DELETE')
@@ -143,6 +146,76 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Chỉnh sửa thông tin -->
+<div class="modal fade" id="editJobModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-pencil-square text-warning me-2"></i>Chỉnh sửa thông tin tuyển dụng
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form action="{{ route('admin.job-offers.update', $jobOffer->id) }}" method="POST">
+                    @csrf
+                    @method('PUT')
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Tên công việc</label>
+                            <input type="text" class="form-control" name="job_name" value="{{ $jobOffer->job_name }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Công ty</label>
+                            <select class="form-select" name="company_id" required>
+                                @foreach($companies as $company)
+                                    <option value="{{ $company->id }}" {{ $jobOffer->company_id == $company->id ? 'selected' : '' }}>
+                                        {{ $company->title }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Chi tiết công việc</label>
+                            <textarea class="form-control" name="job_detail" rows="3" required>{{ $jobOffer->job_detail }}</textarea>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Mô tả công việc</label>
+                            <textarea class="form-control" name="job_description" rows="3" required>{{ $jobOffer->job_description }}</textarea>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Yêu cầu</label>
+                            <textarea class="form-control" name="job_requirement" rows="3" required>{{ $jobOffer->job_requirement }}</textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Hạn nộp</label>
+                            <input type="date" class="form-control" name="expiration_date" value="{{ $jobOffer->expiration_date }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Số lượng tuyển</label>
+                            <input type="number" class="form-control" name="job_quantity" value="{{ $jobOffer->job_quantity }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Vị trí</label>
+                            <input type="text" class="form-control" name="job_position" value="{{ $jobOffer->job_position }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Mức lương</label>
+                            <input type="number" class="form-control" name="job_salary" value="{{ $jobOffer->job_salary }}">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save me-2"></i>Lưu thay đổi
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

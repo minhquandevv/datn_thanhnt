@@ -60,6 +60,13 @@ class JobOfferController extends Controller
         return view('admin.chitiettintuyendung', compact('jobOffer', 'companies'));
     }
 
+    public function edit($id)
+    {
+        $jobOffer = JobOffer::with(['company', 'skills', 'benefits'])->findOrFail($id);
+        $companies = Company::all();
+        return view('admin.chitiettintuyendung', compact('jobOffer', 'companies'));
+    }
+
     public function update(Request $request, $id)
     {
         $jobOffer = JobOffer::findOrFail($id);
