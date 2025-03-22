@@ -223,7 +223,10 @@ class CandidateController extends Controller
         $certificate->candidate_id = $candidate->id;
         
         if ($request->hasFile('url_cert')) {
-            $certificate->url_cert = $request->file('url_cert')->store('candidates/certificates');
+            $file = $request->file('url_cert');
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads/certificates'), $fileName);
+            $certificate->url_cert = 'certificates/' . $fileName;
         }
         
         $certificate->save();
@@ -245,10 +248,16 @@ class CandidateController extends Controller
         $certificate = Certificate::where('candidate_id', $candidate->id)->findOrFail($id);
         
         if ($request->hasFile('url_cert')) {
-            if ($certificate->url_cert) {
-                Storage::delete($certificate->url_cert);
+            // Xóa file cũ nếu tồn tại
+            if ($certificate->url_cert && file_exists(public_path('uploads/' . $certificate->url_cert))) {
+                unlink(public_path('uploads/' . $certificate->url_cert));
             }
-            $certificate->url_cert = $request->file('url_cert')->store('candidates/certificates');
+            
+            // Upload file mới
+            $file = $request->file('url_cert');
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads/certificates'), $fileName);
+            $certificate->url_cert = 'certificates/' . $fileName;
         }
         
         $certificate->update($request->except('url_cert'));
@@ -261,8 +270,9 @@ class CandidateController extends Controller
         $candidate = auth()->guard('candidate')->user();
         $certificate = Certificate::where('candidate_id', $candidate->id)->findOrFail($id);
         
-        if ($certificate->url_cert) {
-            Storage::delete($certificate->url_cert);
+        // Xóa file nếu tồn tại
+        if ($certificate->url_cert && file_exists(public_path('uploads/' . $certificate->url_cert))) {
+            unlink(public_path('uploads/' . $certificate->url_cert));
         }
         
         $certificate->delete();

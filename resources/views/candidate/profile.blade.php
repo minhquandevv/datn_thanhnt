@@ -301,6 +301,7 @@
                                     <th>Ngày cấp</th>
                                     <th>Kết quả</th>
                                     <th>Nơi cấp</th>
+                                    <th>File</th>
                                     <th>Thao tác</th>
                                 </tr>
                             </thead>
@@ -311,6 +312,15 @@
                                     <td>{{ $cert->date }}</td>
                                     <td>{{ $cert->result }}</td>
                                     <td>{{ $cert->location }}</td>
+                                    <td>
+                                        @if($cert->url_cert)
+                                            <a href="{{ asset('uploads/' . $cert->url_cert) }}" target="_blank" class="btn btn-sm btn-info">
+                                                <i class="bi bi-file-earmark-pdf"></i> Xem
+                                            </a>
+                                        @else
+                                            <span class="text-muted">Không có file</span>
+                                        @endif
+                                    </td>
                                     <td>
                                         <button type="button" class="btn btn-sm btn-primary" onclick="editCertificate({{ $cert->id }})">
                                             <i class="bi bi-pencil"></i>

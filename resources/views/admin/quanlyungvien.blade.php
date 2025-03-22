@@ -49,7 +49,7 @@
                             <td>{{ $candidate->id }}</td>
                             <td>
                                 @if($candidate->url_avatar)
-                                    <img src="{{ Storage::url($candidate->url_avatar) }}" alt="Avatar" class="rounded-circle" width="50">
+                                    <img src="{{ asset('uploads/' . $candidate->url_avatar) }}" alt="Avatar" class="rounded-circle" width="50">
                                 @else
                                     <div class="bg-secondary rounded-circle text-white d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
                                         {{ substr($candidate->fullname, 0, 1) }}
@@ -127,6 +127,34 @@
                     <div class="tab-content mt-3" id="viewTabContent{{ $candidate->id }}">
                         <!-- Thông tin cá nhân -->
                         <div class="tab-pane fade show active" id="profile{{ $candidate->id }}" role="tabpanel">
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <h6>Ảnh đại diện</h6>
+                                    @if($candidate->url_avatar)
+                                        <img src="{{ asset('uploads/' . $candidate->url_avatar) }}" alt="Avatar" class="img-thumbnail" style="max-width: 200px;">
+                                    @else
+                                        <div class="bg-secondary text-white d-flex align-items-center justify-content-center" style="width: 200px; height: 200px;">
+                                            {{ substr($candidate->fullname, 0, 1) }}
+                                        </div>
+                                    @endif
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <h6>Ảnh CCCD/CMND</h6>
+                                    @if($candidate->identity_image)
+                                        <img src="{{ asset('uploads/' . $candidate->identity_image) }}" alt="Identity Card" class="img-thumbnail" style="max-width: 200px;">
+                                    @else
+                                        <p class="text-muted">Chưa có ảnh CCCD/CMND</p>
+                                    @endif
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <h6>Ảnh công ty</h6>
+                                    @if($candidate->image_company)
+                                        <img src="{{ asset('uploads/' . $candidate->image_company) }}" alt="Company" class="img-thumbnail" style="max-width: 200px;">
+                                    @else
+                                        <p class="text-muted">Chưa có ảnh công ty</p>
+                                    @endif
+                                </div>
+                            </div>
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <h6>Thông tin cơ bản</h6>
@@ -238,6 +266,7 @@
                                             <th>Ngày cấp</th>
                                             <th>Kết quả</th>
                                             <th>Nơi cấp</th>
+                                            <th>File</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -247,6 +276,15 @@
                                             <td>{{ $cert->date }}</td>
                                             <td>{{ $cert->result }}</td>
                                             <td>{{ $cert->location }}</td>
+                                            <td>
+                                                @if($cert->url_cert)
+                                                    <a href="{{ asset('uploads/certificates/' . basename($cert->url_cert)) }}" target="_blank" class="btn btn-sm btn-info">
+                                                        <i class="bi bi-file-earmark-pdf"></i> Xem
+                                                    </a>
+                                                @else
+                                                    <span class="text-muted">Không có file</span>
+                                                @endif
+                                            </td>
                                         </tr>
                                         @endforeach
                                     </tbody>
@@ -305,6 +343,7 @@
                                                 <td>
                                                     @php
                                                         $statusColors = [
+                                                            'pending' => 'warning',
                                                             'submitted' => 'info',
                                                             'pending_review' => 'warning',
                                                             'interview_scheduled' => 'primary',
@@ -313,6 +352,7 @@
                                                             'rejected' => 'danger'
                                                         ];
                                                         $statusTexts = [
+                                                            'pending' => 'Chờ xử lý',
                                                             'submitted' => 'Đã nộp',
                                                             'pending_review' => 'Chờ xem xét',
                                                             'interview_scheduled' => 'Đã lên lịch PV',
@@ -320,9 +360,10 @@
                                                             'approved' => 'Đã duyệt',
                                                             'rejected' => 'Từ chối'
                                                         ];
+                                                        $status = $application->status ?? 'pending';
                                                     @endphp
-                                                    <span class="badge bg-{{ $statusColors[$application->status] }}">
-                                                        {{ $statusTexts[$application->status] }}
+                                                    <span class="badge bg-{{ $statusColors[$status] ?? 'secondary' }}">
+                                                        {{ $statusTexts[$status] ?? 'Không xác định' }}
                                                     </span>
                                                 </td>
                                                 <td>{{ Str::limit($application->feedback, 30) }}</td>
@@ -404,8 +445,8 @@
                                     <p><strong>Ngày ứng tuyển:</strong> {{ \Carbon\Carbon::parse($application->applied_at)->format('d/m/Y H:i:s') }}</p>
                                     <p><strong>Ngày xem xét:</strong> {{ $application->reviewed_at ? \Carbon\Carbon::parse($application->reviewed_at)->format('d/m/Y H:i:s') : 'Chưa xem xét' }}</p>
                                     <p><strong>Trạng thái:</strong> 
-                                        <span class="badge bg-{{ $statusColors[$application->status] }}">
-                                            {{ $statusTexts[$application->status] }}
+                                        <span class="badge bg-{{ $statusColors[$status] ?? 'secondary' }}">
+                                            {{ $statusTexts[$status] ?? 'Không xác định' }}
                                         </span>
                                     </p>
                                 </div>
@@ -421,7 +462,7 @@
                             <div class="mb-4">
                                 <h6 class="fw-bold">CV</h6>
                                 @if($application->cv_path)
-                                    <a href="{{ Storage::url($application->cv_path) }}" class="btn btn-sm btn-info" target="_blank">
+                                    <a href="{{ asset('uploads/cv/' . basename($application->cv_path)) }}" class="btn btn-sm btn-info" target="_blank">
                                         <i class="bi bi-file-earmark-pdf"></i> Xem CV
                                     </a>
                                 @else
