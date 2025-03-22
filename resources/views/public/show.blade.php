@@ -70,9 +70,11 @@
                 <div class="row align-items-center">
                     <div class="col-md-2 text-center">
                         @if($candidate->url_avatar)
-                            <img src="{{ asset('storage/' . $candidate->url_avatar) }}" alt="Avatar" class="candidate-avatar">
+                            <img src="{{ asset('uploads/' . $candidate->url_avatar) }}" alt="Avatar" class="candidate-avatar">
                         @else
-                            <img src="{{ asset('images/default-avatar.png') }}" alt="Default Avatar" class="candidate-avatar">
+                            <div class="candidate-avatar bg-secondary text-white d-flex align-items-center justify-content-center rounded-circle">
+                                {{ substr($candidate->fullname, 0, 1) }}
+                            </div>
                         @endif
                     </div>
                     <div class="col-md-10">

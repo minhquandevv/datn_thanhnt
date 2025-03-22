@@ -8,7 +8,7 @@ use App\Models\Education;
 use App\Models\Experience;
 use App\Models\CandidateSkill;
 use App\Models\Certificate;
-use App\Models\CandidateDesires;
+use App\Models\CandidateDesire;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -37,43 +37,55 @@ class CandidateController extends Controller
 
     public function updateProfile(Request $request)
     {
+        $candidate = auth()->guard('candidate')->user();
+        
         $request->validate([
             'fullname' => 'required|string|max:255',
-            'phone_number' => 'required|string|max:20',
-            'address' => 'required|string|max:255',
-            'url_avatar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'identity_image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'email' => 'required|email|unique:candidates,email,' . $candidate->id,
+            'password' => 'nullable|min:6',
+            'identity_number' => 'required|string|max:20',
+            'phone_number' => 'nullable|string|max:20',
+            'gender' => 'nullable|in:male,female,other',
+            'dob' => 'nullable|date',
+            'address' => 'nullable|string|max:255',
+            'experience_year' => 'nullable|numeric|min:0',
+            'finding_job' => 'boolean',
+            'url_avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'identity_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image_company' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
-        try {
-            $candidate = Auth::user();
-            
-            // Xử lý upload ảnh đại diện
-            if ($request->hasFile('url_avatar')) {
-                $avatar = $request->file('url_avatar');
-                $avatarName = time() . '_avatar_' . $avatar->getClientOriginalName();
-                $avatar->move(public_path('uploads/images'), $avatarName);
-                $candidate->url_avatar = 'images/' . $avatarName;
-            }
+        // Update basic info
+        $candidate->fullname = $request->fullname;
+        $candidate->email = $request->email;
+        $candidate->identity_number = $request->identity_number;
+        $candidate->phone_number = $request->phone_number;
+        $candidate->gender = $request->gender;
+        $candidate->dob = $request->dob;
+        $candidate->address = $request->address;
+        $candidate->experience_year = $request->experience_year;
+        $candidate->finding_job = $request->has('finding_job');
 
-            // Xử lý upload ảnh CCCD
-            if ($request->hasFile('identity_image')) {
-                $idImage = $request->file('identity_image');
-                $idName = time() . '_id_' . $idImage->getClientOriginalName();
-                $idImage->move(public_path('uploads/images'), $idName);
-                $candidate->identity_image = 'images/' . $idName;
-            }
-
-            // Cập nhật thông tin cơ bản
-            $candidate->fullname = $request->fullname;
-            $candidate->phone_number = $request->phone_number;
-            $candidate->address = $request->address;
-            $candidate->save();
-
-            return redirect()->route('candidate.profile')->with('success', 'Cập nhật thông tin thành công!');
-        } catch (\Exception $e) {
-            return back()->with('error', 'Có lỗi xảy ra khi cập nhật thông tin: ' . $e->getMessage());
+        if ($request->filled('password')) {
+            $candidate->password = Hash::make($request->password);
         }
+
+        // Handle file uploads
+        if ($request->hasFile('url_avatar')) {
+            $candidate->url_avatar = $this->handleFileUpload($request->file('url_avatar'));
+        }
+
+        if ($request->hasFile('identity_image')) {
+            $candidate->identity_image = $this->handleFileUpload($request->file('identity_image'));
+        }
+
+        if ($request->hasFile('image_company')) {
+            $candidate->image_company = $this->handleFileUpload($request->file('image_company'));
+        }
+
+        $candidate->save();
+
+        return redirect()->route('candidate.profile')->with('success', 'Cập nhật thông tin thành công');
     }
 
     public function storeEducation(Request $request)
@@ -289,7 +301,7 @@ class CandidateController extends Controller
         ]);
 
         $candidate = auth()->guard('candidate')->user();
-        $desires = $candidate->desires ?? new CandidateDesires();
+        $desires = $candidate->desires ?? new CandidateDesire();
         $desires->candidate_id = $candidate->id;
         $desires->fill($request->all());
         $desires->save();

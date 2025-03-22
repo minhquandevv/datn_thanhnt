@@ -4,105 +4,149 @@
 
 @section('content')
     <div class="content-container">
-        <h4 class="mb-3">DANH SÁCH ỨNG VIÊN</h4>
-        @if (session('success'))
-            <div class="alert alert-success">
-                {{ session('success') }}
-            </div>
-        @endif
+        <div class="page-header mb-4">
+            <h4 class="page-title">DANH SÁCH ỨNG VIÊN</h4>
+        </div>
 
         <!-- Form tìm kiếm -->
-        <form method="GET" action="{{ route('admin.candidates') }}" id="searchForm">
-            <div class="row mb-3">
-                <div class="col">
-                    <input type="text" class="form-control" name="fullname" placeholder="Tìm họ và tên" value="{{ request('fullname') }}">
-                </div>
-                <div class="col">
-                    <input type="text" class="form-control" name="email" placeholder="Tìm email" value="{{ request('email') }}">
-                </div>
-                <div class="col">
-                    <input type="text" class="form-control" name="phone_number" placeholder="Tìm SĐT" value="{{ request('phone_number') }}">
-                </div>
-                <div class="col">
-                    <button type="submit" class="btn btn-primary">Tìm kiếm</button>
-                </div>
+        <div class="card mb-4">
+            <div class="card-body">
+                <form method="GET" action="{{ route('admin.candidates') }}" id="searchForm">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="form-label text-muted mb-2">Họ và tên</label>
+                                <input type="text" class="form-control" name="fullname" placeholder="Tìm họ và tên" value="{{ request('fullname') }}">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="form-label text-muted mb-2">Email</label>
+                                <input type="text" class="form-control" name="email" placeholder="Tìm email" value="{{ request('email') }}">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="form-label text-muted mb-2">Số điện thoại</label>
+                                <input type="text" class="form-control" name="phone_number" placeholder="Tìm SĐT" value="{{ request('phone_number') }}">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="form-label text-muted mb-2">&nbsp;</label>
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="bi bi-search me-2"></i>Tìm kiếm
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
             </div>
-        </form>
+        </div>
 
         <!-- Bảng danh sách -->
-        <div class="table-responsive">
-            <table class="table table-bordered">
-                <thead class="bg-light">
-                    <tr>
-                        <th>ID</th>
-                        <th>Ảnh</th>
-                        <th>Họ tên</th>
-                        <th>Thông tin cơ bản</th>
-                        <th>Thông tin khác</th>
-                        <th>Trạng thái</th>
-                        <th>Thao tác</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($candidates as $candidate)
-                        <tr>
-                            <td>{{ $candidate->id }}</td>
-                            <td>
-                                @if($candidate->url_avatar)
-                                    <img src="{{ asset('uploads/' . $candidate->url_avatar) }}" alt="Avatar" class="rounded-circle" width="50">
-                                @else
-                                    <div class="bg-secondary rounded-circle text-white d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
-                                        {{ substr($candidate->fullname, 0, 1) }}
-                                    </div>
-                                @endif
-                            </td>
-                            <td>
-                                {{ $candidate->fullname }}<br>
-                                @if ($candidate->gender == 'male')
-                                    <i class="bi bi-gender-male"></i> Nam
-                                @elseif ($candidate->gender == 'female')
-                                    <i class="bi bi-gender-female"></i> Nữ
-                                @else
-                                    <i class="bi bi-gender-trans"></i> Khác
-                                @endif  
-                            </td>
-                            <td>
-                                <i class="bi bi-envelope"></i> {{ 'Email: ' . $candidate->email }}<br>
-                                <i class="bi bi-phone"></i> {{ 'SĐT: ' . $candidate->phone_number }}<br>
-                                <i class="bi bi-geo-alt"></i> {{ 'Địa chỉ: ' . $candidate->address }}
-                            </td>
-                            <td>
-                                <strong>CCCD/CMND:</strong> {{ $candidate->identity_number }}<br>
-                                <strong>Kinh nghiệm:</strong> {{ $candidate->experience_year ?? 'Chưa có' }}<br>
-                                <strong>Đang tìm việc:</strong> {{ $candidate->finding_job ? 'Có' : 'Không' }}
-                            </td>
-                            <td>
-                                @if ($candidate->active)
-                                    <span class="badge bg-success">Hoạt động</span>
-                                @else
-                                    <span class="badge bg-danger">Đã ẩn</span>
-                                @endif
-                            </td>
-                            <td>
-                                <div class="btn-group">
-                                    <button class="btn btn-sm btn-info me-2" data-bs-toggle="modal" data-bs-target="#viewModal{{ $candidate->id }}">
-                                        👁️
-                                    </button>
-                                    <form action="{{ route('admin.candidates.update', $candidate->id) }}" method="POST" class="d-inline">
-                                        @csrf
-                                        @method('PUT')
-                                        <input type="hidden" name="active" value="{{ $candidate->active ? 0 : 1 }}">
-                                        <button type="submit" class="btn btn-sm {{ $candidate->active ? 'btn-danger' : 'btn-success' }}" 
-                                                onclick="return confirm('{{ $candidate->active ? 'Bạn có chắc muốn ẩn ứng viên này?' : 'Bạn có chắc muốn hiển thị ứng viên này?' }}')">
-                                            {{ $candidate->active ? 'Ẩn' : 'Hiện' }}
-                                        </button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th class="text-center" style="width: 60px">ID</th>
+                                <th class="text-center" style="width: 80px">Ảnh</th>
+                                <th style="min-width: 200px">Họ tên</th>
+                                <th style="min-width: 250px">Thông tin cơ bản</th>
+                                <th style="min-width: 200px">Thông tin khác</th>
+                                <th class="text-center" style="width: 120px">Trạng thái</th>
+                                <th class="text-center" style="width: 120px">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($candidates as $candidate)
+                                <tr>
+                                    <td class="text-center">{{ $candidate->id }}</td>
+                                    <td class="text-center">
+                                        @if($candidate->url_avatar)
+                                            <img src="{{ asset('uploads/' . $candidate->url_avatar) }}" alt="Avatar" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">
+                                        @else
+                                            <div class="bg-secondary rounded-circle text-white d-flex align-items-center justify-content-center mx-auto" style="width: 50px; height: 50px;">
+                                                {{ substr($candidate->fullname, 0, 1) }}
+                                            </div>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        <div class="fw-bold mb-1">{{ $candidate->fullname }}</div>
+                                        <div class="text-muted small">
+                                            @if ($candidate->gender == 'male')
+                                                <i class="bi bi-gender-male text-primary"></i> Nam
+                                            @elseif ($candidate->gender == 'female')
+                                                <i class="bi bi-gender-female text-danger"></i> Nữ
+                                            @else
+                                                <i class="bi bi-gender-trans text-secondary"></i> Khác
+                                            @endif
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="mb-1">
+                                            <i class="bi bi-envelope text-primary me-2"></i>
+                                            <span class="text-muted">{{ $candidate->email }}</span>
+                                        </div>
+                                        <div class="mb-1">
+                                            <i class="bi bi-phone text-success me-2"></i>
+                                            <span class="text-muted">{{ $candidate->phone_number }}</span>
+                                        </div>
+                                        <div>
+                                            <i class="bi bi-geo-alt text-danger me-2"></i>
+                                            <span class="text-muted">{{ $candidate->address }}</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="mb-1">
+                                            <span class="fw-medium">CCCD/CMND:</span>
+                                            <span class="text-muted">{{ $candidate->identity_number }}</span>
+                                        </div>
+                                        <div class="mb-1">
+                                            <span class="fw-medium">Kinh nghiệm:</span>
+                                            <span class="text-muted">{{ $candidate->experience_year ?? 'Chưa có' }}</span>
+                                        </div>
+                                        <div>
+                                            <span class="fw-medium">Đang tìm việc:</span>
+                                            <span class="text-muted">{{ $candidate->finding_job ? 'Có' : 'Không' }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="text-center">
+                                        @if ($candidate->active)
+                                            <span class="badge bg-success-subtle text-success">
+                                                <i class="bi bi-check-circle me-1"></i>Hoạt động
+                                            </span>
+                                        @else
+                                            <span class="badge bg-danger-subtle text-danger">
+                                                <i class="bi bi-x-circle me-1"></i>Đã ẩn
+                                            </span>
+                                        @endif
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="btn-group">
+                                            <button class="btn btn-sm btn-info me-2" data-bs-toggle="modal" data-bs-target="#viewModal{{ $candidate->id }}" title="Xem chi tiết">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                            <form action="{{ route('admin.candidates.update', $candidate->id) }}" method="POST" class="d-inline">
+                                                @csrf
+                                                @method('PUT')
+                                                <input type="hidden" name="active" value="{{ $candidate->active ? 0 : 1 }}">
+                                                <button type="submit" class="btn btn-sm {{ $candidate->active ? 'btn-danger' : 'btn-success' }}" 
+                                                        onclick="return confirm('{{ $candidate->active ? 'Bạn có chắc muốn ẩn ứng viên này?' : 'Bạn có chắc muốn hiển thị ứng viên này?' }}')"
+                                                        title="{{ $candidate->active ? 'Ẩn ứng viên' : 'Hiện ứng viên' }}">
+                                                    <i class="bi {{ $candidate->active ? 'bi-eye-slash' : 'bi-eye' }}"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -342,15 +386,6 @@
                                                 <td>{{ \Carbon\Carbon::parse($application->applied_at)->format('d/m/Y H:i:s') }}</td>
                                                 <td>
                                                     @php
-                                                        $modalStatusColors = [
-                                                            'pending' => 'warning',
-                                                            'submitted' => 'info',
-                                                            'pending_review' => 'warning',
-                                                            'interview_scheduled' => 'primary',
-                                                            'result_pending' => 'secondary',
-                                                            'approved' => 'success',
-                                                            'rejected' => 'danger'
-                                                        ];
                                                         $modalStatusIcons = [
                                                             'pending' => 'hourglass-split',
                                                             'submitted' => 'send',
@@ -359,6 +394,15 @@
                                                             'result_pending' => 'hourglass',
                                                             'approved' => 'check-circle-fill',
                                                             'rejected' => 'x-circle-fill'
+                                                        ];
+                                                        $modalStatusColors = [
+                                                            'pending' => 'warning',
+                                                            'submitted' => 'info',
+                                                            'pending_review' => 'warning',
+                                                            'interview_scheduled' => 'primary',
+                                                            'result_pending' => 'secondary',
+                                                            'approved' => 'success',
+                                                            'rejected' => 'danger'
                                                         ];
                                                         $modalStatusTexts = [
                                                             'pending' => 'Chờ xử lý',
@@ -371,9 +415,9 @@
                                                         ];
                                                         $currentStatus = $application->status ?? 'pending';
                                                     @endphp
-                                                    <span class="badge bg-{{ $modalStatusColors[$currentStatus] }}">
-                                                        <i class="bi bi-{{ $modalStatusIcons[$currentStatus] }} me-1"></i>
-                                                        {{ $modalStatusTexts[$currentStatus] }}
+                                                    <span class="badge bg-{{ $modalStatusColors[$currentStatus] ?? 'secondary' }}">
+                                                        <i class="bi bi-{{ $modalStatusIcons[$currentStatus] ?? 'question-circle' }} me-1"></i>
+                                                        {{ $modalStatusTexts[$currentStatus] ?? 'Không xác định' }}
                                                     </span>
                                                 </td>
                                                 <td>{{ Str::limit($application->feedback, 30) }}</td>
@@ -456,15 +500,6 @@
                                     <p><strong>Ngày xem xét:</strong> {{ $application->reviewed_at ? \Carbon\Carbon::parse($application->reviewed_at)->format('d/m/Y H:i:s') : 'Chưa xem xét' }}</p>
                                     <p><strong>Trạng thái:</strong> 
                                         @php
-                                            $modalStatusColors = [
-                                                'pending' => 'warning',
-                                                'submitted' => 'info',
-                                                'pending_review' => 'warning',
-                                                'interview_scheduled' => 'primary',
-                                                'result_pending' => 'secondary',
-                                                'approved' => 'success',
-                                                'rejected' => 'danger'
-                                            ];
                                             $modalStatusIcons = [
                                                 'pending' => 'hourglass-split',
                                                 'submitted' => 'send',
@@ -473,6 +508,15 @@
                                                 'result_pending' => 'hourglass',
                                                 'approved' => 'check-circle-fill',
                                                 'rejected' => 'x-circle-fill'
+                                            ];
+                                            $modalStatusColors = [
+                                                'pending' => 'warning',
+                                                'submitted' => 'info',
+                                                'pending_review' => 'warning',
+                                                'interview_scheduled' => 'primary',
+                                                'result_pending' => 'secondary',
+                                                'approved' => 'success',
+                                                'rejected' => 'danger'
                                             ];
                                             $modalStatusTexts = [
                                                 'pending' => 'Chờ xử lý',
@@ -485,9 +529,9 @@
                                             ];
                                             $currentStatus = $application->status ?? 'pending';
                                         @endphp
-                                        <span class="badge bg-{{ $modalStatusColors[$currentStatus] }}">
-                                            <i class="bi bi-{{ $modalStatusIcons[$currentStatus] }} me-1"></i>
-                                            {{ $modalStatusTexts[$currentStatus] }}
+                                        <span class="badge bg-{{ $modalStatusColors[$currentStatus] ?? 'secondary' }}">
+                                            <i class="bi bi-{{ $modalStatusIcons[$currentStatus] ?? 'question-circle' }} me-1"></i>
+                                            {{ $modalStatusTexts[$currentStatus] ?? 'Không xác định' }}
                                         </span>
                                     </p>
                                 </div>
