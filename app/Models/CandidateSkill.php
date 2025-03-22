@@ -2,11 +2,18 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class CandidateSkill extends Model
 {
-    protected $fillable = ['candidate_id', 'skill_name', 'skill_desc'];
+    use HasFactory;
+
+    protected $fillable = [
+        'candidate_id',
+        'skill_name',
+        'skill_desc'
+    ];
 
     public function candidate()
     {

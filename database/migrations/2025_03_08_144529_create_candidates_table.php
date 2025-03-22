@@ -33,6 +33,7 @@ return new class extends Migration
             $table->string('r_company')->nullable();
             $table->string('url_avatar')->nullable();
             $table->boolean('finding_job')->default(false);
+            $table->boolean('active')->default(true);
             $table->timestamps();
         });
 

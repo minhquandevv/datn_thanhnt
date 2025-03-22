@@ -8,12 +8,14 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\public\HomeController;
 use App\Http\Controllers\JobApplicationController;
 use App\Http\Controllers\admin\SchoolController;
+use App\Http\Controllers\CandidateController;
+use App\Http\Controllers\JobController;
 
-//Auth routes (only for guests)
-Route::middleware(['guest'])->group(function () {
+// Authentication Routes
+Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
-    Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
+    Route::get('/register', [AuthController::class, 'showRegistrationForm'])->name('register');
     Route::post('/register', [AuthController::class, 'register']);
 });
 
@@ -24,8 +26,17 @@ Route::get('/job-offers/{id}', [HomeController::class, 'show'])->name('public.sh
 Route::resource('users', UserController::class);
 
 //Candidate routes
-Route::middleware(['auth', 'role:candidate'])->group(function () {
+Route::middleware(['auth:candidate', 'candidate'])->group(function () {
     Route::post('/apply', [JobApplicationController::class, 'store'])->name('job_applications.store');
+    
+    // Candidate management routes
+    Route::prefix('candidate')->group(function () {
+        Route::get('/dashboard', [CandidateController::class, 'dashboard'])->name('candidate.dashboard');
+        Route::get('/profile', [CandidateController::class, 'profile'])->name('candidate.profile');
+        Route::put('/profile', [CandidateController::class, 'updateProfile'])->name('candidate.profile.update');
+        Route::get('/applications', [CandidateController::class, 'applications'])->name('candidate.applications');
+        Route::get('/applications/{id}', [CandidateController::class, 'showApplication'])->name('candidate.applications.show');
+    });
 });
 
 //Admin routes
@@ -58,6 +69,10 @@ Route::middleware(['auth', 'admin'])->group(function () {
 });
 
 //Logout route (accessible to all authenticated users)
-Route::middleware(['auth'])->group(function () {
-    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+// Job routes
+Route::get('/jobs/{job}', [JobController::class, 'show'])->name('jobs.show');
+Route::middleware(['auth:candidate'])->group(function () {
+    Route::post('/jobs/{job}/apply', [JobController::class, 'apply'])->name('jobs.apply');
 });

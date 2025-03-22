@@ -1,10 +1,12 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Models\Candidate;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
@@ -14,24 +16,26 @@ class AuthController extends Controller
      */
     public function showLoginForm()
     {
-        // Nếu người dùng đã đăng nhập, chuyển hướng về trang chủ
-        if (Auth::check()) {
-            return redirect()->route('home');
+        if (Auth::guard('web')->check()) {
+            return redirect()->route('admin.dashboard');
         }
-
+        if (Auth::guard('candidate')->check()) {
+            return redirect()->route('candidate.dashboard');
+        }
         return view('auth.login');
     }
 
     /**
      * Show the register form.
      */
-    public function showRegisterForm()
+    public function showRegistrationForm()
     {
-        // Nếu người dùng đã đăng nhập, chuyển hướng về trang chủ
-        if (Auth::check()) {
-            return redirect()->route('home');
+        if (Auth::guard('web')->check()) {
+            return redirect()->route('admin.dashboard');
         }
-
+        if (Auth::guard('candidate')->check()) {
+            return redirect()->route('candidate.dashboard');
+        }
         return view('auth.register');
     }
 
@@ -40,29 +44,32 @@ class AuthController extends Controller
      */
     public function register(Request $request)
     {
-        // Validate the incoming request
         $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6|confirmed',
-            'role' => 'in:hr,admin,candidate', // Chỉ chấp nhận role hợp lệ
+            'fullname' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:candidates'],
+            'password' => ['required', 'confirmed', Password::defaults()],
+            'identity_number' => ['required', 'string', 'max:20', 'unique:candidates'],
+            'phone_number' => ['required', 'string', 'max:20'],
+            'gender' => ['required', 'in:male,female,other'],
+            'dob' => ['required', 'date'],
+            'address' => ['required', 'string', 'max:255'],
         ]);
 
-        // Create new user
-        try {
-            $role = $request->role ?? 'candidate'; // Default role is 'candidate'
-            $user = User::create([
-                'name' => $request->name,
-                'email' => $request->email,
-                'password' => Hash::make($request->password),
-                'role' => $role,
-            ]);
-            
-            // Chuyển hướng người dùng về trang đăng nhập sau khi đăng ký thành công
-            return redirect()->route('login')->with('success', 'Đăng ký thành công! Vui lòng đăng nhập.');
-        } catch (\Exception $e) {
-            return back()->withErrors(['error' => 'Đã có lỗi xảy ra. Vui lòng thử lại.']);
-        }
+        $candidate = Candidate::create([
+            'fullname' => $request->fullname,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'identity_number' => $request->identity_number,
+            'phone_number' => $request->phone_number,
+            'gender' => $request->gender,
+            'dob' => $request->dob,
+            'address' => $request->address,
+            'finding_job' => true,
+        ]);
+
+        Auth::guard('candidate')->login($candidate);
+
+        return redirect()->route('candidate.dashboard');
     }
 
     /**
@@ -70,31 +77,43 @@ class AuthController extends Controller
      */
     public function login(Request $request)
     {
-        // Validate login credentials
         $credentials = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
+            'email' => ['required', 'email'],
+            'password' => ['required'],
         ]);
 
-        // Attempt to log the user in
-        if (Auth::attempt($credentials)) {
-            // Regenerate session to avoid session fixation
+        // Thử đăng nhập với guard admin
+        if (Auth::guard('web')->attempt($credentials)) {
             $request->session()->regenerate();
-
-            // Check the user role and redirect accordingly
-            if (Auth::user()->role === 'admin') {
-                return redirect()->route('admin.dashboard');
-            }
-
-            if (Auth::user()->role === 'hr') {
-                return redirect()->route('admin.dashboard');
-            }
-
-            return redirect()->route('home');
+            return redirect()->intended('admin/dashboard');
         }
 
-        // If authentication fails, return error message
-        return back()->withErrors(['email' => 'Thông tin đăng nhập không chính xác']);
+        // Thử đăng nhập với guard candidate
+        if (Auth::guard('candidate')->attempt($credentials)) {
+            $request->session()->regenerate();
+            $candidate = Auth::guard('candidate')->user();
+            
+            // Lưu thông tin candidate vào session
+            session([
+                'candidate_id' => $candidate->id,
+                'candidate_name' => $candidate->fullname,
+                'candidate_email' => $candidate->email,
+                'candidate_phone' => $candidate->phone_number,
+                'candidate_avatar' => $candidate->url_avatar,
+                'candidate_profile' => $candidate->profile,
+                'candidate_skills' => $candidate->skills,
+                'candidate_experience' => $candidate->experience,
+                'candidate_education' => $candidate->education,
+                'candidate_certificates' => $candidate->certificates,
+                'candidate_desires' => $candidate->desires
+            ]);
+
+            return redirect()->intended('candidate/dashboard');
+        }
+
+        throw ValidationException::withMessages([
+            'email' => ['Thông tin đăng nhập không chính xác.'],
+        ]);
     }
 
     /**
@@ -102,12 +121,10 @@ class AuthController extends Controller
      */
     public function logout(Request $request)
     {
-        // Logout the user and invalidate the session
-        Auth::logout();
+        Auth::guard('web')->logout();
+        Auth::guard('candidate')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-
-        // Redirect to home after logout
-        return redirect('/');
+        return redirect()->route('home');
     }
 }

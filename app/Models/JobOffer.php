@@ -11,7 +11,11 @@ class JobOffer extends Model
 
     protected $fillable = [
         'job_name', 'company_id', 'expiration_date', 'job_detail', 
-        'job_description', 'job_requirement', 'job_position', 'job_salary', 'job_quantity', 'job_category_id'
+        'job_description', 'job_requirement', 'job_position', 'job_salary', 'job_quantity', 'job_category_id', 'status'
+    ];
+
+    protected $casts = [
+        'expiration_date' => 'datetime',
     ];
 
     public function category()
@@ -32,5 +36,10 @@ class JobOffer extends Model
     public function company()
     {
         return $this->belongsTo(Company::class, 'company_id');
+    }
+
+    public function applications()
+    {
+        return $this->hasMany(JobApplication::class, 'job_offer_id');
     }
 }

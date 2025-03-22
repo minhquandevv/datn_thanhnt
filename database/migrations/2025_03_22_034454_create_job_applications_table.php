@@ -13,15 +13,18 @@ return new class extends Migration {
         // Bảng job_applications: Lưu thông tin ứng tuyển
         Schema::create('job_applications', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade'); // Người nộp đơn
-            $table->foreignId('job_offer_id')->constrained('job_offers')->onDelete('cascade');
-            $table->string('applicant_name');
-            $table->string('applicant_email');
-            $table->string('applicant_phone');
-            $table->string('cv'); // Đường dẫn file CV
-            $table->date('application_date'); // Ngày ứng tuyển
-            $table->enum('status', ['pending', 'interview_scheduled', 'approved', 'rejected'])->default('pending'); // Trạng thái
+            $table->unsignedBigInteger('candidate_id');
+            $table->unsignedBigInteger('job_offer_id');
+            $table->text('cover_letter')->nullable();
+            $table->string('cv_path')->nullable();
+            $table->string('status')->default('pending');
+            $table->timestamp('applied_at')->nullable();
+            $table->timestamp('reviewed_at')->nullable();
+            $table->text('feedback')->nullable();
             $table->timestamps();
+
+            $table->foreign('candidate_id')->references('id')->on('candidates')->onDelete('cascade');
+            $table->foreign('job_offer_id')->references('id')->on('job_offers')->onDelete('cascade');
         });
 
         // Bảng application_statuses: Lưu lịch sử trạng thái của đơn ứng tuyển

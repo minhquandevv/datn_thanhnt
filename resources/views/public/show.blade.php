@@ -29,27 +29,102 @@
             padding: 20px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
+
+        .candidate-info {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .candidate-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
     </style>
+
     @if(session('success'))
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-@endif
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-circle-fill me-2"></i>{{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
     <div class="container mt-4">
+        @auth('candidate')
+            @php
+                $candidate = Auth::guard('candidate')->user();
+                $hasApplied = $jobOffer->applications()->where('candidate_id', $candidate->id)->exists();
+            @endphp
+
+            <div class="candidate-info mb-4">
+                <div class="row align-items-center">
+                    <div class="col-md-2 text-center">
+                        @if($candidate->url_avatar)
+                            <img src="{{ asset('storage/' . $candidate->url_avatar) }}" alt="Avatar" class="candidate-avatar">
+                        @else
+                            <img src="{{ asset('images/default-avatar.png') }}" alt="Default Avatar" class="candidate-avatar">
+                        @endif
+                    </div>
+                    <div class="col-md-10">
+                        <h4 class="text-danger mb-3">{{ $candidate->fullname }}</h4>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><i class="bi bi-envelope"></i> {{ $candidate->email }}</p>
+                                <p><i class="bi bi-telephone"></i> {{ $candidate->phone_number }}</p>
+                                <p><i class="bi bi-geo-alt"></i> {{ $candidate->address }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><i class="bi bi-briefcase"></i> {{ $candidate->experience_year }} năm kinh nghiệm</p>
+                                @if($candidate->position)
+                                    <p><i class="bi bi-person-badge"></i> {{ $candidate->position }}</p>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @if($candidate->skills->count() > 0)
+                    <div class="mt-3">
+                        <h6 class="text-danger">Kỹ năng</h6>
+                        <div class="d-flex flex-wrap gap-2">
+                            @foreach($candidate->skills as $skill)
+                                <span class="badge bg-secondary">{{ $skill->skill_name }}</span>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+            </div>
+        @endauth
+
         <div class="card shadow-lg p-4 border-0 rounded-4 bg-white">
             <div class="d-flex justify-content-between align-items-center border-bottom pb-3">
                 <h2 class="fw-bold text-danger"><i class="bi bi-briefcase me-2"></i>{{ $jobOffer->job_name }}</h2>
-                @if ($hasApplied)
-                    <button class="btn btn-secondary fw-bold px-4 py-2 rounded-pill shadow-sm" disabled>
-                        ĐÃ ỨNG TUYỂN <i class="bi bi-check-circle"></i>
-                    </button>
+                @auth('candidate')
+                    @if($hasApplied)
+                        <button class="btn btn-secondary fw-bold px-4 py-2 rounded-pill shadow-sm" disabled>
+                            ĐÃ ỨNG TUYỂN <i class="bi bi-check-circle"></i>
+                        </button>
+                    @else
+                        <button class="btn btn-danger fw-bold px-4 py-2 rounded-pill shadow-sm"
+                            data-bs-toggle="modal" data-bs-target="#applyJobModal">
+                            ỨNG TUYỂN NGAY <i class="bi bi-arrow-right"></i>
+                        </button>
+                    @endif
                 @else
-                    <button class="btn btn-danger fw-bold px-4 py-2 rounded-pill shadow-sm"
-                        data-bs-toggle="modal" data-bs-target="#applyJobModal">
-                        ỨNG TUYỂN NGAY <i class="bi bi-arrow-right"></i>
-                    </button>
-                @endif
+                    <a href="{{ route('login') }}" class="btn btn-danger fw-bold px-4 py-2 rounded-pill shadow-sm">
+                        ĐĂNG NHẬP ĐỂ ỨNG TUYỂN <i class="bi bi-arrow-right"></i>
+                    </a>
+                @endauth
             </div>
             <p class="text-muted mt-2"><i class="bi bi-building me-1"></i> {{ $jobOffer->company->title }}</p>
             <p class="text-muted">
@@ -130,48 +205,42 @@
     </div>
 
     <!-- Modal ỨNG TUYỂN -->
-    <div class="modal fade" id="applyJobModal" tabindex="-1" aria-labelledby="applyJobModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title text-danger" id="applyJobModalLabel">Ứng tuyển: {{ $jobOffer->job_name }}</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form action="{{ route('job_applications.store') }}" method="POST"
-                    enctype="multipart/form-data">
-                    @csrf
-                    <input type="hidden" name="job_offer_id" value="{{ $jobOffer->id }}">
+    <div class="modal fade" id="applyJobModal" tabindex="-1" aria-labelledby="applyJobModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-danger" id="applyJobModalLabel">Ứng tuyển: {{ $jobOffer->job_name }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ route('job_applications.store') }}" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="job_offer_id" value="{{ $jobOffer->id }}">
+                        <input type="hidden" name="candidate_id" value="{{ Auth::guard('candidate')->id() }}">
 
-                    <div class="mb-3">
-                        <label for="applicant_name" class="form-label">Họ và tên</label>
-                        <input type="text" class="form-control" id="applicant_name" name="applicant_name"
-                            required value="{{ old('applicant_name') }}">
-                    </div>
+                        <div class="mb-3">
+                            <label for="cover_letter" class="form-label">Thư xin việc</label>
+                            <textarea class="form-control @error('cover_letter') is-invalid @enderror" 
+                                id="cover_letter" name="cover_letter" rows="5" required>{{ old('cover_letter') }}</textarea>
+                            @error('cover_letter')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
 
-                    <div class="mb-3">
-                        <label for="applicant_email" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="applicant_email" name="applicant_email"
-                            required value="{{ old('applicant_email') }}">
-                    </div>
+                        <div class="mb-3">
+                            <label for="cv" class="form-label">CV của bạn</label>
+                            <input type="file" class="form-control @error('cv') is-invalid @enderror" 
+                                id="cv" name="cv" accept=".pdf,.doc,.docx">
+                            @error('cv')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                            <small class="text-muted">Bạn có thể tải lên CV mới hoặc sử dụng CV đã lưu</small>
+                        </div>
 
-                    <div class="mb-3">
-                        <label for="applicant_phone" class="form-label">Số điện thoại</label>
-                        <input type="text" class="form-control" id="applicant_phone" name="applicant_phone"
-                            required value="{{ old('applicant_phone') }}">
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="applicant_cv" class="form-label">Tải lên CV</label>
-                        <input type="file" class="form-control" id="applicant_cv" name="cv" accept=".pdf"
-                            required>
-                    </div>
-
-                    <button type="submit" class="btn btn-danger w-100 fw-bold">Gửi ứng tuyển</button>
-                </form>
+                        <button type="submit" class="btn btn-danger w-100 fw-bold">Gửi ứng tuyển</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
 @endsection

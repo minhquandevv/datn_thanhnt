@@ -4,34 +4,31 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\User;
-
-namespace App\Models;
-
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use App\Models\User;
-use App\Models\JobOffer;
 
 class JobApplication extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'user_id', 
+        'candidate_id',
         'job_offer_id',
-        'application_date',
+        'cover_letter',
+        'cv_path',
         'status',
-        'feedback'
+        'applied_at'
     ];
 
-    public function user()
+    protected $casts = [
+        'applied_at' => 'datetime'
+    ];
+
+    public function candidate()
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(Candidate::class);
     }
 
     public function jobOffer()
     {
-        return $this->belongsTo(JobOffer::class, 'job_offer_id');
+        return $this->belongsTo(JobOffer::class);
     }
 }
