@@ -20,17 +20,21 @@
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active text-bg-light' : '' }}" href="{{ route('admin.dashboard') }}">Đề xuất tuyển dụng</a>
                 </li>
-                {{-- <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('admin.ke-hoach-tuyen-dung') ? 'active text-bg-light' : '' }}" href="{{ route('admin.ke-hoach-tuyen-dung') }}">Kế hoạch tuyển dụng</a>
-                </li>
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('admin.tin-tuyen-dung') ? 'active text-bg-light' : '' }}" href="{{ route('admin.tin-tuyen-dung') }}">Tin tuyển dụng</a>
-                </li> --}}
+                    <a class="nav-link {{ request()->routeIs('admin.job-offers') ? 'active text-bg-light' : '' }}" href="{{ route('admin.job-offers') }}">Quản lý tin tuyển dụng</a>
+                </li>
+
+                
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('admin.candidates') ? 'active text-bg-light' : '' }}" href="{{ route('admin.candidates') }}">Hồ sơ ứng viên</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-danger" href="{{ route('logout') }}">Đăng xuất</a>
+                    <form action="{{ route('logout') }}" method="POST" class="d-inline">
+                        @csrf
+                        <button type="submit" class="nav-link text-danger border-0 bg-transparent w-100 text-start">
+                            Đăng xuất
+                        </button>
+                    </form>
                 </li>
             </ul>
         </nav>

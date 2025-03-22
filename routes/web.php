@@ -2,18 +2,13 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\JobOfferController;
+use App\Http\Controllers\admin\JobOfferController;
 use App\Http\Controllers\admin\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\public\HomeController;
+use App\Http\Controllers\JobApplicationController;
 
-//Public routes
-Route::get('/', [JobOfferController::class, 'index'])->name('home');
-Route::get('/job-offers/{id}', [JobOfferController::class, 'show'])->name('public.show');
-//Route resource
-Route::resource('users', UserController::class);
-
-// Auth routes (only for guests)
+//Auth routes (only for guests)
 Route::middleware(['guest'])->group(function () {
     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
@@ -21,12 +16,19 @@ Route::middleware(['guest'])->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
 });
 
-Route::middleware(['auth'])->group(function () {
-    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+//Public routes
+Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/job-offers/{id}', [HomeController::class, 'show'])->name('public.show');
+//Route resource
+Route::resource('users', UserController::class);
+
+//Candidate routes
+Route::middleware(['auth', 'role:candidate'])->group(function () {
+    Route::post('/apply', [JobApplicationController::class, 'store'])->name('job_applications.store');
 });
 
 //Admin routes
-Route::middleware(['admin'])->group(function () {
+Route::middleware(['auth', 'admin'])->group(function () {
     Route::prefix('admin')->group(function () {
         Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
         Route::get('/candidates', [AdminController::class, 'candidate'])->name('admin.candidates');
@@ -35,5 +37,16 @@ Route::middleware(['admin'])->group(function () {
         Route::put('/candidates/{id}/status', [AdminController::class, 'updateStatus'])->name('admin.candidates.updateStatus');
         Route::put('/candidates/{id}', [AdminController::class, 'updateCandidate'])->name('admin.candidates.update');
         Route::delete('/candidates/{id}', [AdminController::class, 'deleteCandidate'])->name('admin.candidates.delete');
+        Route::get('/', [JobOfferController::class, 'index'])->name('home');
+        Route::get('/job-offers', [JobOfferController::class, 'index'])->name('admin.job-offers');
+        Route::post('/job-offers', [JobOfferController::class, 'store'])->name('admin.job-offers.store');
+        Route::get('/job-offers/{id}', [JobOfferController::class, 'show'])->name('admin.job-offers.show');
+        Route::put('/job-offers/{id}', [JobOfferController::class, 'update'])->name('admin.job-offers.update');
+        Route::delete('/job-offers/{id}', [JobOfferController::class, 'destroy'])->name('admin.job-offers.destroy');
     });
+});
+
+//Logout route (accessible to all authenticated users)
+Route::middleware(['auth'])->group(function () {
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });

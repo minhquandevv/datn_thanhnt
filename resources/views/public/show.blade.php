@@ -30,12 +30,26 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
     </style>
-
+    @if(session('success'))
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+@endif
     <div class="container mt-4">
         <div class="card shadow-lg p-4 border-0 rounded-4 bg-white">
             <div class="d-flex justify-content-between align-items-center border-bottom pb-3">
                 <h2 class="fw-bold text-danger"><i class="bi bi-briefcase me-2"></i>{{ $jobOffer->job_name }}</h2>
-                <button class="btn btn-danger fw-bold px-4 py-2 rounded-pill shadow-sm">ỨNG TUYỂN NGAY <i class="bi bi-arrow-right"></i></button>
+                @if ($hasApplied)
+                    <button class="btn btn-secondary fw-bold px-4 py-2 rounded-pill shadow-sm" disabled>
+                        ĐÃ ỨNG TUYỂN <i class="bi bi-check-circle"></i>
+                    </button>
+                @else
+                    <button class="btn btn-danger fw-bold px-4 py-2 rounded-pill shadow-sm"
+                        data-bs-toggle="modal" data-bs-target="#applyJobModal">
+                        ỨNG TUYỂN NGAY <i class="bi bi-arrow-right"></i>
+                    </button>
+                @endif
             </div>
             <p class="text-muted mt-2"><i class="bi bi-building me-1"></i> {{ $jobOffer->company->title }}</p>
             <p class="text-muted">
@@ -114,4 +128,50 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal ỨNG TUYỂN -->
+    <div class="modal fade" id="applyJobModal" tabindex="-1" aria-labelledby="applyJobModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-danger" id="applyJobModalLabel">Ứng tuyển: {{ $jobOffer->job_name }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="{{ route('job_applications.store') }}" method="POST"
+                    enctype="multipart/form-data">
+                    @csrf
+                    <input type="hidden" name="job_offer_id" value="{{ $jobOffer->id }}">
+
+                    <div class="mb-3">
+                        <label for="applicant_name" class="form-label">Họ và tên</label>
+                        <input type="text" class="form-control" id="applicant_name" name="applicant_name"
+                            required value="{{ old('applicant_name') }}">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="applicant_email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="applicant_email" name="applicant_email"
+                            required value="{{ old('applicant_email') }}">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="applicant_phone" class="form-label">Số điện thoại</label>
+                        <input type="text" class="form-control" id="applicant_phone" name="applicant_phone"
+                            required value="{{ old('applicant_phone') }}">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="applicant_cv" class="form-label">Tải lên CV</label>
+                        <input type="file" class="form-control" id="applicant_cv" name="cv" accept=".pdf"
+                            required>
+                    </div>
+
+                    <button type="submit" class="btn btn-danger w-100 fw-bold">Gửi ứng tuyển</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection

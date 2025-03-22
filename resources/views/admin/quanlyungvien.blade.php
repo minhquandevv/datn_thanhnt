@@ -4,202 +4,198 @@
 
 @section('content')
     <div class="content-container">
-        <h4 class="mb-3">DANH SÁCH ỨNG VIÊN VIETTEL SOFTWARE</h4>
+        <h4 class="mb-3">DANH SÁCH ỨNG VIÊN</h4>
         @if (session('success'))
             <div class="alert alert-success">
                 {{ session('success') }}
             </div>
         @endif
-        <div class="d-flex justify-content-between mb-3">
-            <span class="badge bg-secondary">Actor: HR</span>
-            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCandidateModal">Thêm mới</button>
-        </div>
+
+        <!-- Form tìm kiếm -->
         <form method="GET" action="{{ route('admin.candidates') }}" id="searchForm">
             <div class="row mb-3">
                 <div class="col">
-                    <input type="text" class="form-control" name="name" placeholder="Tìm họ và tên"
-                        value="{{ request('name') }}" onchange="document.getElementById('searchForm').submit();">
+                    <input type="text" class="form-control" name="name" placeholder="Tìm họ và tên" value="{{ request('name') }}">
                 </div>
                 <div class="col">
-                    <input type="text" class="form-control" name="email" placeholder="Tìm theo email"
-                        value="{{ request('email') }}" onchange="document.getElementById('searchForm').submit();">
+                    <input type="text" class="form-control" name="email" placeholder="Tìm email" value="{{ request('email') }}">
                 </div>
                 <div class="col">
-                    <input type="text" class="form-control" name="phone" placeholder="Tìm theo SĐT"
-                        value="{{ request('phone') }}" onchange="document.getElementById('searchForm').submit();">
+                    <input type="text" class="form-control" name="phone" placeholder="Tìm SĐT" value="{{ request('phone') }}">
                 </div>
                 <div class="col">
-                    <select class="form-control" name="school_id"
-                        onchange="document.getElementById('searchForm').submit();">
+                    <select class="form-control" name="school_id">
                         <option value="">Chọn trường</option>
                         @foreach ($schools as $school)
                             <option value="{{ $school->id }}" {{ request('school_id') == $school->id ? 'selected' : '' }}>
-                                {{ $school->name }}</option>
+                                {{ $school->name }}
+                            </option>
                         @endforeach
                     </select>
                 </div>
+                <div class="col">
+                    <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addCandidateModal">
+                        Thêm mới
+                    </button>
+                </div>
             </div>
         </form>
-        <table class="table table-bordered text-center">
-            <thead class="bg-light">
-                <tr>
-                    <th>Mã ứng viên</th>
-                    <th>Thời gian nộp</th>
-                    <th>Họ và tên</th>
-                    <th>Email</th>
-                    <th>Số điện thoại</th>
-                    <th>Trường</th>
-                    <th>CV</th>
-                    <th>Trạng thái</th>
-                    <th>Hành động</th>
-                </tr>
-            </thead>
-            <tbody>
-                @php
-                    $statusMap = [
-                        'pending' => 'Đang chờ',
-                        'approved' => 'Đã duyệt',
-                        'rejected' => 'Đã từ chối',
-                    ];
-                @endphp
-                @foreach ($candidates as $candidate)
+
+        <!-- Bảng danh sách -->
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead class="bg-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>Ảnh</th>
+                        <th>Họ tên</th>
+                        <th>Thông tin cơ bản</th>
+                        <th>Trường/Kinh nghiệm</th>
+                        <th>Trạng thái</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($candidates as $candidate)
                     <tr>
                         <td>{{ $candidate->id }}</td>
-                        <td>{{ $candidate->created_at }}</td>
-                        <td>{{ $candidate->name }}</td>
-                        <td>{{ $candidate->email }}</td>
-                        <td>{{ $candidate->phone }}</td>
-                        <td>{{ $candidate->school->name }}</td>
                         <td>
-                            <a href="{{ route('admin.candidates.show', $candidate->id) }}">Xem CV</a>
+                            @if($candidate->avatar)
+                                <img src="{{ Storage::url($candidate->avatar) }}" alt="Avatar" class="rounded-circle" width="50">
+                            @else
+                                <div class="bg-secondary rounded-circle text-white d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                    {{ substr($candidate->name, 0, 1) }}
+                                </div>
+                            @endif
                         </td>
-                        <td>{{ $statusMap[$candidate->status] }}</td>
                         <td>
-                            <button class="btn btn-sm btn-warning" data-bs-toggle="modal"
-                                data-bs-target="#editCandidateModal-{{ $candidate->id }}">✏️</button>
-                            <form action="{{ route('admin.candidates.delete', $candidate->id) }}" method="POST"
-                                style="display:inline;">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-danger"
-                                    onclick="return confirm('Bạn có chắc chắn muốn xóa ứng viên này?')">🗑</button>
-                            </form>
+                            {{ $candidate->name }}<br>
+                            @if ($candidate->gender == 'male')
+                                <i class="bi bi-gender-male"></i> Nam
+                            @elseif ($candidate->gender == 'female')
+                                <i class="bi bi-gender-female"></i> Nữ
+                            @else
+                                <i class="bi bi-gender-trans"></i> Khác
+                            @endif  
+                        </td>
+                        <td>
+                            <i class="bi bi-envelope"></i> {{ 'Email: ' . $candidate->email }}<br>
+                            <i class="bi bi-phone"></i> {{ 'SĐT: ' . $candidate->phone }}<br>
+                            <i class="bi bi-geo-alt"></i> {{ 'Địa chỉ: ' . $candidate->address }}
+                        </td>
+                        <td>
+                            <strong>Trường:</strong> {{ $candidate->school->name }}<br>
+                            <strong>Kinh nghiệm:</strong> {{ $candidate->experience_year ?? 'Chưa có' }}
+                        </td>
+                        <td>
+                            @if ($candidate->status == 'pending')
+                                <span class="badge bg-warning">Chưa duyệt</span>
+                            @elseif ($candidate->status == 'approved')
+                                <span class="badge bg-success">Đã duyệt</span>
+                            @else
+                                <span class="badge bg-danger">Từ chối</span>
+                            @endif
+
+                        </td>
+                        <td>
+                            <div class="btn-group">
+                                <button class="btn btn-sm btn-warning me-2" data-bs-toggle="modal" data-bs-target="#editModal{{ $candidate->id }}">
+                                    ✏️
+                                </button>
+                                <a href="{{ asset($candidate->cv) }}" target="_blank" class="btn btn-sm btn-info me-2">
+                                    📄
+                                </a>
+                                <form action="{{ route('admin.candidates.delete', $candidate->id) }}" method="POST" class="d-inline">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Bạn có chắc muốn xóa?')">
+                                        🗑️
+                                    </button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
-
-                    <!-- Modal chỉnh sửa thông tin ứng viên -->
-                    <div class="modal fade" id="editCandidateModal-{{ $candidate->id }}" tabindex="-1"
-                        aria-labelledby="editCandidateModalLabel-{{ $candidate->id }}" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="editCandidateModalLabel-{{ $candidate->id }}">Sửa thông tin
-                                        ứng viên</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <form action="{{ route('admin.candidates.update', $candidate->id) }}" method="POST"
-                                        enctype="multipart/form-data">
-                                        @csrf
-                                        @method('PUT')
-                                        <div class="mb-3">
-                                            <label for="candidateName-{{ $candidate->id }}" class="form-label">Họ và
-                                                tên</label>
-                                            <input type="text" class="form-control"
-                                                id="candidateName-{{ $candidate->id }}" name="name"
-                                                value="{{ $candidate->name }}" required>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="candidateEmail-{{ $candidate->id }}"
-                                                class="form-label">Email</label>
-                                            <input type="email" class="form-control"
-                                                id="candidateEmail-{{ $candidate->id }}" name="email"
-                                                value="{{ $candidate->email }}" required>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="candidatePhone-{{ $candidate->id }}" class="form-label">Số điện
-                                                thoại</label>
-                                            <input type="text" class="form-control"
-                                                id="candidatePhone-{{ $candidate->id }}" name="phone"
-                                                value="{{ $candidate->phone }}" required>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="candidateSchool-{{ $candidate->id }}"
-                                                class="form-label">Trường</label>
-                                            <select class="form-control mt-2" id="candidateSchool-{{ $candidate->id }}"
-                                                name="school_id" required>
-                                                @foreach ($schools as $school)
-                                                    <option value="{{ $school->id }}"
-                                                        {{ $candidate->school_id == $school->id ? 'selected' : '' }}>
-                                                        {{ $school->name }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="candidateCV-{{ $candidate->id }}" class="form-label">CV</label>
-                                            <input type="file" class="form-control"
-                                                id="candidateCV-{{ $candidate->id }}" name="cv">
-                                            <small class="form-text text-muted">Để trống nếu không muốn thay đổi CV</small>
-                                        </div>
-                                        <button type="submit" class="btn btn-primary">Lưu</button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                @endforeach
-            </tbody>
-        </table>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
     </div>
 
-    <!-- Modal thêm mới ứng viên -->
-    <div class="modal fade" id="addCandidateModal" tabindex="-1" aria-labelledby="addCandidateModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog">
+    <!-- Modal Thêm mới -->
+    <div class="modal fade" id="addCandidateModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="addCandidateModalLabel">Thêm mới ứng viên</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title">Thêm mới ứng viên</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <form action="{{ route('admin.candidates.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
-                        <div class="mb-3">
-                            <label for="candidateName" class="form-label">Họ và tên</label>
-                            <input type="text" class="form-control" id="candidateName" name="name"
-                                placeholder="Nhập họ và tên" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="candidateEmail" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="candidateEmail" name="email"
-                                placeholder="Nhập email" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="candidatePhone" class="form-label">Số điện thoại</label>
-                            <input type="text" class="form-control" id="candidatePhone" name="phone"
-                                placeholder="Nhập số điện thoại" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="candidateSchool" class="form-label">Trường</label>
-                            <select class="form-control mt-2" id="candidateSchool" name="school_id" required>
-                                <option value="">Chọn trường</option>
-                                @foreach ($schools as $school)
-                                    <option value="{{ $school->id }}">{{ $school->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="candidateCV" class="form-label">CV</label>
-                            <input type="file" class="form-control" id="candidateCV" name="cv" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="candidateStatus" class="form-label">Trạng thái</label>
-                            <select class="form-control" id="candidateStatus" name="status" required>
-                                <option value="pending">Pending</option>
-                                <option value="approved">Approved</option>
-                                <option value="rejected">Rejected</option>
-                            </select>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Họ và tên</label>
+                                <input type="text" class="form-control" name="name" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" name="email" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Số điện thoại</label>
+                                <input type="text" class="form-control" name="phone" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Giới tính <span class="text-danger">*</span></label>
+                                <select class="form-control" name="gender" required>
+                                    <option value="male">Nam</option>
+                                    <option value="female">Nữ</option>
+                                    <option value="other">Khác</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Ngày sinh <span class="text-danger">*</span></label>
+                                <input type="date" class="form-control" name="dob" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Địa chỉ <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="address" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Trường</label>
+                                <select class="form-control" name="school_id" required>
+                                    @foreach ($schools as $school)
+                                        <option value="{{ $school->id }}">{{ $school->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Kinh nghiệm (năm)</label>
+                                <input type="text" class="form-control" name="experience_year">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Ảnh đại diện</label>
+                                <input type="file" class="form-control" name="avatar" accept="image/*">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">CV</label>
+                                <input type="file" class="form-control" name="cv" accept=".pdf" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" name="is_finding_job" value="1">
+                                    <label class="form-check-label">Đang tìm việc</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Trạng thái</label>
+                                <select class="form-control" name="status" required>
+                                    <option value="pending">Đang chờ</option>
+                                    <option value="approved">Đã duyệt</option>
+                                    <option value="rejected">Từ chối</option>
+                                </select>
+                            </div>
                         </div>
                         <button type="submit" class="btn btn-primary">Lưu</button>
                     </form>
@@ -207,4 +203,99 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal Chỉnh sửa -->
+    @foreach ($candidates as $candidate)
+    <div class="modal fade" id="editModal{{ $candidate->id }}" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Chỉnh sửa ứng viên</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ route('admin.candidates.update', $candidate->id) }}" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        @method('PUT')
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Họ và tên</label>
+                                <input type="text" class="form-control" name="name" value="{{ $candidate->name }}" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" name="email" value="{{ $candidate->email }}" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Số điện thoại</label>
+                                <input type="text" class="form-control" name="phone" value="{{ $candidate->phone }}" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Giới tính</label>
+                                <select class="form-control" name="gender" required>
+                                    <option value="male" {{ $candidate->gender == 'male' ? 'selected' : '' }}>Nam</option>
+                                    <option value="female" {{ $candidate->gender == 'female' ? 'selected' : '' }}>Nữ</option>
+                                    <option value="other" {{ $candidate->gender == 'other' ? 'selected' : '' }}>Khác</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Ngày sinh</label>
+                                <input type="date" class="form-control" name="dob" value="{{ $candidate->dob }}" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Địa chỉ</label>
+                                <input type="text" class="form-control" name="address" value="{{ $candidate->address }}" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Trường</label>
+                                <select class="form-control" name="school_id" required>
+                                    @foreach ($schools as $school)
+                                        <option value="{{ $school->id }}" {{ $candidate->school_id == $school->id ? 'selected' : '' }}>
+                                            {{ $school->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Kinh nghiệm (năm)</label>
+                                <input type="text" class="form-control" name="experience_year" value="{{ $candidate->experience_year }}">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Ảnh đại diện</label>
+                                <input type="file" class="form-control" name="avatar" accept="image/*">
+                                @if($candidate->avatar)
+                                    <img src="{{ Storage::url($candidate->avatar) }}" alt="Current avatar" class="mt-2" width="50">
+                                @endif
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">CV</label>
+                                <input type="file" class="form-control" name="cv" accept=".pdf">
+                                @if($candidate->cv)
+                                    <a href="{{ asset($candidate->cv) }}" target="_blank" class="mt-2 d-block">
+                                        <i class="bi bi-file-pdf"></i> Xem CV hiện tại
+                                    </a>
+                                @endif
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" name="is_finding_job" value="1" {{ $candidate->is_finding_job ? 'checked' : '' }}>
+                                    <label class="form-check-label">Đang tìm việc</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Trạng thái</label>
+                                <select class="form-control" name="status" required>
+                                    <option value="pending" {{ $candidate->status == 'pending' ? 'selected' : '' }}>Đang chờ</option>
+                                    <option value="approved" {{ $candidate->status == 'approved' ? 'selected' : '' }}>Đã duyệt</option>
+                                    <option value="rejected" {{ $candidate->status == 'rejected' ? 'selected' : '' }}>Từ chối</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Cập nhật</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endforeach
 @endsection

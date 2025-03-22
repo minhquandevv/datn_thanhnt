@@ -52,4 +52,15 @@ class User extends Authenticatable
     {
         return $this->role === 'admin';
     }
+
+
+    public function jobApplications()
+    {
+        return $this->hasMany(JobApplication::class);
+    }
+
+    public function hasApplied($jobOfferId)
+    {
+        return $this->jobApplications()->where('job_offer_id', $jobOfferId)->exists();
+    }
 }

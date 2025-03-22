@@ -34,7 +34,7 @@ class AdminController extends Controller
             $query->where('school_id', $request->school_id);
         }
 
-        $candidates = $query->get();
+        $candidates = $query->with('school')->get();
         $schools = School::all();
 
         return view('admin.quanlyungvien', compact('candidates', 'schools'));
@@ -53,25 +53,40 @@ class AdminController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:candidates',
             'phone' => 'required|string|max:15',
-            'school_id' => 'required|integer|exists:schools,id',
+            'gender' => 'required|in:male,female,other',
+            'dob' => 'required|date',
+            'address' => 'required|string',
+            'school_id' => 'required|exists:schools,id',
+            'experience_year' => 'nullable|string',
             'cv' => 'required|file|mimes:pdf|max:2048',
+            'is_finding_job' => 'boolean',
             'status' => 'required|in:pending,approved,rejected',
         ]);
 
-        // Lưu tệp vào thư mục cố định
-        $cvPath = $request->file('cv')->move(public_path('cvs'), $request->file('cv')->getClientOriginalName());
+        $avatarPath = null;
+        if ($request->hasFile('avatar')) {
+            $avatarPath = $request->file('avatar')->store('avatars', 'public');
+        }
+
+        $cvFileName = time() . '_' . $request->file('cv')->getClientOriginalName();
+        $request->file('cv')->move(public_path('cvs'), $cvFileName);
 
         Candidate::create([
+            'avatar' => $avatarPath,
             'name' => $request->name,
+            'gender' => $request->gender,
+            'dob' => $request->dob,
             'email' => $request->email,
             'phone' => $request->phone,
+            'address' => $request->address,
             'school_id' => $request->school_id,
-            'cv' => 'cvs/' . $request->file('cv')->getClientOriginalName(),
-            'status' => $request->status,
-            'active' => true,
+            'experience_year' => $request->experience_year,
+            'cv' => 'cvs/' . $cvFileName,
+            'is_finding_job' => $request->boolean('is_finding_job'),
+            'status' => $request->status ?? 'pending',
         ]);
 
-        return redirect()->route('admin.candidates')->with('success', 'Ứng viên đã được thêm mới thành công.');
+        return redirect()->route('admin.candidates')->with('success', 'Thêm mới ứng viên thành công.');
     }
 
     public function updateStatus(Request $request, $id)
@@ -93,30 +108,49 @@ class AdminController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:candidates,email,' . $candidate->id,
+            'email' => 'required|string|email|max:255|unique:candidates,email,' . $id,
             'phone' => 'required|string|max:15',
-            'school_id' => 'required|integer|exists:schools,id',
+            'gender' => 'required|in:male,female,other',
+            'dob' => 'required|date',
+            'address' => 'required|string',
+            'school_id' => 'required|exists:schools,id',
+            'experience_year' => 'nullable|string',
             'cv' => 'nullable|file|mimes:pdf|max:2048',
+            'is_finding_job' => 'boolean',
+            'status' => 'required|in:pending,approved,rejected',
         ]);
 
-        $candidate->name = $request->name;
-        $candidate->email = $request->email;
-        $candidate->phone = $request->phone;
-        $candidate->school_id = $request->school_id;
-
-        if ($request->hasFile('cv')) {
-            // Xóa CV cũ nếu có
-            if ($candidate->cv) {
-                unlink(public_path($candidate->cv));
+        if ($request->hasFile('avatar')) {
+            if ($candidate->avatar) {
+                Storage::disk('public')->delete($candidate->avatar);
             }
-            // Lưu CV mới vào thư mục cố định
-            $cvPath = $request->file('cv')->move(public_path('cvs'), $request->file('cv')->getClientOriginalName());
-            $candidate->cv = 'cvs/' . $request->file('cv')->getClientOriginalName();
+            $avatarPath = $request->file('avatar')->store('avatars', 'public');
+            $candidate->avatar = $avatarPath;
         }
 
-        $candidate->save();
+        if ($request->hasFile('cv')) {
+            if ($candidate->cv && file_exists(public_path($candidate->cv))) {
+                unlink(public_path($candidate->cv));
+            }
+            $cvFileName = time() . '_' . $request->file('cv')->getClientOriginalName();
+            $request->file('cv')->move(public_path('cvs'), $cvFileName);
+            $candidate->cv = 'cvs/' . $cvFileName;
+        }
 
-        return redirect()->route('admin.candidates.show', $id)->with('success', 'Thông tin ứng viên đã được cập nhật.');
+        $candidate->update([
+            'name' => $request->name,
+            'gender' => $request->gender,
+            'dob' => $request->dob,
+            'email' => $request->email,
+            'phone' => $request->phone,
+            'address' => $request->address,
+            'school_id' => $request->school_id,
+            'experience_year' => $request->experience_year,
+            'is_finding_job' => $request->boolean('is_finding_job'),
+            'status' => $request->status,
+        ]);
+
+        return redirect()->route('admin.candidates')->with('success', 'Cập nhật ứng viên thành công.');
     }
 
     public function deleteCandidate($id)
@@ -125,6 +159,6 @@ class AdminController extends Controller
         $candidate->active = false;
         $candidate->save();
 
-        return redirect()->route('admin.candidates')->with('success', 'Ứng viên đã được xóa thành công.');
+        return redirect()->route('admin.candidates')->with('success', 'Xóa ứng viên thành công.');
     }
 }

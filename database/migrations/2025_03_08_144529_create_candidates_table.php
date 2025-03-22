@@ -13,17 +13,20 @@ return new class extends Migration
     {
         Schema::create('candidates', function (Blueprint $table) {
             $table->id();
+            $table->string('avatar')->nullable();
             $table->string('name');
+            $table->enum('gender', ['male', 'female', 'other']);
+            $table->date('dob');
             $table->string('email')->unique();
             $table->string('phone');
-            $table->unsignedBigInteger('school_id'); // Thêm trường school_id với kiểu dữ liệu unsignedBigInteger
-            $table->string('cv');
+            $table->string('address');
+            $table->foreignId('school_id')->nullable()->constrained()->nullOnDelete();
+            $table->string('experience_year')->nullable();
+            $table->string('cv')->nullable();
+            $table->boolean('is_finding_job')->default(false);
             $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
             $table->boolean('active')->default(true);
             $table->timestamps();
-
-            // Thiết lập khóa ngoại
-            $table->foreign('school_id')->references('id')->on('schools')->onDelete('cascade');
         });
     }
 

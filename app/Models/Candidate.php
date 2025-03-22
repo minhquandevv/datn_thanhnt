@@ -13,10 +13,15 @@ class Candidate extends Model
         'name',
         'email',
         'phone',
+        'gender',
+        'dob',
+        'address',
         'school_id',
+        'experience_year',
         'cv',
         'status',
-        'active',
+        'is_finding_job',
+        'avatar',
     ];
 
     public function school()
