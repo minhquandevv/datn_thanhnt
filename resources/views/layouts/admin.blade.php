@@ -346,6 +346,12 @@
                             Quản lý công ty
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('admin.interns.*') ? 'active' : '' }}" href="{{ route('admin.interns.index') }}">
+                            <i class="bi bi-building"></i>
+                            Quản lý thực tập sinh
+                        </a>
+                    </li>
                 </ul>
             </div>
 

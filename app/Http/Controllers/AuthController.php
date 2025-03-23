@@ -88,6 +88,25 @@ class AuthController extends Controller
             return redirect()->intended('admin/dashboard');
         }
 
+        // Thử đăng nhập với guard intern
+        if (Auth::guard('intern')->attempt($credentials)) {
+            $request->session()->regenerate();
+            $intern = Auth::guard('intern')->user();
+            
+            // Lưu thông tin intern vào session
+            session([
+                'intern_id' => $intern->intern_id,
+                'intern_name' => $intern->fullname,
+                'intern_email' => $intern->email,
+                'intern_phone' => $intern->phone,
+                'intern_department' => $intern->department,
+                'intern_position' => $intern->position,
+                'intern_avatar' => $intern->avatar ?? 'default.jpg'
+            ]);
+
+            return redirect()->intended('intern/dashboard');
+        }
+
         // Thử đăng nhập với guard candidate
         if (Auth::guard('candidate')->attempt($credentials)) {
             $request->session()->regenerate();
@@ -123,6 +142,7 @@ class AuthController extends Controller
     {
         Auth::guard('web')->logout();
         Auth::guard('candidate')->logout();
+        Auth::guard('intern')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
         return redirect()->route('home');

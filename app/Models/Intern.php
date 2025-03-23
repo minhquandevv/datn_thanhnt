@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use App\Models\Mentor;
+use App\Models\Mentors;
 use App\Models\CertInterns;
 use App\Models\Task;
 
@@ -19,7 +19,7 @@ class Intern extends Authenticatable
     protected $guarded = ['intern_id'];
 
     protected $fillable = [
-        'intern_name', 'birthdate', 'gender', 'email', 'phone', 'university',
+        'fullname', 'birthdate', 'gender', 'email', 'phone', 'university',
         'major', 'address', 'citizen_id', 'citizen_id_image', 'degree',
         'degree_image', 'username', 'password', 'department', 'position', 'mentor_id'
     ];
@@ -29,10 +29,20 @@ class Intern extends Authenticatable
         'remember_token',
     ];
 
+    /**
+     * Get the login identifier to be used by the controller.
+     *
+     * @return string
+     */
+    public function username()
+    {
+        return 'email';
+    }
+
     // Relationship với mentor
     public function mentor()
     {
-        return $this->belongsTo(Mentor::class, 'mentor_id');
+        return $this->belongsTo(Mentors::class, 'mentor_id');
     }
 
     // Relationship với chứng chỉ

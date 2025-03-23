@@ -81,12 +81,12 @@ return [
             'model' => App\Models\Candidate::class,
         ],
         'interns' => [
-          'driver' => 'eloquent',
-          'model' => App\Models\Intern::class,
+            'driver' => 'eloquent',
+            'model' => App\Models\Intern::class,
         ],
         'mentors' => [
-           'driver' => 'eloquent',
-           'model' => App\Models\Mentors::class,
+            'driver' => 'eloquent',
+            'model' => App\Models\Mentors::class,
         ],
         // 'users' => [
         //     'driver' => 'database',
@@ -123,6 +123,12 @@ return [
         'candidates' => [
             'provider' => 'candidates',
             'table' => 'password_reset_tokens',
+            'expire' => 60,
+            'throttle' => 60,
+        ],
+        'interns' => [
+            'provider' => 'interns',
+            'table' => 'password_resets',
             'expire' => 60,
             'throttle' => 60,
         ],

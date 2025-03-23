@@ -11,6 +11,9 @@ use App\Http\Controllers\admin\SchoolController;
 use App\Http\Controllers\CandidateController;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\admin\CompanyController;
+use App\Http\Controllers\admin\ManagerInternController;
+use App\Http\Controllers\Intern\InternDashboardController;
+use App\Http\Controllers\Intern\ProfileController;
 
 // Authentication Routes
 Route::middleware('guest')->group(function () {
@@ -105,6 +108,19 @@ Route::middleware(['auth:web', 'admin'])->prefix('admin')->name('admin.')->group
 
     // Company routes
     Route::resource('companies', CompanyController::class);
+
+    // Intern management routes
+    Route::resource('interns', ManagerInternController::class);
+});
+
+// Intern routes
+Route::middleware(['auth:intern'])->group(function () {
+    Route::get('/intern/dashboard', [InternDashboardController::class, 'index'])->name('intern.dashboard');
+    Route::get('/intern/profile', [ProfileController::class, 'show'])->name('intern.profile');
+    
+    // Profile routes
+    Route::put('/intern/profile/update', [ProfileController::class, 'update'])->name('intern.profile.update');
+    Route::put('/intern/password/update', [ProfileController::class, 'updatePassword'])->name('intern.password.update');
 });
 
 //Logout route (accessible to all authenticated users)
