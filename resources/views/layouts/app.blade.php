@@ -376,11 +376,11 @@ footer ul li a:hover {
                                 <img src="{{ asset('uploads/' . Auth::user()->url_avatar) }}" alt="Avatar" class="user-avatar">
                             @else
                                 <div class="user-avatar bg-secondary text-white d-flex align-items-center justify-content-center">
-                                    {{ substr(Auth::user()->fullname, 0, 1) }}
+                                    {{ substr(Auth::user()->name, 0, 1) }}
                                 </div>
                             @endif
                             <div class="user-info">
-                                <div class="user-name">{{ Auth::user()->fullname }}</div>
+                                <div class="user-name">{{ Auth::user()->name }}</div>
                                 <div class="user-role">{{ ucfirst(Auth::user()->role) }}</div>
                             </div>
                         </div>
@@ -394,7 +394,7 @@ footer ul li a:hover {
                             </form>
                         </div>
                     @else
-                        <a href="{{ route('login') }}" class="btn btn-primary btn-apply">Đăng nhập</a>
+                        <a href="{{ route('login') }}" class="btn btn-danger btn-apply">Đăng nhập</a>
                     @endauth
                 </div>
             </div>

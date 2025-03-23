@@ -104,7 +104,7 @@
                             </div>
 
                             <div class="form-group mt-4">
-                                <button type="submit" class="btn btn-primary btn-block">Đăng ký</button>
+                                <button type="submit" class="btn btn-danger btn-block">Đăng ký</button>
                             </div>
 
                             <div class="text-center mt-3">

@@ -94,7 +94,11 @@
                                     </div>
 
                                     <div class="mt-auto">
-                                        @if(Auth::guard('candidate')->check())
+                                        @if(Auth::check() && Auth::user()->role === 'admin')
+                                            <button class="btn btn-danger w-100">
+                                                <i class="bi bi-eye me-2"></i>Xem chi tiết
+                                            </button>
+                                        @elseif(Auth::guard('candidate')->check())
                                             @php
                                                 $candidate = Auth::guard('candidate')->user();
                                                 $hasApplied = $job->applications()->where('candidate_id', $candidate->id)->exists();

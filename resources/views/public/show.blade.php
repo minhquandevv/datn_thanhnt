@@ -285,7 +285,7 @@
             <div class="d-flex justify-content-between align-items-center border-bottom pb-3">
                 <h2 class="fw-bold text-danger"><i class="bi bi-briefcase me-2"></i>{{ $jobOffer->job_name }}</h2>
                 @if($isAdmin)
-                    <a href="{{ route('admin.job-offers.edit', $jobOffer->id) }}" class="btn btn-primary fw-bold px-4 py-2 rounded-pill shadow-sm">
+                    <a href="{{ route('admin.job-offers.edit', $jobOffer->id) }}" class="btn btn-danger fw-bold px-4 py-2 rounded-pill shadow-sm">
                         <i class="bi bi-pencil-square me-2"></i>Chỉnh sửa tin tuyển dụng
                     </a>
                 @elseif(Auth::guard('candidate')->check())

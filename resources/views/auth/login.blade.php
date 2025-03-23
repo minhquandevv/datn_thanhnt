@@ -5,7 +5,7 @@
         <div class="row justify-content-center align-items-center min-vh-100">
             <div class="col-md-6 col-lg-5">
                 <div class="text-center mb-4">
-                    <h2 class="text-primary fw-bold">Đăng nhập</h2>
+                    <h2 class="text-danger fw-bold">Đăng nhập</h2>
                     <p class="text-muted">Chào mừng bạn quay lại! Vui lòng đăng nhập để tiếp tục.</p>
                 </div>
 
@@ -61,7 +61,7 @@
 
                             <!-- Submit Button -->
                             <div class="d-grid gap-2">
-                                <button type="submit" class="btn btn-primary btn-lg">
+                                <button type="submit" class="btn btn-danger btn-lg">
                                     <i class="bi bi-box-arrow-in-right me-2"></i>Đăng nhập
                                 </button>
                             </div>
@@ -69,7 +69,7 @@
                             <!-- Register Link -->
                             <div class="text-center mt-4">
                                 <p class="mb-0">Chưa có tài khoản? 
-                                    <a href="{{ route('register') }}" class="text-primary text-decoration-none">
+                                    <a href="{{ route('register') }}" class="text-danger text-decoration-none">
                                         Đăng ký ngay
                                     </a>
                                 </p>
