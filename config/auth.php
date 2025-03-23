@@ -44,6 +44,14 @@ return [
             'driver' => 'session',
             'provider' => 'candidates',
         ],
+        'intern' => [
+            'driver' => 'session',
+            'provider' => 'interns',
+        ],
+        'mentor' => [
+            'driver' => 'session',
+            'provider' => 'mentors',
+        ],
     ],
 
     /*
@@ -72,7 +80,14 @@ return [
             'driver' => 'eloquent',
             'model' => App\Models\Candidate::class,
         ],
-
+        'interns' => [
+          'driver' => 'eloquent',
+          'model' => App\Models\Intern::class,
+        ],
+        'mentors' => [
+           'driver' => 'eloquent',
+           'model' => App\Models\Mentors::class,
+        ],
         // 'users' => [
         //     'driver' => 'database',
         //     'table' => 'users',

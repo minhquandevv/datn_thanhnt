@@ -6,26 +6,32 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
+    public function up()
     {
         Schema::create('interns', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade'); // Thực tập sinh (user_id)
-            $table->string('school'); // Trường học
-            $table->string('major'); // Ngành học
-            $table->date('start_date'); // Ngày bắt đầu thực tập
-            $table->date('end_date'); // Ngày kết thúc thực tập
+            $table->id('intern_id');
+            $table->string('fullname')->nullable();
+            $table->date('birthdate')->nullable();
+            $table->enum('gender', ['Nam', 'Nữ', 'Khác'])->nullable();
+            $table->string('email')->unique();
+            $table->string('phone')->nullable();
+            $table->string('university')->nullable();
+            $table->string('major')->nullable();
+            $table->text('address')->nullable();
+            $table->string('citizen_id')->unique();
+            $table->string('citizen_id_image')->nullable();
+            $table->string('degree')->nullable();
+            $table->string('degree_image')->nullable();
+            $table->string('username')->unique();
+            $table->string('password')->nullable();
+            $table->string('department')->nullable();
+            $table->string('position')->nullable();
+            $table->foreignId('mentor_id')->nullable()->constrained('mentors', 'mentor_id')->onDelete('set null');            $table->rememberToken();
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
+    public function down()
     {
         Schema::dropIfExists('interns');
     }
