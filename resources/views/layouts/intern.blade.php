@@ -14,8 +14,8 @@
     <!-- Custom CSS -->
     <style>
         :root {
-            --primary-color: #4f46e5;
-            --primary-hover: #4338ca;
+            --primary-color: #D40000;
+            --primary-hover: #b30000;
             --secondary-color: #64748b;
             --success-color: #22c55e;
             --info-color: #3b82f6;
@@ -28,7 +28,8 @@
             --topbar-height: 70px;
             --sidebar-bg: #1e293b;
             --sidebar-hover: #334155;
-            --sidebar-active: #3b82f6;
+            --sidebar-active: #D40000;
+            --red-gradient: linear-gradient(135deg, #D40000, #ff1a1a);
         }
 
         body {
@@ -46,8 +47,10 @@
             background: var(--sidebar-bg);
             box-shadow: 0 0 20px rgba(0,0,0,.1);
             z-index: 1000;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             color: white;
+            backdrop-filter: blur(10px);
+            background: linear-gradient(180deg, var(--sidebar-bg) 0%, #2d3748 100%);
         }
 
         #sidebar.collapsed {
@@ -76,7 +79,19 @@
             display: flex;
             align-items: center;
             border-bottom: 1px solid rgba(255,255,255,.1);
-            background: rgba(0,0,0,.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sidebar-logo::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            opacity: 0.1;
+            z-index: 0;
         }
 
         .sidebar-logo a {
@@ -86,6 +101,8 @@
             text-decoration: none;
             display: flex;
             align-items: center;
+            position: relative;
+            z-index: 1;
         }
 
         .sidebar-logo i {
@@ -103,21 +120,39 @@
             color: rgba(255,255,255,.8);
             border-radius: 0.5rem;
             font-weight: 500;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--red-gradient);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 0;
         }
 
         .nav-link:hover {
             color: white;
-            background-color: var(--sidebar-hover);
             transform: translateX(5px);
+        }
+
+        .nav-link:hover::before {
+            opacity: 0.1;
         }
 
         .nav-link.active {
             color: white;
-            background-color: var(--sidebar-active);
-            box-shadow: 0 4px 6px -1px rgba(59,130,246,.2);
+            background: var(--red-gradient);
+            box-shadow: 0 4px 6px -1px rgba(212,0,0,.2);
         }
 
         .nav-link i {
@@ -125,6 +160,13 @@
             text-align: center;
             margin-right: 0.75rem;
             font-size: 1.1rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .nav-link span {
+            position: relative;
+            z-index: 1;
         }
 
         /* User Profile Section */
@@ -133,6 +175,20 @@
             text-align: center;
             border-bottom: 1px solid rgba(255,255,255,.1);
             background: rgba(0,0,0,.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .user-profile::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--red-gradient);
+            opacity: 0.05;
+            z-index: 0;
         }
 
         .user-avatar {
@@ -143,6 +199,15 @@
             border: 3px solid var(--sidebar-active);
             padding: 3px;
             background: white;
+            position: relative;
+            z-index: 1;
+            box-shadow: 0 4px 6px -1px rgba(212,0,0,.2);
+            transition: all 0.3s ease;
+        }
+
+        .user-avatar:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 12px -1px rgba(212,0,0,.3);
         }
 
         .user-avatar img {
@@ -156,11 +221,15 @@
             color: white;
             font-weight: 600;
             margin-bottom: 0.25rem;
+            position: relative;
+            z-index: 1;
         }
 
         .user-role {
             color: rgba(255,255,255,.6);
             font-size: 0.875rem;
+            position: relative;
+            z-index: 1;
         }
 
         /* Topbar Styling */
@@ -173,8 +242,10 @@
             background: white;
             box-shadow: 0 2px 10px rgba(0,0,0,.05);
             z-index: 999;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             padding: 0 1.5rem;
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
         }
 
         #topbar.full-width {
@@ -193,6 +264,7 @@
         .menu-toggle:hover {
             background-color: var(--light-color);
             color: var(--primary-color);
+            transform: scale(1.05);
         }
 
         /* Notification Styling */
@@ -201,11 +273,13 @@
             padding: 0.5rem;
             border-radius: 0.5rem;
             transition: all 0.3s ease;
+            color: var(--dark-color);
         }
 
         .notification-bell:hover {
             background-color: var(--light-color);
             color: var(--primary-color);
+            transform: scale(1.05);
         }
 
         .notification-badge {
@@ -219,6 +293,7 @@
             font-size: 0.75rem;
             font-weight: 600;
             transform: translate(25%, -25%);
+            animation: pulse 2s infinite;
         }
 
         .notification-dropdown {
@@ -229,6 +304,8 @@
             min-width: 320px;
             max-height: 480px;
             overflow-y: auto;
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
         }
 
         .notification-item {
@@ -239,11 +316,12 @@
 
         .notification-item:hover {
             background-color: var(--light-color);
+            transform: translateX(5px);
         }
 
         .notification-item.unread {
-            background-color: rgba(59,130,246,.05);
-            border-left: 3px solid var(--sidebar-active);
+            background-color: rgba(212,0,0,.05);
+            border-left: 3px solid var(--primary-color);
         }
 
         /* Main Content */
@@ -251,7 +329,7 @@
             margin-left: var(--sidebar-width);
             margin-top: var(--topbar-height);
             padding: 2rem;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             min-height: calc(100vh - var(--topbar-height));
         }
 
@@ -264,8 +342,9 @@
             border: none;
             border-radius: 1rem;
             box-shadow: 0 4px 6px -1px rgba(0,0,0,.1);
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             background: white;
+            overflow: hidden;
         }
 
         .card:hover {
@@ -286,18 +365,17 @@
             padding: 0.625rem 1.25rem;
             border-radius: 0.5rem;
             font-weight: 500;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .btn-primary {
-            background: var(--primary-color);
-            border-color: var(--primary-color);
+            background: var(--red-gradient);
+            border: none;
         }
 
         .btn-primary:hover {
-            background: var(--primary-hover);
-            border-color: var(--primary-hover);
-            transform: translateY(-1px);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(212,0,0,.2);
         }
 
         /* Form Controls */
@@ -310,13 +388,14 @@
 
         .form-control:focus, .form-select:focus {
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(79,70,229,.1);
+            box-shadow: 0 0 0 3px rgba(212,0,0,.1);
         }
 
         /* Responsive */
         @media (max-width: 992px) {
             #sidebar {
                 left: calc(-1 * var(--sidebar-width));
+                background: var(--sidebar-bg);
             }
             #sidebar.mobile-show {
                 left: 0;
@@ -349,6 +428,12 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        @keyframes pulse {
+            0% { transform: translate(25%, -25%) scale(1); }
+            50% { transform: translate(25%, -25%) scale(1.1); }
+            100% { transform: translate(25%, -25%) scale(1); }
+        }
+
         .fade-in {
             animation: fadeIn 0.3s ease-in-out;
         }
@@ -372,6 +457,35 @@
         ::-webkit-scrollbar-thumb:hover {
             background: rgba(0,0,0,.3);
         }
+
+        /* Glass Effect */
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Loading Animation */
+        .loading {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .loading::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,.2), transparent);
+            animation: loading 1.5s infinite;
+        }
+
+        @keyframes loading {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
     </style>
 </head>
 <body>
@@ -379,8 +493,7 @@
     <nav id="sidebar">
         <div class="sidebar-logo">
             <a href="{{ route('intern.dashboard') }}">
-                <i class="bi bi-building"></i>
-                <span>Intern Management</span>
+                <h5 class="text-danger fw-bold">Viettel <span class="text-white">Software</span></h5>
             </a>
         </div>
         <div class="user-profile">
@@ -612,6 +725,15 @@
                         previewImage(this, previewSelector);
                     });
                 }
+            });
+
+            // Add loading animation to buttons
+            document.querySelectorAll('button[type="submit"]').forEach(button => {
+                button.addEventListener('click', function() {
+                    if (!this.classList.contains('loading')) {
+                        this.classList.add('loading');
+                    }
+                });
             });
         });
     </script>
