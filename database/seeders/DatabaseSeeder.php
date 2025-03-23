@@ -21,19 +21,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Seed dữ liệu cho bảng users
-        User::factory(5)->create();
-
-        // Seed dữ liệu cho bảng workers
-        Worker::factory(5)->create();
-
-        // Seed dữ liệu cho bảng applications
-        Application::factory(10)->create();
-
-        // Seed dữ liệu cho bảng interns
-        Intern::factory(5)->create();
-
-        // Seed dữ liệu cho bảng companies
         Company::factory(5)->create()->each(function ($company) {
             // Mỗi công ty có từ 2-5 phòng ban
             Department::factory(rand(2, 5))->create(['company_id' => $company->id]);

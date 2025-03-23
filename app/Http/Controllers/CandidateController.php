@@ -36,57 +36,66 @@ class CandidateController extends Controller
     }
 
     public function updateProfile(Request $request)
-    {
-        $candidate = auth()->guard('candidate')->user();
-        
-        $request->validate([
-            'fullname' => 'required|string|max:255',
-            'email' => 'required|email|unique:candidates,email,' . $candidate->id,
-            'password' => 'nullable|min:6',
-            'identity_number' => 'required|string|max:20',
-            'phone_number' => 'nullable|string|max:20',
-            'gender' => 'nullable|in:male,female,other',
-            'dob' => 'nullable|date',
-            'address' => 'nullable|string|max:255',
-            'experience_year' => 'nullable|numeric|min:0',
-            'finding_job' => 'boolean',
-            'url_avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'identity_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'image_company' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
-        ]);
+{
+    $candidate = auth()->guard('candidate')->user();
 
-        // Update basic info
-        $candidate->fullname = $request->fullname;
-        $candidate->email = $request->email;
-        $candidate->identity_number = $request->identity_number;
-        $candidate->phone_number = $request->phone_number;
-        $candidate->gender = $request->gender;
-        $candidate->dob = $request->dob;
-        $candidate->address = $request->address;
-        $candidate->experience_year = $request->experience_year;
-        $candidate->finding_job = $request->has('finding_job');
+    $request->validate([
+        'fullname' => 'required|string|max:255',
+        'email' => 'required|email|unique:candidates,email,' . $candidate->id,
+        'password' => 'nullable|min:6',
+        'identity_number' => 'required|string|max:20',
+        'phone_number' => 'nullable|string|max:20',
+        'gender' => 'nullable|in:male,female,other',
+        'dob' => 'nullable|date',
+        'address' => 'nullable|string|max:255',
+        'experience_year' => 'nullable|numeric|min:0',
+        'finding_job' => 'boolean',
+        'url_avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        'identity_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        'image_company' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+    ]);
 
-        if ($request->filled('password')) {
-            $candidate->password = Hash::make($request->password);
-        }
+    // Update basic info
+    $candidate->fullname = $request->fullname;
+    $candidate->email = $request->email;
+    $candidate->identity_number = $request->identity_number;
+    $candidate->phone_number = $request->phone_number;
+    $candidate->gender = $request->gender;
+    $candidate->dob = $request->dob;
+    $candidate->address = $request->address;
+    $candidate->experience_year = $request->experience_year;
+    $candidate->finding_job = $request->has('finding_job');
 
-        // Handle file uploads
-        if ($request->hasFile('url_avatar')) {
-            $candidate->url_avatar = $this->handleFileUpload($request->file('url_avatar'));
-        }
-
-        if ($request->hasFile('identity_image')) {
-            $candidate->identity_image = $this->handleFileUpload($request->file('identity_image'));
-        }
-
-        if ($request->hasFile('image_company')) {
-            $candidate->image_company = $this->handleFileUpload($request->file('image_company'));
-        }
-
-        $candidate->save();
-
-        return redirect()->route('candidate.profile')->with('success', 'Cập nhật thông tin thành công');
+    if ($request->filled('password')) {
+        $candidate->password = Hash::make($request->password);
     }
+
+    // Handle file uploads - giống logic của đoạn code thứ hai
+    if ($request->hasFile('url_avatar')) {
+        $avatar = $request->file('url_avatar');
+        $avatarName = time() . '_avatar_' . $avatar->getClientOriginalName();
+        $avatar->move(public_path('uploads/images'), $avatarName);
+        $candidate->url_avatar = 'images/' . $avatarName;
+    }
+
+    if ($request->hasFile('identity_image')) {
+        $identity = $request->file('identity_image');
+        $identityName = time() . '_id_' . $identity->getClientOriginalName();
+        $identity->move(public_path('uploads/images'), $identityName);
+        $candidate->identity_image = 'images/' . $identityName;
+    }
+
+    if ($request->hasFile('image_company')) {
+        $companyImage = $request->file('image_company');
+        $companyName = time() . '_company_' . $companyImage->getClientOriginalName();
+        $companyImage->move(public_path('uploads/images'), $companyName);
+        $candidate->image_company = 'images/' . $companyName;
+    }
+
+    $candidate->save();
+
+    return redirect()->route('candidate.profile')->with('success', 'Cập nhật thông tin thành công');
+}
 
     public function storeEducation(Request $request)
     {
