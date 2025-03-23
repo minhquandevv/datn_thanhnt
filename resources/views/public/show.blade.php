@@ -2,16 +2,28 @@
 
 @section('content')
     <style>
+        :root {
+            --primary-red: #D40000;
+            --secondary-red: #ff1a1a;
+            --dark: #1a1a1a;
+            --light-red: rgba(212, 0, 0, 0.1);
+        }
+
         .nav-pills .nav-link {
-            background-color: #e9ecef;
-            color: #495057;
+            background-color: var(--light-red);
+            color: var(--dark);
             transition: all 0.3s ease;
             font-weight: 600;
+            border-radius: 30px;
+            padding: 0.8rem 2rem;
+            margin: 0 0.5rem;
         }
 
         .nav-pills .nav-link.active, .nav-pills .nav-link:hover {
-            background-color: #dc3545;
+            background-color: var(--primary-red);
             color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(212, 0, 0, 0.2);
         }
 
         .tab-content {
@@ -24,24 +36,185 @@
         }
 
         .job-info-card {
-            background: #fff;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .job-info-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 30px rgba(0, 0, 0, 0.1);
         }
 
         .candidate-info {
-            background: #f8f9fa;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
+            background: linear-gradient(145deg, white, #f8f9fa);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
         }
 
         .candidate-avatar {
-            width: 100px;
-            height: 100px;
+            width: 120px;
+            height: 120px;
             border-radius: 50%;
             object-fit: cover;
+            border: 3px solid var(--primary-red);
+            box-shadow: 0 4px 15px rgba(212, 0, 0, 0.2);
+        }
+
+        .list-group-item {
+            border: none;
+            background: var(--light-red);
+            margin-bottom: 0.5rem;
+            border-radius: 10px !important;
+            padding: 1rem 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .list-group-item:hover {
+            transform: translateX(5px);
+            background: rgba(212, 0, 0, 0.15);
+        }
+
+        .badge {
+            padding: 0.8rem 1.2rem;
+            border-radius: 30px;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .badge.bg-secondary {
+            background: var(--light-red) !important;
+            color: var(--primary-red);
+        }
+
+        .btn-red {
+            background: var(--primary-red);
+            border-color: var(--primary-red);
+            color: white;
+            border-radius: 30px;
+            padding: 0.8rem 2rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(212, 0, 0, 0.2);
+        }
+
+        .btn-red:hover {
+            background: var(--secondary-red);
+            border-color: var(--secondary-red);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(212, 0, 0, 0.3);
+        }
+
+        .btn-outline-red {
+            color: var(--primary-red);
+            border-color: var(--primary-red);
+            border-radius: 30px;
+            padding: 0.8rem 2rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-outline-red:hover {
+            background: var(--primary-red);
+            border-color: var(--primary-red);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .section-title {
+            color: var(--primary-red);
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            position: relative;
+            padding-left: 1rem;
+        }
+
+        .section-title::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background: var(--primary-red);
+            border-radius: 2px;
+        }
+
+        .modal-content {
+            border-radius: 15px;
+            border: none;
+        }
+
+        .modal-header {
+            border-bottom: 2px solid var(--light-red);
+            padding: 1.5rem;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .form-control {
+            border-radius: 10px;
+            padding: 0.8rem 1.2rem;
+            border: 2px solid #eee;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-red);
+            box-shadow: 0 0 0 0.2rem rgba(212, 0, 0, 0.1);
+        }
+
+        .alert {
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            border: none;
+            margin-bottom: 1.5rem;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .share-buttons .btn {
+            padding: 0.8rem 1.5rem;
+            border-radius: 30px;
+            margin-right: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .share-buttons .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .nav-pills .nav-link {
+                padding: 0.6rem 1rem;
+                margin: 0 0.3rem;
+                font-size: 0.9rem;
+            }
+
+            .candidate-avatar {
+                width: 100px;
+                height: 100px;
+            }
+
+            .badge {
+                padding: 0.6rem 1rem;
+                font-size: 0.8rem;
+            }
         }
     </style>
 
