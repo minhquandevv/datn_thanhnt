@@ -114,13 +114,16 @@ Route::middleware(['auth:web', 'admin'])->prefix('admin')->name('admin.')->group
 });
 
 // Intern routes
-Route::middleware(['auth:intern'])->group(function () {
-    Route::get('/intern/dashboard', [InternDashboardController::class, 'index'])->name('intern.dashboard');
-    Route::get('/intern/profile', [ProfileController::class, 'show'])->name('intern.profile');
+Route::middleware(['auth:intern'])->prefix('intern')->name('intern.')->group(function () {
+    Route::get('/dashboard', [App\Http\Controllers\Intern\InternDashboardController::class, 'index'])->name('dashboard');
     
     // Profile routes
-    Route::put('/intern/profile/update', [ProfileController::class, 'update'])->name('intern.profile.update');
-    Route::put('/intern/password/update', [ProfileController::class, 'updatePassword'])->name('intern.password.update');
+    Route::get('/profile', [App\Http\Controllers\Intern\ProfileController::class, 'show'])->name('profile.show');
+    Route::put('/profile/update', [App\Http\Controllers\Intern\ProfileController::class, 'update'])->name('profile.update');
+    Route::put('/profile/password', [App\Http\Controllers\Intern\ProfileController::class, 'updatePassword'])->name('password.update');
+    
+    // Logout route
+    Route::post('/logout', [App\Http\Controllers\Intern\AuthController::class, 'logout'])->name('logout');
 });
 
 //Logout route (accessible to all authenticated users)

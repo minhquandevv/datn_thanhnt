@@ -65,7 +65,7 @@
                                             @if($intern->degree_image)
                                                 <div class="mt-3">
                                                     <h6>Ảnh bằng cấp:</h6>
-                                                    <img src="{{ asset('uploads/degrees/' . $intern->degree_image) }}" 
+                                                    <img src="{{ asset('uploads/documents/' . $intern->degree_image) }}" 
                                                          alt="Ảnh bằng cấp" 
                                                          class="img-fluid rounded">
                                                 </div>
@@ -120,7 +120,7 @@
                                             <th>Ảnh CCCD</th>
                                             <td>
                                                 @if($intern->citizen_id_image)
-                                                    <img src="{{ asset('uploads/citizen_ids/' . $intern->citizen_id_image) }}" 
+                                                    <img src="{{ asset('uploads/documents/' . $intern->citizen_id_image) }}" 
                                                          alt="Ảnh CCCD" 
                                                          class="img-fluid rounded">
                                                 @else

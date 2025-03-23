@@ -169,7 +169,7 @@
                                             </label>
                                             @if($intern->degree_image)
                                                 <div class="mb-2">
-                                                    <img src="{{ asset('uploads/degrees/' . $intern->degree_image) }}" 
+                                                    <img src="{{ asset('uploads/documents/' . $intern->degree_image) }}" 
                                                          alt="Ảnh bằng cấp" class="img-fluid rounded" style="max-width: 200px;">
                                                 </div>
                                             @endif
@@ -270,7 +270,7 @@
                                             </label>
                                             @if($intern->citizen_id_image)
                                                 <div class="mb-2">
-                                                    <img src="{{ asset('uploads/citizen_ids/' . $intern->citizen_id_image) }}" 
+                                                    <img src="{{ asset('uploads/documents/' . $intern->citizen_id_image) }}" 
                                                          alt="Ảnh CCCD" class="img-fluid rounded" style="max-width: 200px;">
                                                 </div>
                                             @endif

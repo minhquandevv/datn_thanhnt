@@ -3,342 +3,451 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ config('app.name') }} - Intern Portal</title>
+    <title>@yield('title', 'Intern Dashboard')</title>
     
-    <!-- Styles -->
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
-    @stack('styles')
-    
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Custom CSS -->
     <style>
-        /* Sidebar styles */
-        .sidebar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            height: 100vh;
-            width: 250px;
-            background: #2c3e50;
-            padding-top: 1rem;
-            transition: all 0.3s ease;
+        :root {
+            --primary-color: #0d6efd;
+            --secondary-color: #6c757d;
+            --success-color: #198754;
+            --info-color: #0dcaf0;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
         }
-        
-        .sidebar-link {
-            color: #ecf0f1;
-            text-decoration: none;
+
+        body {
+            background-color: var(--light-color);
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        /* Navbar Styling */
+        .navbar {
+            box-shadow: 0 2px 4px rgba(0,0,0,.08);
             padding: 0.8rem 1rem;
-            display: flex;
-            align-items: center;
+        }
+
+        .navbar-brand {
+            font-weight: 600;
+            color: var(--primary-color) !important;
+        }
+
+        .nav-link {
+            font-weight: 500;
+            padding: 0.5rem 1rem;
             transition: all 0.3s ease;
         }
-        
-        .sidebar-link:hover {
-            background: #34495e;
-            color: #fff;
+
+        .nav-link:hover {
+            color: var(--primary-color);
         }
-        
-        .sidebar-link.active {
-            background: #3498db;
-            color: #fff;
+
+        /* Card Styling */
+        .card {
+            border: none;
+            border-radius: 0.75rem;
+            box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,.075);
+            transition: all 0.3s ease;
         }
-        
-        .sidebar-link i {
-            margin-right: 0.5rem;
-            width: 24px;
-            height: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+
+        .card:hover {
+            box-shadow: 0 0.5rem 1rem rgba(0,0,0,.15);
         }
-        
-        /* Main content styles */
-        .main-content {
-            margin-left: 250px;
+
+        .card-header {
+            background-color: white;
+            border-bottom: 1px solid rgba(0,0,0,.125);
+            padding: 1rem 1.25rem;
+            border-top-left-radius: 0.75rem !important;
+            border-top-right-radius: 0.75rem !important;
+        }
+
+        /* Form Controls */
+        .form-control, .form-select {
+            border-radius: 0.5rem;
+            padding: 0.625rem 0.75rem;
+            border: 1px solid #dee2e6;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(13,110,253,.15);
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.625rem 1.25rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-primary:hover {
+            background-color: #0b5ed7;
+            border-color: #0a58ca;
+        }
+
+        /* Modal Styling */
+        .modal-content {
+            border: none;
+            border-radius: 0.75rem;
+        }
+
+        .modal-header {
+            border-bottom: 1px solid #dee2e6;
+            background-color: white;
+            border-top-left-radius: 0.75rem;
+            border-top-right-radius: 0.75rem;
+            padding: 1.25rem;
+        }
+
+        .modal-footer {
+            border-top: 1px solid #dee2e6;
+            background-color: white;
+            border-bottom-left-radius: 0.75rem;
+            border-bottom-right-radius: 0.75rem;
+            padding: 1.25rem;
+        }
+
+        /* Images */
+        .img-thumbnail {
+            border-radius: 0.5rem;
+            padding: 0.25rem;
+            border: 1px solid #dee2e6;
+        }
+
+        .rounded-circle {
+            border: 2px solid white;
+            box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,.075);
+        }
+
+        /* Notifications */
+        .notification-dropdown {
+            box-shadow: 0 0.5rem 1rem rgba(0,0,0,.15);
+            border: none;
+            border-radius: 0.75rem;
+            padding: 0;
+            min-width: 320px;
+            max-height: 480px;
+            overflow-y: auto;
+        }
+
+        .notification-dropdown .dropdown-header {
             padding: 1rem;
-            min-height: 100vh;
-            background: #f8f9fa;
+            background-color: white;
+            border-bottom: 1px solid #dee2e6;
         }
-        
-        /* Header styles */
-        .top-header {
-            background: #fff;
+
+        .notification-dropdown .dropdown-item {
             padding: 1rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            margin-bottom: 2rem;
+            border-bottom: 1px solid #f8f9fa;
+            white-space: normal;
+        }
+
+        .notification-dropdown .dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .notification-dropdown .dropdown-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .notification-dropdown .dropdown-item.unread {
+            background-color: rgba(13,110,253,.05);
+            position: relative;
+        }
+
+        .notification-dropdown .dropdown-item.unread::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background-color: var(--primary-color);
+        }
+
+        /* Badges */
+        .badge {
+            padding: 0.35em 0.65em;
+            font-weight: 600;
             border-radius: 0.5rem;
         }
-        
-        /* User dropdown styles */
-        .user-dropdown img {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            object-fit: cover;
+
+        /* Alerts */
+        .alert {
+            border: none;
+            border-radius: 0.75rem;
+            padding: 1rem 1.25rem;
         }
-        
-        /* Responsive */
+
+        /* Tables */
+        .table {
+            margin-bottom: 0;
+        }
+
+        .table th {
+            font-weight: 600;
+            color: var(--dark-color);
+            background-color: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .table td {
+            vertical-align: middle;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        /* Responsive Adjustments */
         @media (max-width: 768px) {
-            .sidebar {
-                transform: translateX(-100%);
+            .navbar {
+                padding: 0.5rem;
             }
-            
-            .sidebar.show {
-                transform: translateX(0);
+
+            .card {
+                margin-bottom: 1rem;
             }
-            
-            .main-content {
-                margin-left: 0;
+
+            .modal-dialog {
+                margin: 0.5rem;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Sidebar -->
-    <nav class="sidebar">
-        <div class="px-3 mb-4">
-            <img src="{{ asset('images/logo.png') }}" alt="Logo" class="img-fluid" style="max-height: 50px;">
-        </div>
-        
-        <div class="nav flex-column">
-            <a href="{{ route('intern.dashboard') }}" class="sidebar-link {{ request()->routeIs('intern.dashboard') ? 'active' : '' }}">
-                <i class="bi bi-speedometer2"></i> Dashboard
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{{ route('intern.dashboard') }}">
+                <i class="bi bi-building me-2"></i>
+                Intern Management
             </a>
-            <a href="{{ route('intern.profile') }}" class="sidebar-link {{ request()->routeIs('intern.profile') ? 'active' : '' }}">
-                <i class="bi bi-person"></i> Thông tin cá nhân
-            </a>
-            <a href="#" class="sidebar-link">
-                <i class="bi bi-list-task"></i> Danh sách công việc
-            </a>
-            <a href="#" class="sidebar-link">
-                <i class="bi bi-award"></i> Chứng chỉ
-            </a>
-            <a href="#" class="sidebar-link">
-                <i class="bi bi-calendar-event"></i> Lịch làm việc
-            </a>
-            <a href="#" class="sidebar-link">
-                <i class="bi bi-chat-dots"></i> Tin nhắn
-            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('intern.dashboard') ? 'active' : '' }}" href="{{ route('intern.dashboard') }}">
+                            <i class="bi bi-speedometer2 me-1"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('intern.profile.*') ? 'active' : '' }}" href="{{ route('intern.profile.show') }}">
+                            <i class="bi bi-person me-1"></i>Profile
+                        </a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <!-- Notifications -->
+                    <li class="nav-item dropdown me-3">
+                        <a class="nav-link" href="#" id="notificationsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <div class="position-relative d-inline-block">
+                                <i class="bi bi-bell fs-5"></i>
+                                @if(isset($unreadNotifications) && $unreadNotifications > 0)
+                                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                        {{ $unreadNotifications }}
+                                        <span class="visually-hidden">unread notifications</span>
+                                    </span>
+                                @endif
+                            </div>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end notification-dropdown">
+                            <li>
+                                <div class="dropdown-header d-flex justify-content-between align-items-center">
+                                    <span class="fw-bold">Thông báo</span>
+                                    @if(isset($unreadNotifications) && $unreadNotifications > 0)
+                                        <a href="#" class="text-primary small text-decoration-none">Đánh dấu tất cả đã đọc</a>
+                                    @endif
+                                </div>
+                            </li>
+                            @if(isset($notifications) && count($notifications) > 0)
+                                @foreach($notifications as $notification)
+                                    <li>
+                                        <a class="dropdown-item {{ !$notification->read_at ? 'unread' : '' }}" href="#">
+                                            <div class="d-flex">
+                                                <div class="flex-shrink-0">
+                                                    <i class="bi bi-bell text-primary fs-4"></i>
+                                                </div>
+                                                <div class="flex-grow-1 ms-3">
+                                                    <p class="mb-1 fw-medium">{{ $notification->data['message'] }}</p>
+                                                    <small class="text-muted">{{ $notification->created_at->diffForHumans() }}</small>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </li>
+                                @endforeach
+                                <li><hr class="dropdown-divider m-0"></li>
+                                <li>
+                                    <a class="dropdown-item text-center py-3" href="#">
+                                        <span class="text-primary">Xem tất cả thông báo</span>
+                                    </a>
+                                </li>
+                            @else
+                                <li>
+                                    <div class="text-center py-4">
+                                        <i class="bi bi-bell-slash fs-4 text-muted d-block mb-2"></i>
+                                        <p class="text-muted mb-0">Không có thông báo nào</p>
+                                    </div>
+                                </li>
+                            @endif
+                        </ul>
+                    </li>
+                    <!-- User Dropdown -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                            @if(session('intern_avatar'))
+                                <img src="{{ asset('uploads/avatars/' . session('intern_avatar')) }}" 
+                                     alt="Avatar" 
+                                     class="rounded-circle me-2"
+                                     style="width: 32px; height: 32px; object-fit: cover;">
+                            @else
+                                <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-2"
+                                     style="width: 32px; height: 32px;">
+                                    <i class="bi bi-person"></i>
+                                </div>
+                            @endif
+                            <span>{{ session('intern_name') }}</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center" href="{{ route('intern.profile.show') }}">
+                                    <i class="bi bi-person me-2"></i>
+                                    <span>Thông tin cá nhân</span>
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form action="{{ route('intern.logout') }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="dropdown-item d-flex align-items-center text-danger">
+                                        <i class="bi bi-box-arrow-right me-2"></i>
+                                        <span>Đăng xuất</span>
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
         </div>
     </nav>
 
     <!-- Main Content -->
-    <div class="main-content">
-        <!-- Top Header -->
-        <div class="top-header d-flex justify-content-between align-items-center">
-            <button class="btn d-md-none" id="sidebarToggle">
-                <i class="bi bi-list fs-4"></i>
-            </button>
-            
-            <div class="d-flex align-items-center">
-                <!-- Notifications -->
-                <div class="dropdown me-3">
-                    <button class="btn position-relative" type="button" data-bs-toggle="dropdown">
-                        <i class="bi bi-bell fs-5"></i>
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                            3
-                        </span>
-                    </button>
-                    <div class="dropdown-menu dropdown-menu-end">
-                        <h6 class="dropdown-header">Thông báo</h6>
-                        <a class="dropdown-item" href="#">Task mới được giao</a>
-                        <a class="dropdown-item" href="#">Deadline sắp đến hạn</a>
-                        <a class="dropdown-item" href="#">Mentor đã phản hồi</a>
-                    </div>
-                </div>
-                
-                <!-- User Menu -->
-                <div class="dropdown user-dropdown">
-                    <button class="btn d-flex align-items-center" type="button" data-bs-toggle="dropdown">
-                        @if(session('intern_avatar'))
-                            <img src="{{ asset('uploads/avatars/' . session('intern_avatar')) }}" 
-                                 alt="User Avatar" 
-                                 class="me-2 rounded-circle"
-                                 style="width: 32px; height: 32px; object-fit: cover;">
-                        @else
-                            <div class="rounded-circle me-2 d-flex align-items-center justify-content-center bg-primary text-white"
-                                 style="width: 32px; height: 32px; font-size: 14px; font-weight: bold;">
-                                {{ \App\Helpers\Helper::getInitials(session('intern_name')) }}
-                            </div>
-                        @endif
-                        <span class="d-none d-md-block">{{ session('intern_name') }}</span>
-                    </button>
-                    <div class="dropdown-menu dropdown-menu-end profile-dropdown">
-                        <!-- User Info -->
-                        <div class="px-4 py-3">
-                            <div class="d-flex align-items-center mb-3">
-                                @if(session('intern_avatar'))
-                                    <img src="{{ asset('uploads/avatars/' . session('intern_avatar')) }}" 
-                                         alt="User Avatar" 
-                                         class="rounded-circle me-3"
-                                         style="width: 60px; height: 60px; object-fit: cover;">
-                                @else
-                                    <div class="rounded-circle me-3 d-flex align-items-center justify-content-center bg-primary text-white"
-                                         style="width: 60px; height: 60px; font-size: 24px; font-weight: bold;">
-                                        {{ \App\Helpers\Helper::getInitials(session('intern_name')) }}
-                                    </div>
-                                @endif
-                                <div>
-                                    <h6 class="mb-1">{{ session('intern_name') }}</h6>
-                                    <p class="text-muted small mb-0">{{ session('intern_email') }}</p>
-                                </div>
-                            </div>
-                            
-                            <!-- Personal Info -->
-                            <div class="mb-3">
-                                <div class="d-flex align-items-center mb-2">
-                                    <i class="bi bi-building me-2"></i>
-                                    <span>{{ session('intern_department') }}</span>
-                                </div>
-                                <div class="d-flex align-items-center mb-2">
-                                    <i class="bi bi-briefcase me-2"></i>
-                                    <span>{{ session('intern_position') }}</span>
-                                </div>
-                                <div class="d-flex align-items-center">
-                                    <i class="bi bi-telephone me-2"></i>
-                                    <span>{{ session('intern_phone') }}</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="dropdown-divider"></div>
-                        
-                        <!-- Quick Actions -->
-                        <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#editProfileModal">
-                            <i class="bi bi-pencil-square me-2"></i> Chỉnh sửa thông tin
-                        </a>
-                        <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
-                            <i class="bi bi-key me-2"></i> Đổi mật khẩu
-                        </a>
-                        <a class="dropdown-item" href="#">
-                            <i class="bi bi-gear me-2"></i> Cài đặt
-                        </a>
-                        
-                        <div class="dropdown-divider"></div>
-                        
-                        <form action="{{ route('logout') }}" method="POST">
-                            @csrf
-                            <button type="submit" class="dropdown-item text-danger">
-                                <i class="bi bi-box-arrow-right me-2"></i> Đăng xuất
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Edit Profile Modal -->
-        <div class="modal fade" id="editProfileModal" tabindex="-1">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Chỉnh sửa thông tin</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <form action="{{ route('intern.profile.update') }}" method="POST" enctype="multipart/form-data">
-                        @csrf
-                        @method('PUT')
-                        <div class="modal-body">
-                            <div class="mb-3">
-                                <label class="form-label">Ảnh đại diện</label>
-                                <input type="file" class="form-control" name="avatar">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Họ và tên</label>
-                                <input type="text" class="form-control" name="fullname" value="{{ session('intern_name') }}">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Email</label>
-                                <input type="email" class="form-control" name="email" value="{{ session('intern_email') }}">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Số điện thoại</label>
-                                <input type="tel" class="form-control" name="phone" value="{{ session('intern_phone') }}">
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                            <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        <!-- Change Password Modal -->
-        <div class="modal fade" id="changePasswordModal" tabindex="-1">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Đổi mật khẩu</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <form action="{{ route('intern.password.update') }}" method="POST">
-                        @csrf
-                        @method('PUT')
-                        <div class="modal-body">
-                            <div class="mb-3">
-                                <label class="form-label">Mật khẩu hiện tại</label>
-                                <input type="password" class="form-control" name="current_password" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Mật khẩu mới</label>
-                                <input type="password" class="form-control" name="password" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Xác nhận mật khẩu mới</label>
-                                <input type="password" class="form-control" name="password_confirmation" required>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                            <button type="submit" class="btn btn-primary">Đổi mật khẩu</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        <!-- Main Content Area -->
-        <div class="content">
+    <main class="py-4">
+        <div class="fade-in">
             @yield('content')
         </div>
-    </div>
+    </main>
 
-    <!-- Scripts -->
+    <!-- Bootstrap Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JavaScript -->
     <script>
-        // Toggle sidebar on mobile
-        document.getElementById('sidebarToggle')?.addEventListener('click', function() {
-            document.querySelector('.sidebar').classList.toggle('show');
-        });
+        // Enable Bootstrap tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        })
 
-        // Close sidebar when clicking outside on mobile
-        document.addEventListener('click', function(event) {
-            const sidebar = document.querySelector('.sidebar');
-            const sidebarToggle = document.getElementById('sidebarToggle');
-            
-            if (window.innerWidth <= 768 && 
-                !sidebar.contains(event.target) && 
-                !sidebarToggle.contains(event.target)) {
-                sidebar.classList.remove('show');
+        // Enable Bootstrap popovers
+        var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+        var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+            return new bootstrap.Popover(popoverTriggerEl)
+        })
+
+        // Preview image before upload
+        function previewImage(input, previewElement) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.querySelector(previewElement);
+                    if (preview) {
+                        preview.src = e.target.result;
+                        preview.style.display = 'block';
+                    }
+                }
+                reader.readAsDataURL(input.files[0]);
             }
+        }
+
+        // Add event listeners for file inputs
+        document.addEventListener('DOMContentLoaded', function() {
+            // File input preview handlers
+            const fileInputs = {
+                'avatar': '#avatar-preview',
+                'citizen_id_image': '#citizen-id-preview',
+                'degree_image': '#degree-preview'
+            };
+
+            Object.entries(fileInputs).forEach(([inputName, previewSelector]) => {
+                const input = document.querySelector(`input[name="${inputName}"]`);
+                if (input) {
+                    input.addEventListener('change', function() {
+                        previewImage(this, previewSelector);
+                    });
+                }
+            });
+
+            // Auto-hide alerts after 5 seconds
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                setTimeout(() => {
+                    const bsAlert = new bootstrap.Alert(alert);
+                    bsAlert.close();
+                }, 5000);
+            });
+
+            // Active link highlight
+            const currentPath = window.location.pathname;
+            document.querySelectorAll('.nav-link').forEach(link => {
+                if (link.getAttribute('href') === currentPath) {
+                    link.classList.add('active');
+                }
+            });
         });
     </script>
-    @stack('scripts')
-
-    <style>
-    .profile-dropdown {
-        width: 300px;
-        padding: 0;
-    }
-    
-    .profile-dropdown .dropdown-item {
-        padding: 0.75rem 1.5rem;
-    }
-    
-    .profile-dropdown .dropdown-divider {
-        margin: 0;
-    }
-    </style>
 </body>
 </html> 
