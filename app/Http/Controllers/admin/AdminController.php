@@ -10,6 +10,12 @@ use App\Models\JobApplication;
 
 class AdminController extends Controller
 {
+
+    public function index()
+    {
+        return view('admin.splash');
+    }
+
     public function dashboard()
     {
         return view('admin.dexuattuyendung'); 

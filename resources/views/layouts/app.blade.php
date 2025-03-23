@@ -385,7 +385,7 @@ footer ul li a:hover {
                             </div>
                         </div>
                         <div class="d-flex gap-2 mt-2">
-                            <a href="{{ route('admin.job-offers') }}" class="btn btn-outline-primary btn-sm">
+                            <a href="{{ route('admin.home') }}" class="btn btn-outline-primary btn-sm">
                                 <i class="bi bi-briefcase me-1"></i>Quản lý tuyển dụng
                             </a>
                             <form action="{{ route('logout') }}" method="POST" style="display: inline;">

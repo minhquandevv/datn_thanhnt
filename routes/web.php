@@ -82,7 +82,7 @@ Route::middleware(['auth:web', 'admin'])->prefix('admin')->name('admin.')->group
     Route::delete('/candidates/{id}', [AdminController::class, 'deleteCandidate'])->name('candidates.delete');
     Route::put('/candidates/{id}/status', [AdminController::class, 'updateStatus'])->name('candidates.status');
     Route::put('/applications/{id}', [AdminController::class, 'updateApplication'])->name('applications.update');
-    Route::get('/', [JobOfferController::class, 'index'])->name('home');
+    Route::get('/', [AdminController::class, 'index'])->name('home');
     Route::get('/job-offers', [JobOfferController::class, 'index'])->name('job-offers');
     Route::post('/job-offers', [JobOfferController::class, 'store'])->name('job-offers.store');
     Route::get('/job-offers/{id}', [JobOfferController::class, 'show'])->name('job-offers.show');
