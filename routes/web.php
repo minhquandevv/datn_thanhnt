@@ -123,7 +123,7 @@ Route::middleware(['auth:intern'])->prefix('intern')->name('intern.')->group(fun
     Route::put('/profile/password', [App\Http\Controllers\Intern\ProfileController::class, 'updatePassword'])->name('password.update');
     
     // Logout route
-    Route::post('/logout', [App\Http\Controllers\Intern\AuthController::class, 'logout'])->name('logout');
+    Route::post('/logout', [App\Http\Controllers\AuthController::class, 'logout'])->name('logout');
 });
 
 //Logout route (accessible to all authenticated users)

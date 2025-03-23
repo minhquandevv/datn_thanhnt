@@ -1,5 +1,7 @@
 @extends('layouts.intern')
 
+@section('title', 'Dashboard')
+
 @section('content')
 <div class="container-fluid">
     @if(session('success'))
