@@ -39,7 +39,7 @@
                                 <td class="text-center">{{ $company->id }}</td>
                                 <td class="text-center">
                                     @if($company->image_company)
-                                        <img src="{{ filter_var($company->image_company, FILTER_VALIDATE_URL) ? $company->image_company : asset('public/companies/' . $company->image_company) }}" 
+                                        <img src="{{ filter_var($company->image_company, FILTER_VALIDATE_URL) ? $company->image_company : asset('uploads/companies/' . $company->image_company) }}" 
                                              alt="{{ $company->title }}" 
                                              class="img-thumbnail rounded-circle shadow-sm" 
                                              style="width: 50px; height: 50px; object-fit: cover;">
@@ -165,7 +165,7 @@
                                                             </label>
                                                             @if($company->image_company)
                                                                 <div class="mb-2">
-                                                                    <img src="{{ filter_var($company->image_company, FILTER_VALIDATE_URL) ? $company->image_company : asset('public/companies/' . $company->image_company) }}" 
+                                                                    <img src="{{ filter_var($company->image_company, FILTER_VALIDATE_URL) ? $company->image_company : asset('uploads/companies/' . $company->image_company) }}" 
                                                                          alt="{{ $company->title }}" 
                                                                          class="img-thumbnail shadow-sm" 
                                                                          style="max-width: 150px;">
