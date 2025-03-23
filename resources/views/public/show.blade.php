@@ -171,7 +171,7 @@
                         <p class="mb-1"><i class="bi bi-geo-alt"></i> {{ $jobOffer->company->location }}</p>
                         <p class="mb-1"><i class="bi bi-file-text"></i> {{ $jobOffer->company->description }}</p>
                         <p class="mb-1"><i class="bi bi-people"></i> Nhân viên: {{ $jobOffer->company->amount_staff }}</p>
-                        <img src="{{ filter_var($jobOffer->company->image_company, FILTER_VALIDATE_URL) ? $jobOffer->company->image_company : asset('storage/' . $jobOffer->company->image_company) }}"
+                        <img src="{{ filter_var($jobOffer->company->image_company, FILTER_VALIDATE_URL) ? $jobOffer->company->image_company : asset('uploads/companies/' . $jobOffer->company->image_company) }}"
                             alt="Company image" class="img-fluid rounded shadow-sm mt-3">
                     </div>
                 </div>

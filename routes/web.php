@@ -10,6 +10,7 @@ use App\Http\Controllers\JobApplicationController;
 use App\Http\Controllers\admin\SchoolController;
 use App\Http\Controllers\CandidateController;
 use App\Http\Controllers\JobController;
+use App\Http\Controllers\admin\CompanyController;
 
 // Authentication Routes
 Route::middleware('guest')->group(function () {
@@ -101,6 +102,9 @@ Route::middleware(['auth:web', 'admin'])->prefix('admin')->name('admin.')->group
     Route::post('/users', [UserController::class, 'store'])->name('users.store');
     Route::put('/users/{id}', [UserController::class, 'update'])->name('users.update');
     Route::delete('/users/{id}', [UserController::class, 'destroy'])->name('users.destroy');
+
+    // Company routes
+    Route::resource('companies', CompanyController::class);
 });
 
 //Logout route (accessible to all authenticated users)

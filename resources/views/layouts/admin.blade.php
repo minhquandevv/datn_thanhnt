@@ -340,6 +340,12 @@
                             Quản lý người dùng
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('admin.companies.*') ? 'active' : '' }}" href="{{ route('admin.companies.index') }}">
+                            <i class="bi bi-building"></i>
+                            Quản lý công ty
+                        </a>
+                    </li>
                 </ul>
             </div>
 
