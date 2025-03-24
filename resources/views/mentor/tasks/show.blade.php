@@ -114,6 +114,36 @@
                 </div>
             </div>
             @endif
+
+            <!-- Báo cáo công việc -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Báo cáo công việc</h6>
+                </div>
+                <div class="card-body">
+                    @if($task->reports->count() > 0)
+                        @foreach($task->reports as $report)
+                        <div class="border-bottom pb-3 mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h6 class="mb-0">Báo cáo ngày {{ \Carbon\Carbon::parse($report->report_date)->format('d/m/Y') }}</h6>
+                            </div>
+                            <div class="mb-2">
+                                <h6 class="text-muted">Công việc đã làm</h6>
+                                <p class="mb-0">{{ $report->work_done }}</p>
+                            </div>
+                            <div>
+                                <h6 class="text-muted">Kế hoạch ngày mai</h6>
+                                <p class="mb-0">{{ $report->next_day_plan }}</p>
+                            </div>
+                        </div>
+                        @endforeach
+                    @else
+                        <div class="text-center py-3">
+                            <p class="text-muted mb-0">Chưa có báo cáo nào</p>
+                        </div>
+                    @endif
+                </div>
+            </div>
         </div>
 
         <div class="col-md-4">

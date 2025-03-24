@@ -120,7 +120,7 @@
             <div class="card border-0 shadow-sm">
                 <div class="card-header bg-white d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">Công việc gần đây</h5>
-                    <a href="#" class="btn btn-sm btn-primary">
+                    <a href="{{ route('intern.tasks.index') }}" class="btn btn-sm btn-primary">
                         <i class="bi bi-plus-lg me-1"></i>Xem tất cả
                     </a>
                 </div>
@@ -142,10 +142,11 @@
                                     <td>
                                         <span class="badge bg-{{ $task->status === 'Hoàn thành' ? 'success' : ($task->status === 'Đang thực hiện' ? 'primary' : ($task->status === 'Trễ hạn' ? 'danger' : 'warning')) }}">
                                             {{ $task->status }}
+                                        </span>
                                     </td>
                                     <td>{{ date('d/m/Y', strtotime($task->assigned_date)) }}</td>
                                     <td>
-                                        <a href="#" class="btn btn-sm btn-outline-primary">
+                                        <a href="{{ route('intern.tasks.show', $task->task_id) }}" class="btn btn-sm btn-outline-primary">
                                             <i class="bi bi-eye me-1"></i>Chi tiết
                                         </a>
                                     </td>

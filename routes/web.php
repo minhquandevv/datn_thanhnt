@@ -160,6 +160,12 @@ Route::middleware(['auth:intern'])->prefix('intern')->name('intern.')->group(fun
     
     // Logout route
     Route::post('/logout', [App\Http\Controllers\AuthController::class, 'logout'])->name('logout');
+    
+    // Task routes
+    Route::get('/tasks', [App\Http\Controllers\Intern\TaskController::class, 'index'])->name('tasks.index');
+    Route::get('/tasks/{task}', [App\Http\Controllers\Intern\TaskController::class, 'show'])->name('tasks.show');
+    Route::post('/tasks/{task}/report', [App\Http\Controllers\Intern\TaskController::class, 'submitReport'])->name('tasks.report');
+    Route::put('/tasks/{task}/status', [App\Http\Controllers\Intern\TaskController::class, 'updateStatus'])->name('tasks.updateStatus');
 });
 
 //Logout route (accessible to all authenticated users)
