@@ -17,7 +17,7 @@ class AuthController extends Controller
     public function showLoginForm()
     {
         if (Auth::guard('web')->check()) {
-            return redirect()->route('admin.dashboard');
+            return redirect()->route('admin.home');
         }
         if (Auth::guard('candidate')->check()) {
             return redirect()->route('candidate.dashboard');
@@ -31,7 +31,7 @@ class AuthController extends Controller
     public function showRegistrationForm()
     {
         if (Auth::guard('web')->check()) {
-            return redirect()->route('admin.dashboard');
+            return redirect()->route('admin.home');
         }
         if (Auth::guard('candidate')->check()) {
             return redirect()->route('candidate.dashboard');
@@ -85,7 +85,7 @@ class AuthController extends Controller
         // Thử đăng nhập với guard admin
         if (Auth::guard('web')->attempt($credentials)) {
             $request->session()->regenerate();
-            return redirect()->intended('admin/dashboard');
+            return redirect()->intended('admin');
         }
 
         // Thử đăng nhập với guard intern

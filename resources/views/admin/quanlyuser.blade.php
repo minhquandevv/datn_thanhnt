@@ -258,8 +258,19 @@
                         <label class="form-label">Mật khẩu mới</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-key"></i></span>
-                            <input type="password" class="form-control" name="password" placeholder="Để trống nếu không muốn thay đổi">
+                            <input type="password" class="form-control @error('password') is-invalid @enderror" 
+                                   name="password" 
+                                   placeholder="Nhập mật khẩu mới (để trống nếu không muốn thay đổi)">
+                            @error('password')
+                                <div class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                            @enderror
                         </div>
+                        <small class="text-muted mt-1">
+                            <i class="bi bi-info-circle me-1"></i>
+                            Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường và số
+                        </small>
                     </div>
                     <div class="mb-4">
                         <label class="form-label">Vai trò</label>

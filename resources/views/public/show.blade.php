@@ -21,9 +21,13 @@
 
         .nav-pills .nav-link.active, .nav-pills .nav-link:hover {
             background-color: var(--primary-red);
-            color: white;
+            color: white !important;
             transform: translateY(-2px);
             box-shadow: 0 4px 15px rgba(212, 0, 0, 0.2);
+        }
+
+        .nav-pills .nav-link i {
+            margin-right: 0.5rem;
         }
 
         .tab-content {
