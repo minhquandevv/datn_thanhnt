@@ -14,6 +14,7 @@ use App\Http\Controllers\admin\CompanyController;
 use App\Http\Controllers\admin\ManagerInternController;
 use App\Http\Controllers\Intern\InternDashboardController;
 use App\Http\Controllers\Intern\ProfileController;
+use App\Http\Controllers\admin\MentorController;
 
 // Authentication Routes
 Route::middleware('guest')->group(function () {
@@ -111,6 +112,23 @@ Route::middleware(['auth:web', 'admin'])->prefix('admin')->name('admin.')->group
 
     // Intern management routes
     Route::resource('interns', ManagerInternController::class);
+
+    // Mentor management routes
+    Route::resource('mentors', MentorController::class);
+});
+
+// Mentor login routes
+Route::middleware('guest:mentor')->group(function () {
+    Route::get('mentor/login', [AuthController::class, 'showMentorLoginForm'])->name('mentor.login');
+    Route::post('mentor/login', [AuthController::class, 'mentorLogin']);
+});
+
+Route::middleware('auth:mentor')->prefix('mentor')->name('mentor.')->group(function () {
+    Route::get('/dashboard', [App\Http\Controllers\Mentor\MentorDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/interns', [App\Http\Controllers\Mentor\MentorDashboardController::class, 'interns'])->name('interns');
+    Route::get('/tasks', [App\Http\Controllers\Mentor\MentorDashboardController::class, 'tasks'])->name('tasks');
+    Route::get('/profile', [App\Http\Controllers\Mentor\MentorDashboardController::class, 'profile'])->name('profile');
+    Route::post('/logout', [AuthController::class, 'mentorLogout'])->name('logout');
 });
 
 // Intern routes

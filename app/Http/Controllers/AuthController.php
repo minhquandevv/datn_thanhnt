@@ -147,4 +147,34 @@ class AuthController extends Controller
         $request->session()->regenerateToken();
         return redirect()->route('home');
     }
+
+    public function showMentorLoginForm()
+    {
+        return view('auth.mentor.login');
+    }
+
+    public function mentorLogin(Request $request)
+    {
+        $credentials = $request->validate([
+            'username' => 'required|string',
+            'password' => 'required|string',
+        ]);
+
+        if (Auth::guard('mentor')->attempt($credentials)) {
+            $request->session()->regenerate();
+            return redirect()->route('mentor.dashboard');
+        }
+
+        return back()->withErrors([
+            'username' => 'Thông tin đăng nhập không chính xác.',
+        ])->onlyInput('username');
+    }
+
+    public function mentorLogout(Request $request)
+    {
+        Auth::guard('mentor')->logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        return redirect('/');
+    }
 }

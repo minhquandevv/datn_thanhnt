@@ -348,8 +348,14 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link {{ request()->routeIs('admin.interns.*') ? 'active' : '' }}" href="{{ route('admin.interns.index') }}">
-                            <i class="bi bi-building"></i>
+                            <i class="bi bi-person-badge"></i>
                             Quản lý thực tập sinh
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('admin.mentors.*') ? 'active' : '' }}" href="{{ route('admin.mentors.index') }}">
+                            <i class="bi bi-person-workspace"></i>
+                            Quản lý mentor
                         </a>
                     </li>
                 </ul>

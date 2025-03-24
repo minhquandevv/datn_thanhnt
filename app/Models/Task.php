@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Intern;
+use App\Models\Mentor;
 
 class Task extends Model
 {
@@ -18,7 +20,7 @@ class Task extends Model
         'status',
         'deadline',
         'intern_id',
-        'mentor_id'
+        'assigned_by'
     ];
 
     protected $casts = [
@@ -36,6 +38,6 @@ class Task extends Model
     // Relationship với mentor
     public function mentor()
     {
-        return $this->belongsTo(Mentors::class, 'mentor_id');
+        return $this->belongsTo(Mentor::class, 'assigned_by', 'mentor_id');
     }
 } 
