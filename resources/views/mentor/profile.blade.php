@@ -2,14 +2,28 @@
 
 @section('content')
 <div class="container-fluid">
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
+    @if($errors->any())
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <ul class="mb-0">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
     <div class="row">
         <div class="col-md-4">
             <div class="card shadow mb-4">
                 <div class="card-body text-center">
-                    <img src="{{ asset('images/default-avatar.png') }}" 
-                         class="rounded-circle mb-3" 
-                         alt="Avatar" 
-                         style="width: 150px; height: 150px; object-fit: cover;">
                     <h4 class="mb-1">{{ $mentor->mentor_name }}</h4>
                     <p class="text-muted mb-3">{{ $mentor->position }}</p>
                     <div class="d-grid">
@@ -47,32 +61,20 @@
                                 @enderror
                             </div>
                             <div class="col-md-6">
-                                <label for="email" class="form-label">Email</label>
-                                <input type="email" 
-                                       class="form-control @error('email') is-invalid @enderror" 
-                                       id="email" 
-                                       name="email" 
-                                       value="{{ old('email', $mentor->email) }}" 
+                                <label for="username" class="form-label">Tên đăng nhập</label>
+                                <input type="text" 
+                                       class="form-control @error('username') is-invalid @enderror" 
+                                       id="username" 
+                                       name="username" 
+                                       value="{{ old('username', $mentor->username) }}" 
                                        required>
-                                @error('email')
+                                @error('username')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
                         </div>
 
                         <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="phone_number" class="form-label">Số điện thoại</label>
-                                <input type="text" 
-                                       class="form-control @error('phone_number') is-invalid @enderror" 
-                                       id="phone_number" 
-                                       name="phone_number" 
-                                       value="{{ old('phone_number', $mentor->phone_number) }}" 
-                                       required>
-                                @error('phone_number')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
                             <div class="col-md-6">
                                 <label for="department" class="form-label">Phòng ban</label>
                                 <input type="text" 
@@ -85,9 +87,6 @@
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
-                        </div>
-
-                        <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="position" class="form-label">Chức vụ</label>
                                 <input type="text" 
@@ -100,29 +99,6 @@
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
-                            <div class="col-md-6">
-                                <label for="address" class="form-label">Địa chỉ</label>
-                                <input type="text" 
-                                       class="form-control @error('address') is-invalid @enderror" 
-                                       id="address" 
-                                       name="address" 
-                                       value="{{ old('address', $mentor->address) }}" 
-                                       required>
-                                @error('address')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="bio" class="form-label">Giới thiệu</label>
-                            <textarea class="form-control @error('bio') is-invalid @enderror" 
-                                      id="bio" 
-                                      name="bio" 
-                                      rows="3">{{ old('bio', $mentor->bio) }}</textarea>
-                            @error('bio')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
                         </div>
 
                         <div class="text-end">

@@ -139,14 +139,14 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link {{ request()->routeIs('mentor.interns') ? 'active' : '' }}" 
-                   href="{{ route('mentor.interns') }}">
+                <a class="nav-link {{ request()->routeIs('mentor.interns.index') ? 'active' : '' }}" 
+                   href="{{ route('mentor.interns.index') }}">
                     <i class="bi bi-people"></i> Quản lý TTS
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link {{ request()->routeIs('mentor.tasks') ? 'active' : '' }}" 
-                   href="{{ route('mentor.tasks') }}">
+                <a class="nav-link {{ request()->routeIs('mentor.tasks.index') ? 'active' : '' }}" 
+                   href="{{ route('mentor.tasks.index') }}">
                     <i class="bi bi-list-task"></i> Công việc
                 </a>
             </li>

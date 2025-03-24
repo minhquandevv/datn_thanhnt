@@ -156,13 +156,13 @@ class AuthController extends Controller
     public function mentorLogin(Request $request)
     {
         $credentials = $request->validate([
-            'username' => 'required|string',
-            'password' => 'required|string',
+            'username' => 'required',
+            'password' => 'required'
         ]);
 
         if (Auth::guard('mentor')->attempt($credentials)) {
             $request->session()->regenerate();
-            return redirect()->route('mentor.dashboard');
+            return redirect()->intended(route('mentor.dashboard'));
         }
 
         return back()->withErrors([

@@ -11,33 +11,41 @@ class Task extends Model
 {
     use HasFactory;
 
-    protected $table = 'tasks';
     protected $primaryKey = 'task_id';
+    protected $guarded = ['task_id'];
+
+    // Định nghĩa các giá trị enum cho status
+    const STATUS_PENDING = 'pending';
+    const STATUS_IN_PROGRESS = 'in_progress';
+    const STATUS_COMPLETED = 'completed';
+    const STATUS_OVERDUE = 'overdue';
+
+    // Định nghĩa các giá trị enum cho evaluation
+    const EVAL_EXCELLENT = 'excellent';
+    const EVAL_GOOD = 'good';
+    const EVAL_AVERAGE = 'average';
+    const EVAL_POOR = 'poor';
 
     protected $fillable = [
-        'name',
-        'description',
-        'status',
-        'deadline',
-        'intern_id',
-        'assigned_by'
+        'intern_id', 'project_name', 'task_name', 'requirements', 'attachment',
+        'assigned_date', 'assigned_by', 'status', 'result', 'mentor_comment', 'evaluation'
     ];
 
-    protected $casts = [
-        'deadline' => 'datetime',
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime'
-    ];
-
-    // Relationship với intern
+    // Relationship với thực tập sinh
     public function intern()
     {
-        return $this->belongsTo(Intern::class, 'intern_id');
+        return $this->belongsTo(Intern::class, 'intern_id', 'intern_id');
     }
 
     // Relationship với mentor
     public function mentor()
     {
         return $this->belongsTo(Mentor::class, 'assigned_by', 'mentor_id');
+    }
+
+    // Relationship với báo cáo
+    public function reports()
+    {
+        return $this->hasMany(TaskReports::class, 'task_id');
     }
 } 

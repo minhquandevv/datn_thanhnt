@@ -131,20 +131,19 @@
                                 <tr>
                                     <th>Tên công việc</th>
                                     <th>Trạng thái</th>
-                                    <th>Hạn chót</th>
+                                    <th>Ngày giao</th>
                                     <th>Thao tác</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @forelse($tasks as $task)
                                 <tr>
-                                    <td>{{ $task->title }}</td>
+                                    <td>{{ $task->task_name }}</td>
                                     <td>
-                                        <span class="badge bg-{{ $task->status === 'completed' ? 'success' : 'warning' }} rounded-pill">
-                                            {{ $task->status === 'completed' ? 'Hoàn thành' : 'Đang chờ' }}
-                                        </span>
+                                        <span class="badge bg-{{ $task->status === 'Hoàn thành' ? 'success' : ($task->status === 'Đang thực hiện' ? 'primary' : ($task->status === 'Trễ hạn' ? 'danger' : 'warning')) }}">
+                                            {{ $task->status }}
                                     </td>
-                                    <td>{{ date('d/m/Y', strtotime($task->deadline)) }}</td>
+                                    <td>{{ date('d/m/Y', strtotime($task->assigned_date)) }}</td>
                                     <td>
                                         <a href="#" class="btn btn-sm btn-outline-primary">
                                             <i class="bi bi-eye me-1"></i>Chi tiết

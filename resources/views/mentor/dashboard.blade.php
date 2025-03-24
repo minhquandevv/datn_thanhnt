@@ -50,7 +50,8 @@
                                 <tr>
                                     <th>Tên</th>
                                     <th>Email</th>
-                                    <th>Trạng thái</th>
+                                    <th>Phòng ban</th>
+                                    <th>Vị trí</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -58,11 +59,9 @@
                                 <tr>
                                     <td>{{ $intern->fullname }}</td>
                                     <td>{{ $intern->email }}</td>
-                                    <td>
-                                        <span class="badge bg-{{ $intern->status === 'active' ? 'success' : 'secondary' }}">
-                                            {{ $intern->status === 'active' ? 'Đang thực tập' : 'Đã kết thúc' }}
-                                        </span>
-                                    </td>
+                                    <td>{{ $intern->department }}</td>
+                                    <td>{{ $intern->position }}</td>
+                                    
                                 </tr>
                                 @endforeach
                             </tbody>
@@ -84,17 +83,28 @@
                                     <th>Tên công việc</th>
                                     <th>Người thực hiện</th>
                                     <th>Trạng thái</th>
+                                    <th>Thao tác</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach($mentor->assignedTasks as $task)
                                 <tr>
-                                    <td>{{ $task->title }}</td>
+                                    <td>{{ $task->task_name }}</td>
                                     <td>{{ $task->intern->fullname }}</td>
                                     <td>
-                                        <span class="badge bg-{{ $task->status === 'completed' ? 'success' : 'warning' }}">
-                                            {{ $task->status === 'completed' ? 'Hoàn thành' : 'Đang thực hiện' }}
+                                        <span class="badge bg-{{ $task->status === 
+                                            'Hoàn thành' ? 'success' : 
+                                            ($task->status === 'Đang thực hiện' ? 'primary' : 
+                                            ($task->status === 'Trễ hạn' ? 'danger' : 'warning')) 
+                                        }}">
+                                            {{ $task->status }}
                                         </span>
+                                    </td>
+                                    <td>
+                                        <a href="{{ route('mentor.tasks.show', $task->task_id) }}" class="btn btn-sm btn-primary">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+
                                     </td>
                                 </tr>
                                 @endforeach

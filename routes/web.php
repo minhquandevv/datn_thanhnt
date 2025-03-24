@@ -15,6 +15,7 @@ use App\Http\Controllers\admin\ManagerInternController;
 use App\Http\Controllers\Intern\InternDashboardController;
 use App\Http\Controllers\Intern\ProfileController;
 use App\Http\Controllers\admin\MentorController;
+use App\Http\Controllers\Mentor\MentorDashboardController;
 
 // Authentication Routes
 Route::middleware('guest')->group(function () {
@@ -123,12 +124,29 @@ Route::middleware('guest:mentor')->group(function () {
     Route::post('mentor/login', [AuthController::class, 'mentorLogin']);
 });
 
-Route::middleware('auth:mentor')->prefix('mentor')->name('mentor.')->group(function () {
-    Route::get('/dashboard', [App\Http\Controllers\Mentor\MentorDashboardController::class, 'index'])->name('dashboard');
-    Route::get('/interns', [App\Http\Controllers\Mentor\MentorDashboardController::class, 'interns'])->name('interns');
-    Route::get('/tasks', [App\Http\Controllers\Mentor\MentorDashboardController::class, 'tasks'])->name('tasks');
-    Route::get('/profile', [App\Http\Controllers\Mentor\MentorDashboardController::class, 'profile'])->name('profile');
+// Mentor routes
+Route::middleware(['auth:mentor'])->prefix('mentor')->name('mentor.')->group(function () {
+    Route::get('/dashboard', [MentorDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/profile', [MentorDashboardController::class, 'profile'])->name('profile');
+    Route::put('/profile', [MentorDashboardController::class, 'updateProfile'])->name('profile.update');
+    Route::put('/profile/password', [MentorDashboardController::class, 'updatePassword'])->name('profile.password');
     Route::post('/logout', [AuthController::class, 'mentorLogout'])->name('logout');
+
+    // Task management routes
+    Route::get('/tasks', [MentorDashboardController::class, 'tasks'])->name('tasks.index');
+    Route::get('/tasks/create', [MentorDashboardController::class, 'createTask'])->name('tasks.create');
+    Route::post('/tasks', [MentorDashboardController::class, 'storeTask'])->name('tasks.store');
+    Route::get('/tasks/{taskId}', [MentorDashboardController::class, 'showTask'])->name('tasks.show');
+    Route::get('/tasks/{taskId}/edit', [MentorDashboardController::class, 'editTask'])->name('tasks.edit');
+    Route::put('/tasks/{taskId}', [MentorDashboardController::class, 'updateTask'])->name('tasks.update');
+    Route::delete('/tasks/{taskId}', [MentorDashboardController::class, 'destroyTask'])->name('tasks.destroy');
+
+    // Intern management routes
+    Route::get('/interns', [MentorDashboardController::class, 'interns'])->name('interns.index');
+    Route::get('/interns/{intern}', [MentorDashboardController::class, 'showIntern'])->name('interns.show');
+    Route::get('/interns/{intern}/edit', [MentorDashboardController::class, 'editIntern'])->name('interns.edit');
+    Route::put('/interns/{intern}', [MentorDashboardController::class, 'updateIntern'])->name('interns.update');
+    Route::delete('/interns/{intern}', [MentorDashboardController::class, 'deleteIntern'])->name('interns.destroy');
 });
 
 // Intern routes
