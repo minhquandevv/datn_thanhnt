@@ -281,7 +281,7 @@
         <!-- Sidebar -->
         <nav class="sidebar">
             <div class="sidebar-header">
-                <img src="{{ asset('assets/Logo_viettel.png') }}" alt="Logo">
+                <img class="" src="{{ asset('assets/Logo_viettel.png') }}" alt="Logo" style="width: 200px; height: auto;">
             </div>
 
             <div class="user-profile">
