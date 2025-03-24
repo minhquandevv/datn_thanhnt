@@ -119,7 +119,7 @@
                             @enderror
                             @if($task->attachment)
                                 <div class="mt-2">
-                                    <a href="{{ asset('storage/' . $task->attachment) }}" target="_blank" class="text-primary">
+                                    <a href="{{ asset('' . $task->attachment) }}" target="_blank" class="text-primary">
                                         <i class="bi bi-file-earmark"></i> Xem file hiện tại
                                     </a>
                                 </div>
