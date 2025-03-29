@@ -319,7 +319,6 @@
             </div>
             <p class="text-muted mt-2"><i class="bi bi-building me-1"></i> {{ $jobOffer->department ? $jobOffer->department->name : 'Chưa phân công' }}</p>
             <p class="text-muted">
-                <i class="bi bi-geo-alt me-1"></i> {{ $jobOffer->department ? $jobOffer->department->location : 'Không có địa chỉ' }} &nbsp;
                 <i class="bi bi-calendar me-1"></i> Ngày hết hạn:
                 {{ \Carbon\Carbon::parse($jobOffer->expiration_date)->format('d/m/Y') }}
             </p>
@@ -346,7 +345,6 @@
                     <div class="job-info-card">
                         @if($jobOffer->department)
                             <h5 class="text-danger fw-bold"><i class="bi bi-building"></i> {{ $jobOffer->department->name }}</h5>
-                            <p class="mb-1"><i class="bi bi-geo-alt"></i> {{ $jobOffer->department->location ?? 'Không có địa chỉ' }}</p>
                             <p class="mb-1"><i class="bi bi-people"></i> Số nhân viên: {{ $jobOffer->department->employee_count ?? 'Chưa cập nhật' }}</p>
                             <p class="mb-1"><i class="bi bi-info-circle"></i> {{ $jobOffer->department->description ?? 'Chưa có mô tả' }}</p>
                         @else
@@ -386,32 +384,6 @@
                 @endforeach
             </ul>
 
-            <div class="mt-4 d-flex gap-3">
-                @if(Auth::guard('candidate')->check())
-                    @if($hasApplied)
-                        <button class="btn btn-secondary px-4 py-2 shadow-sm" disabled>
-                            ĐÃ ỨNG TUYỂN <i class="bi bi-check-circle"></i>
-                        </button>
-                    @elseif($jobOffer->job_quantity <= 0)
-                        <button class="btn btn-secondary px-4 py-2 shadow-sm" disabled>
-                            ĐÃ ĐỦ ỨNG VIÊN <i class="bi bi-x-circle"></i>
-                        </button>
-                    @elseif(!\Carbon\Carbon::parse($jobOffer->expiration_date)->isFuture())
-                        <button class="btn btn-secondary px-4 py-2 shadow-sm" disabled>
-                            ĐÃ HẾT HẠN <i class="bi bi-clock"></i>
-                        </button>
-                    @else
-                        <button class="btn btn-danger px-4 py-2 shadow-sm" data-bs-toggle="modal" data-bs-target="#applyJobModal">
-                            ỨNG TUYỂN NGAY <i class="bi bi-arrow-right"></i>
-                        </button>
-                    @endif
-                @else
-                    <a href="{{ route('login') }}" class="btn btn-danger px-4 py-2 shadow-sm">
-                        ĐĂNG NHẬP ĐỂ ỨNG TUYỂN <i class="bi bi-arrow-right"></i>
-                    </a>
-                @endif
-                <button class="btn btn-secondary px-4 py-2 shadow-sm">LƯU TIN <i class="bi bi-bookmark"></i></button>
-            </div>
 
             <div class="mt-4">
                 <h5 class="text-danger">Chia sẻ tin này</h5>

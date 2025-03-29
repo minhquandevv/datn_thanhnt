@@ -196,12 +196,6 @@
                                         <h6 class="mb-0 fw-bold">
                                             {{ $job->department ? $job->department->name : 'Chưa phân công' }}
                                         </h6>
-                                        <div class="text-muted small">
-                                            <p class="mb-0">
-                                                <i class="bi bi-geo-alt me-1 text-danger"></i>
-                                                {{ $job->department ? ($job->department->location ?? 'Không có địa chỉ') : 'Chưa có địa chỉ' }}
-                                            </p>
-                                        </div>
                                     </div>
                                 </div>
                             </td>

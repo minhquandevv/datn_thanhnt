@@ -63,10 +63,6 @@
                                         @endif
                                     </div>
                                     
-                                    <p class="card-text text-muted mb-3">
-                                        <i class="bi bi-geo-alt text-primary me-2"></i>{{ $job->department->location ?? 'Không có địa chỉ' }}
-                                    </p>
-                                    
                                     <p class="card-text text-dark mb-3">{{ Str::limit($job->job_detail, 100) }}</p>
                                     
                                     <div class="d-flex justify-content-between align-items-center mb-3">

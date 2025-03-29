@@ -119,6 +119,7 @@
                             @enderror
                             @if($task->attachment)
                                 <div class="mt-2">
+                                    <p class="mb-0">{{ basename($task->attachment) }}</p>
                                     <a href="{{ asset('' . $task->attachment) }}" target="_blank" class="text-primary">
                                         <i class="bi bi-file-earmark"></i> Xem file hiện tại
                                     </a>

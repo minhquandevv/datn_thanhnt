@@ -170,15 +170,6 @@
                                     value="{{ $jobOffer->job_quantity }}" data-original="{{ $jobOffer->job_quantity }}" min="1">
                             </div>
 
-                            <div class="mb-4">
-                                <label class="form-label text-muted">
-                                    <i class="bi bi-geo-alt text-danger me-2"></i>Địa điểm
-                                </label>
-                                <div class="d-flex align-items-center">
-                                    <i class="bi bi-geo-alt-fill text-danger me-2"></i>
-                                    <span>{{ $jobOffer->department->location ?? 'Không có địa chỉ' }}</span>
-                                </div>
-                            </div>
 
                             <div class="mb-4">
                                 <label class="form-label text-muted">
