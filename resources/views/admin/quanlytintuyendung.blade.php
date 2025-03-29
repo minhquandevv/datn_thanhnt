@@ -3,134 +3,219 @@
 @section('title', 'Quản lý tin tuyển dụng')
 
 @section('content')
-<div class="content-container">
-    <div class="page-header mb-4">
-        <h4 class="page-title">QUẢN LÝ TIN TUYỂN DỤNG</h4>
-    </div>
-    
-    @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+<div class="container-fluid px-2 py-3">
+    <!-- Header Section -->
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <div>
+            <h1 class="h4 text-danger fw-bold mb-0">
+                <i class="bi bi-briefcase me-2"></i>Quản lý tin tuyển dụng
+            </h1>
+            <p class="text-muted mb-0 small">Danh sách và quản lý các tin tuyển dụng trong hệ thống</p>
         </div>
-    @endif
+        <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#addJobOfferModal">
+            <i class="bi bi-plus-lg me-1"></i>Thêm mới
+        </button>
+    </div>
 
-    @php
-        $jobSkills = \App\Models\JobSkill::all();
-        $jobBenefits = \App\Models\JobBenefit::all();
-    @endphp
-
-    <!-- Form tìm kiếm -->
-    <div class="card mb-4">
-        <div class="card-body">
-            <form method="GET" action="{{ route('admin.job-offers') }}">
-                <div class="row g-3">
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label class="form-label text-muted mb-2">Tên công việc</label>
-                            <div class="input-group">
-                                <span class="input-group-text bg-light">
-                                    <i class="bi bi-search text-primary"></i>
-                                </span>
-                                <input type="text" class="form-control" name="job_name" placeholder="Tìm theo tên công việc" value="{{ request('job_name') }}">
-                            </div>
+    <!-- Stats Cards -->
+    <div class="row g-2 mb-2">
+        <div class="col-sm-6 col-md-3">
+            <div class="card border-0 shadow-sm bg-gradient-danger text-white h-100">
+                <div class="card-body p-2">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-subtitle mb-0 opacity-75 small">Tổng số tin</h6>
+                            <h4 class="card-title mb-0 fw-bold">{{ $jobOffers->count() }}</h4>
                         </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label class="form-label text-muted mb-2">Công ty</label>
-                            <div class="input-group">
-                                <span class="input-group-text bg-light">
-                                    <i class="bi bi-building text-primary"></i>
-                                </span>
-                                <select class="form-select" name="company_id">
-                                    <option value="">Tất cả công ty</option>
-                                    @foreach($companies as $company)
-                                        <option value="{{ $company->id }}" {{ request('company_id') == $company->id ? 'selected' : '' }}>
-                                            {{ $company->title }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label class="form-label text-muted mb-2">&nbsp;</label>
-                            <div class="d-flex gap-2">
-                                <button type="submit" class="btn btn-primary flex-grow-1">
-                                    <i class="bi bi-search me-2"></i>Tìm kiếm
-                                </button>
-                                <a href="{{ route('admin.job-offers') }}" class="btn btn-secondary">
-                                    <i class="bi bi-arrow-counterclockwise"></i>
-                                </a>
-                                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addJobOfferModal">
-                                    <i class="bi bi-plus-lg"></i>
-                                </button>
-                            </div>
+                        <div class="icon-box rounded-circle bg-white bg-opacity-25 p-1">
+                            <i class="bi bi-briefcase"></i>
                         </div>
                     </div>
                 </div>
-            </form>
+            </div>
+        </div>
+        <div class="col-sm-6 col-md-3">
+            <div class="card border-0 shadow-sm bg-gradient-danger text-white h-100">
+                <div class="card-body p-2">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-subtitle mb-0 opacity-75 small">Đang tuyển</h6>
+                            <h4 class="card-title mb-0 fw-bold">
+                                {{ $jobOffers->where('expiration_date', '>', now())->count() }}
+                            </h4>
+                        </div>
+                        <div class="icon-box rounded-circle bg-white bg-opacity-25 p-1">
+                            <i class="bi bi-person-plus"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-md-3">
+            <div class="card border-0 shadow-sm bg-gradient-danger text-white h-100">
+                <div class="card-body p-2">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-subtitle mb-0 opacity-75 small">Hết hạn</h6>
+                            <h4 class="card-title mb-0 fw-bold">
+                                {{ $jobOffers->where('expiration_date', '<=', now())->count() }}
+                            </h4>
+                        </div>
+                        <div class="icon-box rounded-circle bg-white bg-opacity-25 p-1">
+                            <i class="bi bi-clock-history"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-md-3">
+            <div class="card border-0 shadow-sm bg-gradient-danger text-white h-100">
+                <div class="card-body p-2">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-subtitle mb-0 opacity-75 small">Chưa phân công</h6>
+                            <h4 class="card-title mb-0 fw-bold">
+                                {{ $jobOffers->whereNull('department_id')->count() }}
+                            </h4>
+                        </div>
+                        <div class="icon-box rounded-circle bg-white bg-opacity-25 p-1">
+                            <i class="bi bi-building"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- Bảng danh sách -->
-    <div class="card">
-        <div class="card-body">
+    <!-- Main Content -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white py-2">
+            <div class="row g-2 align-items-center">
+                <div class="col-md-4">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text bg-light border-0">
+                            <i class="bi bi-search text-danger"></i>
+                        </span>
+                        <input type="text" class="form-control border-0 bg-light" name="job_name" placeholder="Tìm theo tên công việc" value="{{ request('job_name') }}">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <select class="form-select form-select-sm border-0 bg-light" name="department_id">
+                        <option value="">Tất cả phòng ban</option>
+                        @foreach($departments as $department)
+                            <option value="{{ $department->department_id }}" {{ request('department_id') == $department->department_id ? 'selected' : '' }}>
+                                {{ $department->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-danger btn-sm flex-grow-1">
+                            <i class="bi bi-search me-1"></i>Tìm kiếm
+                        </button>
+                        <a href="{{ route('admin.job-offers') }}" class="btn btn-secondary btn-sm">
+                            <i class="bi bi-arrow-counterclockwise"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body p-0">
+            @if(session('success'))
+                <div class="alert alert-success alert-dismissible m-2 border-0">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-check-circle-fill me-2"></i>
+                        <strong>Thành công!</strong>
+                        <span class="ms-2">{{ session('success') }}</span>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            @endif
+
             <div class="table-responsive">
-                <table class="table table-hover align-middle">
-                    <thead>
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light">
                         <tr>
-                            <th class="text-center" style="width: 60px">ID</th>
-                            <th style="min-width: 200px">Tên công việc</th>
-                            <th style="min-width: 250px">Công ty</th>
-                            <th class="text-center" style="width: 120px">Hạn nộp</th>
-                            <th style="min-width: 200px">Kỹ năng</th>
-                            <th class="text-center" style="width: 120px">Thao tác</th>
+                            <th class="px-2 py-1 text-center" style="width: 150px">Thao tác</th>
+                            <th class="px-2 py-1 text-center" style="width: 40px">ID</th>
+                            <th class="px-2 py-1">Tên công việc</th>
+                            <th class="px-2 py-1">Phòng ban</th>
+                            <th class="px-2 py-1 text-center" style="width: 100px">Hạn nộp</th>
+                            <th class="px-2 py-1">Kỹ năng</th>
+
                         </tr>
                     </thead>
                     <tbody>
                         @foreach($jobOffers as $job)
                         <tr>
-                            <td class="text-center">{{ $job->id }}</td>
-                            <td>
-                                <div class="fw-bold">{{ $job->job_name }}</div>
-                                <div class="text-muted small">{{ Str::limit($job->job_detail, 50) }}</div>
-                            </td>
-                            <td>
-                                <div class="fw-bold">{{ $job->company->title }}</div>
-                                <div class="text-muted small">
-                                    <i class="bi bi-geo-alt me-1"></i>{{ $job->company->location }}
+                            <td class="px-2 text-center">
+                                <div class="btn-group">
+                                    <a href="{{ route('admin.job-offers.show', $job->id) }}" 
+                                       class="btn btn-outline-danger btn-sm">
+                                        <i class="bi bi-eye"></i>
+                                        <span class="d-none d-md-inline ms-1">Xem</span>
+                                    </a>
+                                    <button class="btn btn-outline-danger btn-sm"
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#editModal{{ $job->id }}">
+                                        <i class="bi bi-pencil"></i>
+                                        <span class="d-none d-md-inline ms-1">Sửa</span>
+                                    </button>
+                                    <button type="button"
+                                            class="btn btn-outline-danger btn-sm"
+                                            onclick="deleteJobOffer({{ $job->id }})">
+                                        <i class="bi bi-trash"></i>
+                                        <span class="d-none d-md-inline ms-1">Xóa</span>
+                                    </button>
                                 </div>
                             </td>
-                            <td class="text-center">
-                                <span class="badge {{ \Carbon\Carbon::parse($job->expiration_date)->isPast() ? 'bg-danger-subtle text-danger' : 'bg-success-subtle text-success' }}">
+                            <td class="px-2 text-center">
+                                <span class="badge bg-danger rounded-pill">{{ $job->id }}</span>
+                            </td>
+                            <td class="px-2">
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-circle me-2 bg-danger bg-opacity-10">
+                                        <i class="bi bi-briefcase text-danger"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0 fw-bold">{{ $job->job_name }}</h6>
+                                        <div class="text-muted small">
+                                            <p class="mb-0">{{ Str::limit($job->job_detail, 50) }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-2">
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-circle me-2 bg-danger bg-opacity-10">
+                                        <i class="bi bi-building text-danger"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0 fw-bold">
+                                            {{ $job->department ? $job->department->name : 'Chưa phân công' }}
+                                        </h6>
+                                        <div class="text-muted small">
+                                            <p class="mb-0">
+                                                <i class="bi bi-geo-alt me-1 text-danger"></i>
+                                                {{ $job->department ? ($job->department->location ?? 'Không có địa chỉ') : 'Chưa có địa chỉ' }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-2 text-center">
+                                <span class="badge {{ \Carbon\Carbon::parse($job->expiration_date)->isPast() ? 'bg-danger-subtle text-danger' : 'bg-success-subtle text-success' }} border {{ \Carbon\Carbon::parse($job->expiration_date)->isPast() ? 'border-danger-subtle' : 'border-success-subtle' }}">
                                     {{ \Carbon\Carbon::parse($job->expiration_date)->format('d/m/Y') }}
                                 </span>
                             </td>
-                            <td>
+                            <td class="px-2">
                                 @foreach($job->skills as $skill)
-                                    <span class="badge bg-light text-dark me-1 mb-1">{{ $skill->name }}</span>
+                                    <span class="badge bg-danger bg-opacity-10 text-danger me-1 mb-1">{{ $skill->name }}</span>
                                 @endforeach
                             </td>
-                            <td class="text-center">
-                                <div class="btn-group">
-                                    <a href="{{ route('admin.job-offers.show', $job->id) }}" class="btn btn-sm btn-info me-2" title="Xem chi tiết">
-                                        <i class="bi bi-eye"></i>
-                                    </a>
-                                    <button class="btn btn-sm btn-warning me-2" data-bs-toggle="modal" data-bs-target="#editModal{{ $job->id }}" title="Chỉnh sửa">
-                                        <i class="bi bi-pencil-square"></i>
-                                    </button>
-                                    <form action="{{ route('admin.job-offers.destroy', $job->id) }}" method="POST" class="d-inline">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Bạn có chắc muốn xóa tin tuyển dụng này?')" title="Xóa">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </form>
-                                </div>
-                            </td>
+                            
                         </tr>
                         @endforeach
                     </tbody>
@@ -140,13 +225,163 @@
     </div>
 </div>
 
+<style>
+:root {
+    --danger-rgb: 220, 53, 69;
+}
+
+.bg-gradient-danger {
+    background: linear-gradient(45deg, rgba(var(--danger-rgb), 1), rgba(var(--danger-rgb), 0.8));
+}
+
+.avatar-circle {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.avatar-circle img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.avatar-text {
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.icon-box {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card {
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+
+.btn-group .btn {
+    margin: 0 1px;
+    padding: 0.25rem 0.375rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+}
+
+.badge {
+    font-weight: 500;
+    font-size: 0.75rem;
+}
+
+.table > :not(caption) > * > * {
+    padding: 0.5rem;
+}
+
+.table tr {
+    transition: all 0.2s ease;
+}
+
+.table tr:hover {
+    background-color: rgba(220, 53, 69, 0.05);
+}
+
+.text-muted {
+    font-size: 0.75rem;
+}
+
+.text-muted i {
+    width: 12px;
+}
+
+@media (max-width: 768px) {
+    .container-fluid {
+        padding: 0.5rem;
+    }
+    
+    .card-body {
+        padding: 0.5rem;
+    }
+    
+    .table > :not(caption) > * > * {
+        padding: 0.375rem;
+    }
+    
+    .btn-group .btn {
+        padding: 0.25rem;
+    }
+}
+</style>
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+function deleteJobOffer(jobId) {
+    Swal.fire({
+        title: 'Xác nhận xóa?',
+        text: 'Bạn có chắc chắn muốn xóa tin tuyển dụng này?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#dc3545',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Xóa',
+        cancelButtonText: 'Hủy'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = `/admin/job-offers/${jobId}`;
+            form.innerHTML = `
+                @csrf
+                @method('DELETE')
+            `;
+            document.body.appendChild(form);
+            form.submit();
+        }
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+    });
+
+    // Add animation to cards
+    const cards = document.querySelectorAll('.card');
+    cards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-2px)';
+            this.style.boxShadow = '0 0.25rem 0.5rem rgba(0,0,0,.1)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+            this.style.boxShadow = '0 0.125rem 0.25rem rgba(0,0,0,.075)';
+        });
+    });
+});
+</script>
+@endpush
+
 <!-- Modal Thêm mới -->
 <div class="modal fade" id="addJobOfferModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header bg-light">
-                <h5 class="modal-title">
-                    <i class="bi bi-plus-circle text-success me-2"></i>Thêm tin tuyển dụng
+                <h5 class="modal-title text-danger">
+                    <i class="bi bi-plus-circle me-2"></i>Thêm tin tuyển dụng
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
@@ -156,29 +391,30 @@
                     <div class="row g-4">
                         <!-- Thông tin cơ bản -->
                         <div class="col-12">
-                            <h6 class="text-primary mb-3">
+                            <h6 class="text-danger mb-3">
                                 <i class="bi bi-info-circle me-2"></i>Thông tin cơ bản
                             </h6>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">
-                                <i class="bi bi-briefcase text-primary me-1"></i>Tên công việc
+                                <i class="bi bi-briefcase text-danger me-1"></i>Tên công việc
                             </label>
                             <input type="text" class="form-control" name="job_name" required>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">
-                                <i class="bi bi-building text-primary me-1"></i>Công ty
+                                <i class="bi bi-building text-danger me-1"></i>Phòng ban
                             </label>
-                            <select class="form-select" name="company_id" required>
-                                @foreach($companies as $company)
-                                    <option value="{{ $company->id }}">{{ $company->title }}</option>
+                            <select class="form-select" name="department_id">
+                                <option value="">Chọn phòng ban</option>
+                                @foreach($departments as $department)
+                                    <option value="{{ $department->department_id }}">{{ $department->name }}</option>
                                 @endforeach
                             </select>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">
-                                <i class="bi bi-grid text-primary me-1"></i>Danh mục công việc
+                                <i class="bi bi-grid text-danger me-1"></i>Danh mục công việc
                             </label>
                             <select class="form-select" name="job_category_id">
                                 <option value="">Chọn danh mục</option>
@@ -189,20 +425,20 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">
-                                <i class="bi bi-person-badge text-primary me-1"></i>Vị trí
+                                <i class="bi bi-person-badge text-danger me-1"></i>Vị trí
                             </label>
                             <input type="text" class="form-control" name="job_position">
                         </div>
 
                         <!-- Thông tin về lương và số lượng -->
                         <div class="col-12 mt-4">
-                            <h6 class="text-primary mb-3">
-                                <i class="bi bi-cash-stack text-primary me-2"></i>Thông tin về lương và số lượng
+                            <h6 class="text-danger mb-3">
+                                <i class="bi bi-cash-stack me-2"></i>Thông tin về lương và số lượng
                             </h6>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">
-                                <i class="bi bi-cash text-primary me-1"></i>Mức lương
+                                <i class="bi bi-cash text-danger me-1"></i>Mức lương
                             </label>
                             <div class="input-group">
                                 <input type="number" class="form-control" name="job_salary" min="0" step="100000">
@@ -211,24 +447,24 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">
-                                <i class="bi bi-people text-primary me-1"></i>Số lượng tuyển
+                                <i class="bi bi-people text-danger me-1"></i>Số lượng tuyển
                             </label>
                             <input type="number" class="form-control" name="job_quantity" value="1" min="1" required>
                         </div>
 
                         <!-- Thời gian -->
                         <div class="col-12 mt-4">
-                            <h6 class="text-primary mb-3">
-                                <i class="bi bi-clock text-primary me-2"></i>Thời gian
+                            <h6 class="text-danger mb-3">
+                                <i class="bi bi-clock me-2"></i>Thời gian
                             </h6>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">
-                                <i class="bi bi-calendar-check text-primary me-1"></i>Hạn nộp
+                                <i class="bi bi-calendar-check text-danger me-1"></i>Hạn nộp
                             </label>
                             <div class="input-group">
                                 <span class="input-group-text bg-light">
-                                    <i class="bi bi-calendar text-primary"></i>
+                                    <i class="bi bi-calendar text-danger"></i>
                                 </span>
                                 <input type="date" class="form-control" name="expiration_date" required>
                             </div>
@@ -236,8 +472,8 @@
 
                         <!-- Kỹ năng -->
                         <div class="col-12 mt-4">
-                            <h6 class="text-primary mb-3">
-                                <i class="bi bi-tools text-primary me-2"></i>Kỹ năng yêu cầu
+                            <h6 class="text-danger mb-3">
+                                <i class="bi bi-tools me-2"></i>Kỹ năng yêu cầu
                             </h6>
                         </div>
                         <div class="col-12">
@@ -257,8 +493,8 @@
 
                         <!-- Phúc lợi -->
                         <div class="col-12 mt-4">
-                            <h6 class="text-primary mb-3">
-                                <i class="bi bi-gift text-primary me-2"></i>Phúc lợi
+                            <h6 class="text-danger mb-3">
+                                <i class="bi bi-gift me-2"></i>Phúc lợi
                             </h6>
                         </div>
                         <div class="col-12">
@@ -278,25 +514,25 @@
 
                         <!-- Mô tả chi tiết -->
                         <div class="col-12 mt-4">
-                            <h6 class="text-primary mb-3">
-                                <i class="bi bi-file-text text-primary me-2"></i>Mô tả chi tiết
+                            <h6 class="text-danger mb-3">
+                                <i class="bi bi-file-text me-2"></i>Mô tả chi tiết
                             </h6>
                         </div>
                         <div class="col-12">
                             <label class="form-label">
-                                <i class="bi bi-list-check text-primary me-1"></i>Chi tiết công việc
+                                <i class="bi bi-list-check text-danger me-1"></i>Chi tiết công việc
                             </label>
                             <textarea class="form-control" name="job_detail" rows="3" required></textarea>
                         </div>
                         <div class="col-12">
                             <label class="form-label">
-                                <i class="bi bi-card-text text-primary me-1"></i>Mô tả công việc
+                                <i class="bi bi-card-text text-danger me-1"></i>Mô tả công việc
                             </label>
                             <textarea class="form-control" name="job_description" rows="3" required></textarea>
                         </div>
                         <div class="col-12">
                             <label class="form-label">
-                                <i class="bi bi-clipboard-check text-primary me-1"></i>Yêu cầu
+                                <i class="bi bi-clipboard-check text-danger me-1"></i>Yêu cầu
                             </label>
                             <textarea class="form-control" name="job_requirement" rows="3" required></textarea>
                         </div>
@@ -305,7 +541,7 @@
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                             <i class="bi bi-x-circle me-2"></i>Hủy
                         </button>
-                        <button type="submit" class="btn btn-primary">
+                        <button type="submit" class="btn btn-danger">
                             <i class="bi bi-save me-2"></i>Lưu
                         </button>
                     </div>
@@ -321,8 +557,8 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header bg-light">
-                <h5 class="modal-title">
-                    <i class="bi bi-pencil-square text-warning me-2"></i>Chỉnh sửa tin tuyển dụng
+                <h5 class="modal-title text-danger">
+                    <i class="bi bi-pencil-square me-2"></i>Chỉnh sửa tin tuyển dụng
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
@@ -333,31 +569,32 @@
                     <div class="row g-4">
                         <!-- Thông tin cơ bản -->
                         <div class="col-12">
-                            <h6 class="text-primary mb-3">
+                            <h6 class="text-danger mb-3">
                                 <i class="bi bi-info-circle me-2"></i>Thông tin cơ bản
                             </h6>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">
-                                <i class="bi bi-briefcase text-primary me-1"></i>Tên công việc
+                                <i class="bi bi-briefcase text-danger me-1"></i>Tên công việc
                             </label>
                             <input type="text" class="form-control" name="job_name" value="{{ $job->job_name }}" required>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">
-                                <i class="bi bi-building text-primary me-1"></i>Công ty
+                                <i class="bi bi-building text-danger me-1"></i>Phòng ban
                             </label>
-                            <select class="form-select" name="company_id" required>
-                                @foreach($companies as $company)
-                                    <option value="{{ $company->id }}" {{ $job->company_id == $company->id ? 'selected' : '' }}>
-                                        {{ $company->title }}
+                            <select class="form-select" name="department_id">
+                                <option value="">Chọn phòng ban</option>
+                                @foreach($departments as $department)
+                                    <option value="{{ $department->department_id }}" {{ $job->department_id == $department->department_id ? 'selected' : '' }}>
+                                        {{ $department->name }}
                                     </option>
                                 @endforeach
                             </select>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">
-                                <i class="bi bi-grid text-primary me-1"></i>Danh mục công việc
+                                <i class="bi bi-grid text-danger me-1"></i>Danh mục công việc
                             </label>
                             <select class="form-select" name="job_category_id">
                                 <option value="">Chọn danh mục</option>
@@ -370,20 +607,20 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">
-                                <i class="bi bi-person-badge text-primary me-1"></i>Vị trí
+                                <i class="bi bi-person-badge text-danger me-1"></i>Vị trí
                             </label>
                             <input type="text" class="form-control" name="job_position" value="{{ $job->job_position }}">
                         </div>
 
                         <!-- Thông tin về lương và số lượng -->
                         <div class="col-12 mt-4">
-                            <h6 class="text-primary mb-3">
-                                <i class="bi bi-cash-stack text-primary me-2"></i>Thông tin về lương và số lượng
+                            <h6 class="text-danger mb-3">
+                                <i class="bi bi-cash-stack me-2"></i>Thông tin về lương và số lượng
                             </h6>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">
-                                <i class="bi bi-cash text-primary me-1"></i>Mức lương
+                                <i class="bi bi-cash text-danger me-1"></i>Mức lương
                             </label>
                             <div class="input-group">
                                 <input type="number" class="form-control" name="job_salary" value="{{ $job->job_salary }}" min="0" step="100000">
@@ -392,24 +629,24 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">
-                                <i class="bi bi-people text-primary me-1"></i>Số lượng tuyển
+                                <i class="bi bi-people text-danger me-1"></i>Số lượng tuyển
                             </label>
                             <input type="number" class="form-control" name="job_quantity" value="{{ $job->job_quantity }}" min="1" required>
                         </div>
 
                         <!-- Thời gian -->
                         <div class="col-12 mt-4">
-                            <h6 class="text-primary mb-3">
-                                <i class="bi bi-clock text-primary me-2"></i>Thời gian
+                            <h6 class="text-danger mb-3">
+                                <i class="bi bi-clock me-2"></i>Thời gian
                             </h6>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">
-                                <i class="bi bi-calendar-check text-primary me-1"></i>Hạn nộp
+                                <i class="bi bi-calendar-check text-danger me-1"></i>Hạn nộp
                             </label>
                             <div class="input-group">
                                 <span class="input-group-text bg-light">
-                                    <i class="bi bi-calendar text-primary"></i>
+                                    <i class="bi bi-calendar text-danger"></i>
                                 </span>
                                 <input type="date" class="form-control" name="expiration_date" 
                                     value="{{ $job->expiration_date ? date('Y-m-d', strtotime($job->expiration_date)) : '' }}" required>
@@ -418,8 +655,8 @@
 
                         <!-- Kỹ năng -->
                         <div class="col-12 mt-4">
-                            <h6 class="text-primary mb-3">
-                                <i class="bi bi-tools text-primary me-2"></i>Kỹ năng yêu cầu
+                            <h6 class="text-danger mb-3">
+                                <i class="bi bi-tools me-2"></i>Kỹ năng yêu cầu
                             </h6>
                         </div>
                         <div class="col-12">
@@ -441,8 +678,8 @@
 
                         <!-- Phúc lợi -->
                         <div class="col-12 mt-4">
-                            <h6 class="text-primary mb-3">
-                                <i class="bi bi-gift text-primary me-2"></i>Phúc lợi
+                            <h6 class="text-danger mb-3">
+                                <i class="bi bi-gift me-2"></i>Phúc lợi
                             </h6>
                         </div>
                         <div class="col-12">
@@ -464,25 +701,25 @@
 
                         <!-- Mô tả chi tiết -->
                         <div class="col-12 mt-4">
-                            <h6 class="text-primary mb-3">
-                                <i class="bi bi-file-text text-primary me-2"></i>Mô tả chi tiết
+                            <h6 class="text-danger mb-3">
+                                <i class="bi bi-file-text me-2"></i>Mô tả chi tiết
                             </h6>
                         </div>
                         <div class="col-12">
                             <label class="form-label">
-                                <i class="bi bi-list-check text-primary me-1"></i>Chi tiết công việc
+                                <i class="bi bi-list-check text-danger me-1"></i>Chi tiết công việc
                             </label>
                             <textarea class="form-control" name="job_detail" rows="3" required>{{ $job->job_detail }}</textarea>
                         </div>
                         <div class="col-12">
                             <label class="form-label">
-                                <i class="bi bi-card-text text-primary me-1"></i>Mô tả công việc
+                                <i class="bi bi-card-text text-danger me-1"></i>Mô tả công việc
                             </label>
                             <textarea class="form-control" name="job_description" rows="3" required>{{ $job->job_description }}</textarea>
                         </div>
                         <div class="col-12">
                             <label class="form-label">
-                                <i class="bi bi-clipboard-check text-primary me-1"></i>Yêu cầu
+                                <i class="bi bi-clipboard-check text-danger me-1"></i>Yêu cầu
                             </label>
                             <textarea class="form-control" name="job_requirement" rows="3" required>{{ $job->job_requirement }}</textarea>
                         </div>
@@ -491,7 +728,7 @@
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                             <i class="bi bi-x-circle me-2"></i>Hủy
                         </button>
-                        <button type="submit" class="btn btn-primary">
+                        <button type="submit" class="btn btn-danger">
                             <i class="bi bi-save me-2"></i>Lưu thay đổi
                         </button>
                     </div>
@@ -501,70 +738,5 @@
     </div>
 </div>
 @endforeach
-
-@push('scripts')
-<style>
-/* Styles cho modal */
-.modal-header {
-    border-bottom: 1px solid rgba(0,0,0,.1);
-}
-
-.modal-footer {
-    border-top: 1px solid rgba(0,0,0,.1);
-}
-
-.form-label {
-    font-weight: 500;
-    color: #495057;
-}
-
-.form-control, .form-select {
-    border: 1px solid #ced4da;
-    transition: all 0.2s ease;
-}
-
-.form-control:focus, .form-select:focus {
-    border-color: #80bdff;
-    box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
-}
-
-.input-group-text {
-    border-color: #ced4da;
-}
-
-.modal-body {
-    padding: 1.5rem;
-}
-
-.modal-body h6 {
-    font-weight: 600;
-    padding-bottom: 0.5rem;
-    border-bottom: 2px solid #e9ecef;
-}
-
-textarea.form-control {
-    resize: vertical;
-    min-height: 100px;
-}
-
-.modal-content {
-    border: none;
-    box-shadow: 0 0.5rem 1rem rgba(0,0,0,.15);
-}
-
-.modal-header, .modal-footer {
-    background-color: #f8f9fa;
-}
-
-.btn {
-    padding: 0.5rem 1rem;
-    font-weight: 500;
-}
-
-.btn i {
-    font-size: 1.1rem;
-}
-</style>
-@endpush
 
 @endsection 

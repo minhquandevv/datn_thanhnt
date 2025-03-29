@@ -1,161 +1,177 @@
 @extends('layouts.admin')
 
 @section('content')
-<div class="container-fluid">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h1 class="h3 mb-0 text-gray-800">Thêm Mentor Mới</h1>
-            <p class="text-muted mb-0">Tạo tài khoản mentor mới trong hệ thống</p>
-        </div>
-        <a href="{{ route('admin.mentors.index') }}" class="btn btn-secondary">
-            <i class="bi bi-arrow-left"></i> Quay lại
-        </a>
-    </div>
-
+<div class="container-fluid py-4">
     <div class="row">
-        <div class="col-md-8">
-            <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Thông tin cơ bản</h6>
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-person-plus text-danger fs-4 me-2"></i>
+                            <h3 class="card-title mb-0">Thêm Mentor Mới</h3>
+                        </div>
+                        <a href="{{ route('admin.mentors.index') }}" class="btn btn-outline-danger">
+                            <i class="bi bi-arrow-left"></i> Quay lại
+                        </a>
+                    </div>
                 </div>
                 <div class="card-body">
                     <form action="{{ route('admin.mentors.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="mentor_name" class="form-label">Tên Mentor</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-light">
+                        <!-- Basic Information -->
+                        <div class="card border-0 shadow-sm mb-4">
+                            <div class="card-header bg-danger bg-opacity-10 border-0 py-3">
+                                <h5 class="card-title mb-0 d-flex align-items-center">
+                                    <i class="bi bi-person text-danger me-2"></i>
+                                    Thông tin cơ bản
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-4">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="mentor_name" class="form-label">
+                                                <i class="bi bi-person-circle text-danger me-1"></i>
+                                                Tên Mentor <span class="text-danger">*</span>
+                                            </label>
+                                            <input type="text" class="form-control @error('mentor_name') is-invalid @enderror" 
+                                                   id="mentor_name" name="mentor_name" value="{{ old('mentor_name') }}" required>
+                                            @error('mentor_name')
+                                                <span class="invalid-feedback">{{ $message }}</span>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="username" class="form-label">
+                                                <i class="bi bi-person text-danger me-1"></i>
+                                                Tên đăng nhập <span class="text-danger">*</span>
+                                            </label>
+                                            <input type="text" class="form-control @error('username') is-invalid @enderror" 
+                                                   id="username" name="username" value="{{ old('username') }}" required>
+                                            @error('username')
+                                                <span class="invalid-feedback">{{ $message }}</span>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row g-4">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="department_id" class="form-label">
+                                                <i class="bi bi-building text-danger me-1"></i>
+                                                Phòng ban <span class="text-danger">*</span>
+                                            </label>
+                                            <select class="form-select @error('department_id') is-invalid @enderror" 
+                                                    id="department_id" name="department_id" required>
+                                                <option value="">Chọn phòng ban</option>
+                                                @foreach($departments as $department)
+                                                    <option value="{{ $department->department_id }}" 
+                                                            {{ old('department_id') == $department->department_id ? 'selected' : '' }}>
+                                                        {{ $department->name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            @error('department_id')
+                                                <span class="invalid-feedback">{{ $message }}</span>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="position" class="form-label">
+                                                <i class="bi bi-briefcase text-danger me-1"></i>
+                                                Chức vụ <span class="text-danger">*</span>
+                                            </label>
+                                            <input type="text" class="form-control @error('position') is-invalid @enderror" 
+                                                   id="position" name="position" value="{{ old('position') }}" required>
+                                            @error('position')
+                                                <span class="invalid-feedback">{{ $message }}</span>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Account Information -->
+                        <div class="card border-0 shadow-sm mb-4">
+                            <div class="card-header bg-danger bg-opacity-10 border-0 py-3">
+                                <h5 class="card-title mb-0 d-flex align-items-center">
+                                    <i class="bi bi-shield-lock text-danger me-2"></i>
+                                    Thông tin tài khoản
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-4">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="password" class="form-label">
+                                                <i class="bi bi-key text-danger me-1"></i>
+                                                Mật khẩu <span class="text-danger">*</span>
+                                            </label>
+                                            <input type="password" class="form-control @error('password') is-invalid @enderror" 
+                                                   id="password" name="password" required>
+                                            @error('password')
+                                                <span class="invalid-feedback">{{ $message }}</span>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="password_confirmation" class="form-label">
+                                                <i class="bi bi-key-fill text-danger me-1"></i>
+                                                Xác nhận mật khẩu <span class="text-danger">*</span>
+                                            </label>
+                                            <input type="password" class="form-control" 
+                                                   id="password_confirmation" name="password_confirmation" required>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Avatar Information -->
+                        <div class="card border-0 shadow-sm mb-4">
+                            <div class="card-header bg-danger bg-opacity-10 border-0 py-3">
+                                <h5 class="card-title mb-0 d-flex align-items-center">
+                                    <i class="bi bi-image text-danger me-2"></i>
+                                    Ảnh đại diện
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="text-center">
+                                    <div class="avatar-circle mx-auto mb-3">
+                                        <div class="avatar-placeholder" id="avatarPreview">
                                             <i class="bi bi-person"></i>
-                                        </span>
-                                        <input type="text" class="form-control @error('mentor_name') is-invalid @enderror" 
-                                               id="mentor_name" name="mentor_name" value="{{ old('mentor_name') }}" required>
+                                        </div>
                                     </div>
-                                    @error('mentor_name')
-                                        <div class="invalid-feedback d-block">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="username" class="form-label">Tên đăng nhập</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-light">
-                                            <i class="bi bi-person-circle"></i>
-                                        </span>
-                                        <input type="text" class="form-control @error('username') is-invalid @enderror" 
-                                               id="username" name="username" value="{{ old('username') }}" required>
-                                    </div>
-                                    @error('username')
-                                        <div class="invalid-feedback d-block">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="department" class="form-label">Phòng ban</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-light">
-                                            <i class="bi bi-building"></i>
-                                        </span>
-                                        <input type="text" class="form-control @error('department') is-invalid @enderror" 
-                                               id="department" name="department" value="{{ old('department') }}" required>
-                                    </div>
-                                    @error('department')
-                                        <div class="invalid-feedback d-block">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="position" class="form-label">Chức vụ</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-light">
-                                            <i class="bi bi-briefcase"></i>
-                                        </span>
-                                        <input type="text" class="form-control @error('position') is-invalid @enderror" 
-                                               id="position" name="position" value="{{ old('position') }}" required>
-                                    </div>
-                                    @error('position')
-                                        <div class="invalid-feedback d-block">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="password" class="form-label">Mật khẩu</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-light">
-                                            <i class="bi bi-lock"></i>
-                                        </span>
-                                        <input type="password" class="form-control @error('password') is-invalid @enderror" 
-                                               id="password" name="password" required>
-                                    </div>
-                                    @error('password')
-                                        <div class="invalid-feedback d-block">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="password_confirmation" class="form-label">Xác nhận mật khẩu</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-light">
-                                            <i class="bi bi-lock-fill"></i>
-                                        </span>
-                                        <input type="password" class="form-control" 
-                                               id="password_confirmation" name="password_confirmation" required>
+                                    <div class="mb-3">
+                                        <label for="avatar" class="form-label">
+                                            <i class="bi bi-upload text-danger me-1"></i>
+                                            Chọn ảnh
+                                        </label>
+                                        <input type="file" class="form-control" id="avatar" name="avatar" accept="image/*">
+                                        <small class="form-text text-muted">
+                                            <i class="bi bi-info-circle"></i> Kích thước tối đa: 2MB
+                                        </small>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="text-end">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-save"></i> Lưu
+                        <div class="form-group text-center">
+                            <button type="submit" class="btn btn-danger btn-lg px-5">
+                                <i class="bi bi-check-circle"></i> Lưu thông tin
                             </button>
+                            <a href="{{ route('admin.mentors.index') }}" class="btn btn-outline-danger btn-lg px-5 ms-2">
+                                <i class="bi bi-x-circle"></i> Hủy
+                            </a>
                         </div>
                     </form>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4">
-            <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Thông tin bổ sung</h6>
-                </div>
-                <div class="card-body">
-                    <div class="text-center mb-4">
-                        <div class="avatar-circle mx-auto mb-3">
-                            <div class="avatar-placeholder" id="avatarPreview">
-                                <i class="bi bi-person"></i>
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="avatar" class="form-label">Ảnh đại diện</label>
-                            <input type="file" class="form-control" id="avatar" name="avatar" accept="image/*">
-                            <small class="text-muted">Kích thước tối đa: 2MB</small>
-                        </div>
-                    </div>
-
-                    <div class="alert alert-info">
-                        <i class="bi bi-info-circle"></i>
-                        <strong>Lưu ý:</strong>
-                        <ul class="mb-0">
-                            <li>Tên đăng nhập phải là duy nhất</li>
-                            <li>Mật khẩu phải có ít nhất 8 ký tự</li>
-                            <li>Ảnh đại diện nên có kích thước vuông</li>
-                        </ul>
-                    </div>
                 </div>
             </div>
         </div>
@@ -163,57 +179,78 @@
 </div>
 
 <style>
-.avatar-circle {
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
-    overflow: hidden;
-    border: 3px solid var(--primary-color);
-    margin: 0 auto;
-}
+    .form-control, .form-select {
+        padding: 0.75rem 1rem;
+        border-radius: 0.5rem;
+        border: 1px solid rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+    }
 
-.avatar-placeholder {
-    width: 100%;
-    height: 100%;
-    background-color: #f8f9fa;
-    color: #6c757d;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 3rem;
-}
+    .form-control:focus, .form-select:focus {
+        border-color: var(--danger-color);
+        box-shadow: 0 0 0 0.25rem rgba(var(--danger-rgb), 0.1);
+    }
 
-.input-group-text {
-    border-right: none;
-}
+    .form-label {
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+    }
 
-.form-control {
-    border-left: none;
-}
+    .avatar-circle {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 3px solid var(--danger-color);
+        margin: 0 auto;
+    }
 
-.form-control:focus {
-    border-color: #ced4da;
-    box-shadow: none;
-}
+    .avatar-placeholder {
+        width: 100%;
+        height: 100%;
+        background-color: rgba(var(--danger-rgb), 0.1);
+        color: var(--danger-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+    }
 
-.input-group:focus-within {
-    box-shadow: 0 0 0 0.2rem rgba(212, 0, 0, 0.25);
-}
+    .card {
+        transition: all 0.3s ease;
+    }
 
-.card {
-    transition: transform 0.2s;
-}
+    .card:hover {
+        transform: translateY(-5px);
+    }
 
-.card:hover {
-    transform: translateY(-5px);
-}
+    .btn {
+        padding: 0.75rem 1.5rem;
+        font-weight: 500;
+        border-radius: 0.5rem;
+        transition: all 0.3s ease;
+    }
 
-.form-check-input:checked {
-    background-color: var(--primary-color);
-    border-color: var(--primary-color);
-}
+    .btn:hover {
+        transform: translateY(-2px);
+    }
+
+    .btn i {
+        margin-right: 0.5rem;
+    }
+
+    .invalid-feedback {
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
+
+    .form-text {
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
 </style>
 
+@push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const avatarInput = document.getElementById('avatar');
@@ -231,4 +268,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+@endpush
+
 @endsection 

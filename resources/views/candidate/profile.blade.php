@@ -7,7 +7,7 @@
     <!-- Header Section -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h4 class="text-primary fw-bold mb-1">THÔNG TIN CÁ NHÂN</h4>
+            <h4 class="text-dark fw-bold mb-1">THÔNG TIN CÁ NHÂN</h4>
             <p class="text-muted mb-0">Cập nhật và quản lý thông tin hồ sơ của bạn</p>
         </div>
         <div class="d-flex gap-2">
@@ -19,20 +19,6 @@
             </button>
         </div>
     </div>
-
-    @if (session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <i class="bi bi-check-circle me-2"></i>{{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    @endif
-
-    @if (session('error'))
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <i class="bi bi-exclamation-circle me-2"></i>{{ session('error') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    @endif
 
     <form id="profileForm" action="{{ route('candidate.profile.update') }}" method="POST" enctype="multipart/form-data">
         @csrf
@@ -300,7 +286,7 @@
                                         <td>{{ $edu->level }}</td>
                                         <td>{{ $edu->edu_type }}</td>
                                         <td>{{ $edu->department }}</td>
-                                        <td>{{ $edu->school_name }}</td>
+                                        <td>{{ $edu->university->name ?? $edu->school_name }}</td>
                                         <td>{{ $edu->graduate_level }}</td>
                                         <td>{{ $edu->graduate_date }}</td>
                                         <td class="text-center">
@@ -521,29 +507,65 @@
             <form action="{{ route('candidate.education.store') }}" method="POST">
                 @csrf
                 <div class="modal-body">
+                    @if ($errors->any())
+                        <div class="alert alert-danger">
+                            <h6 class="alert-heading mb-2">Vui lòng kiểm tra lại các thông tin sau:</h6>
+                            <ul class="mb-0">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
                     <div class="mb-3">
-                        <label class="form-label">Cấp học</label>
-                        <input type="text" class="form-control" name="level" required>
+                        <label class="form-label">Cấp học <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control @error('level') is-invalid @enderror" name="level" value="{{ old('level') }}" required>
+                        @error('level')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Loại hình đào tạo</label>
-                        <input type="text" class="form-control" name="edu_type" required>
+                        <label class="form-label">Loại hình đào tạo <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control @error('edu_type') is-invalid @enderror" name="edu_type" value="{{ old('edu_type') }}" required>
+                        @error('edu_type')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Chuyên ngành</label>
-                        <input type="text" class="form-control" name="department" required>
+                        <label class="form-label">Chuyên ngành <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control @error('department') is-invalid @enderror" name="department" value="{{ old('department') }}" required>
+                        @error('department')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Tên trường</label>
-                        <input type="text" class="form-control" name="school_name" required>
+                        <label class="form-label">Trường đại học <span class="text-danger">*</span></label>
+                        <select class="form-select @error('university_id') is-invalid @enderror" name="university_id" id="university_select" required>
+                            <option value="">Chọn trường đại học</option>
+                            @foreach($universities as $university)
+                                <option value="{{ $university->university_id }}" data-name="{{ $university->name }}" {{ old('university_id') == $university->university_id ? 'selected' : '' }}>
+                                    {{ $university->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <input type="hidden" name="school_name" id="school_name">
+                        @error('university_id')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Xếp loại</label>
-                        <input type="text" class="form-control" name="graduate_level" required>
+                        <label class="form-label">Xếp loại <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control @error('graduate_level') is-invalid @enderror" name="graduate_level" value="{{ old('graduate_level') }}" required>
+                        @error('graduate_level')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Ngày tốt nghiệp</label>
-                        <input type="date" class="form-control" name="graduate_date" required>
+                        <label class="form-label">Ngày tốt nghiệp <span class="text-danger">*</span></label>
+                        <input type="date" class="form-control @error('graduate_date') is-invalid @enderror" name="graduate_date" value="{{ old('graduate_date') }}" required>
+                        @error('graduate_date')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -580,8 +602,13 @@
                         <input type="text" class="form-control" name="department" id="edit_department" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Tên trường</label>
-                        <input type="text" class="form-control" name="school_name" id="edit_school_name" required>
+                        <label class="form-label">Trường đại học</label>
+                        <select class="form-select" name="university_id" id="edit_university_id" required>
+                            <option value="">Chọn trường đại học</option>
+                            @foreach($universities as $university)
+                                <option value="{{ $university->university_id }}">{{ $university->name }}</option>
+                            @endforeach
+                        </select>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Xếp loại</label>
@@ -913,6 +940,7 @@
 @endpush
 
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 // Preview avatar image
 document.getElementById('avatar').addEventListener('change', function(e) {
@@ -925,6 +953,44 @@ document.getElementById('avatar').addEventListener('change', function(e) {
     }
 });
 
+// Show success message
+function showSuccess(message) {
+    Swal.fire({
+        icon: 'success',
+        title: 'Thành công!',
+        text: message,
+        timer: 2000,
+        showConfirmButton: false
+    });
+}
+
+// Show error message
+function showError(message) {
+    Swal.fire({
+        icon: 'error',
+        title: 'Lỗi!',
+        text: message
+    });
+}
+
+// Show confirmation dialog
+function showConfirm(title, text, callback) {
+    Swal.fire({
+        title: title,
+        text: text,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Đồng ý',
+        cancelButtonText: 'Hủy'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            callback();
+        }
+    });
+}
+
 // Education functions
 function editEducation(id) {
     fetch(`/candidate/education/${id}/edit`)
@@ -933,27 +999,29 @@ function editEducation(id) {
             document.getElementById('edit_level').value = data.level;
             document.getElementById('edit_edu_type').value = data.edu_type;
             document.getElementById('edit_department').value = data.department;
-            document.getElementById('edit_school_name').value = data.school_name;
+            document.getElementById('edit_university_id').value = data.university_id;
             document.getElementById('edit_graduate_level').value = data.graduate_level;
             document.getElementById('edit_graduate_date').value = data.graduate_date;
             document.getElementById('editEducationForm').action = `/candidate/education/${id}`;
             new bootstrap.Modal(document.getElementById('editEducationModal')).show();
+        })
+        .catch(error => {
+            showError('Không thể tải thông tin học vấn');
         });
 }
 
 function deleteEducation(id) {
-    if (confirm('Bạn có chắc muốn xóa học vấn này?')) {
-        fetch(`/candidate/education/${id}`, {
-            method: 'DELETE',
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-            }
-        }).then(response => {
-            if (response.ok) {
-                location.reload();
-            }
-        });
-    }
+    showConfirm('Xác nhận xóa', 'Bạn có chắc muốn xóa học vấn này?', function() {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/candidate/education/${id}`;
+        form.innerHTML = `
+            @csrf
+            @method('DELETE')
+        `;
+        document.body.appendChild(form);
+        form.submit();
+    });
 }
 
 // Experience functions
@@ -968,22 +1036,24 @@ function editExperience(id) {
             document.getElementById('edit_description').value = data.description;
             document.getElementById('editExperienceForm').action = `/candidate/experience/${id}`;
             new bootstrap.Modal(document.getElementById('editExperienceModal')).show();
+        })
+        .catch(error => {
+            showError('Không thể tải thông tin kinh nghiệm');
         });
 }
 
 function deleteExperience(id) {
-    if (confirm('Bạn có chắc muốn xóa kinh nghiệm này?')) {
-        fetch(`/candidate/experience/${id}`, {
-            method: 'DELETE',
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-            }
-        }).then(response => {
-            if (response.ok) {
-                location.reload();
-            }
-        });
-    }
+    showConfirm('Xác nhận xóa', 'Bạn có chắc muốn xóa kinh nghiệm này?', function() {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/candidate/experience/${id}`;
+        form.innerHTML = `
+            @csrf
+            @method('DELETE')
+        `;
+        document.body.appendChild(form);
+        form.submit();
+    });
 }
 
 // Skill functions
@@ -995,22 +1065,24 @@ function editSkill(id) {
             document.getElementById('edit_skill_desc').value = data.skill_desc;
             document.getElementById('editSkillForm').action = `/candidate/skill/${id}`;
             new bootstrap.Modal(document.getElementById('editSkillModal')).show();
+        })
+        .catch(error => {
+            showError('Không thể tải thông tin kỹ năng');
         });
 }
 
 function deleteSkill(id) {
-    if (confirm('Bạn có chắc muốn xóa kỹ năng này?')) {
-        fetch(`/candidate/skill/${id}`, {
-            method: 'DELETE',
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-            }
-        }).then(response => {
-            if (response.ok) {
-                location.reload();
-            }
-        });
-    }
+    showConfirm('Xác nhận xóa', 'Bạn có chắc muốn xóa kỹ năng này?', function() {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/candidate/skill/${id}`;
+        form.innerHTML = `
+            @csrf
+            @method('DELETE')
+        `;
+        document.body.appendChild(form);
+        form.submit();
+    });
 }
 
 // Certificate functions
@@ -1028,22 +1100,35 @@ function editCertificate(id) {
                 </a>` : '';
             document.getElementById('editCertificateForm').action = `/candidate/certificate/${id}`;
             new bootstrap.Modal(document.getElementById('editCertificateModal')).show();
+        })
+        .catch(error => {
+            showError('Không thể tải thông tin chứng chỉ');
         });
 }
 
 function deleteCertificate(id) {
-    if (confirm('Bạn có chắc muốn xóa chứng chỉ này?')) {
-        fetch(`/candidate/certificate/${id}`, {
-            method: 'DELETE',
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-            }
-        }).then(response => {
-            if (response.ok) {
-                location.reload();
-            }
-        });
-    }
+    showConfirm('Xác nhận xóa', 'Bạn có chắc muốn xóa chứng chỉ này?', function() {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/candidate/certificate/${id}`;
+        form.innerHTML = `
+            @csrf
+            @method('DELETE')
+        `;
+        document.body.appendChild(form);
+        form.submit();
+    });
+}
+
+// Add this new code for handling university selection
+document.getElementById('university_select').addEventListener('change', function() {
+    const selectedOption = this.options[this.selectedIndex];
+    document.getElementById('school_name').value = selectedOption.dataset.name;
+});
+
+// Trigger the change event on page load if a university is selected
+if (document.getElementById('university_select').value) {
+    document.getElementById('university_select').dispatchEvent(new Event('change'));
 }
 </script>
 @endpush

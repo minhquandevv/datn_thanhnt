@@ -8,7 +8,7 @@
                 <div class="card-header bg-white py-3">
                     <div class="d-flex justify-content-between align-items-center">
                         <div class="d-flex align-items-center">
-                            <i class="bi bi-person-badge text-primary fs-4 me-2"></i>
+                            <i class="bi bi-person-badge text-danger fs-4 me-2"></i>
                             <h3 class="card-title mb-0">Chỉnh sửa Thông tin Thực tập sinh</h3>
                         </div>
                         <a href="{{ route('admin.interns.index') }}" class="btn btn-secondary">
@@ -23,9 +23,9 @@
                         
                         <!-- Personal Information -->
                         <div class="card border-0 shadow-sm mb-4">
-                            <div class="card-header bg-primary bg-opacity-10 border-0 py-3">
+                            <div class="card-header  bg-danger bg-opacity-10 border-0 py-3">
                                 <h5 class="card-title mb-0 d-flex align-items-center">
-                                    <i class="bi bi-person text-primary me-2"></i>
+                                    <i class="bi bi-person text-danger me-2"></i>
                                     Thông tin cá nhân
                                 </h5>
                             </div>
@@ -126,9 +126,9 @@
 
                         <!-- Education Information -->
                         <div class="card border-0 shadow-sm mb-4">
-                            <div class="card-header bg-success bg-opacity-10 border-0 py-3">
+                            <div class="card-header bg-danger bg-opacity-10 border-0 py-3">
                                 <h5 class="card-title mb-0 d-flex align-items-center">
-                                    <i class="bi bi-mortarboard text-success me-2"></i>
+                                    <i class="bi bi-mortarboard text-danger me-2"></i>
                                     Thông tin học tập
                                 </h5>
                             </div>
@@ -136,13 +136,21 @@
                                 <div class="row g-4">
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label for="university" class="form-label">
+                                            <label for="university_id" class="form-label">
                                                 <i class="bi bi-building text-success me-1"></i>
-                                                Trường học <span class="text-danger">*</span>
+                                                Trường đại học <span class="text-danger">*</span>
                                             </label>
-                                            <input type="text" class="form-control @error('university') is-invalid @enderror" 
-                                                   id="university" name="university" value="{{ old('university', $intern->university) }}" required>
-                                            @error('university')
+                                            <select class="form-select @error('university_id') is-invalid @enderror" 
+                                                    id="university_id" name="university_id" required>
+                                                <option value="">Chọn trường đại học</option>
+                                                @foreach($universities as $university)
+                                                    <option value="{{ $university->university_id }}" 
+                                                            {{ old('university_id', $intern->university_id) == $university->university_id ? 'selected' : '' }}>
+                                                        {{ $university->name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            @error('university_id')
                                                 <span class="invalid-feedback">{{ $message }}</span>
                                             @enderror
                                         </div>
@@ -203,9 +211,9 @@
 
                         <!-- Work Information -->
                         <div class="card border-0 shadow-sm mb-4">
-                            <div class="card-header bg-info bg-opacity-10 border-0 py-3">
+                            <div class="card-header bg-danger bg-opacity-10 border-0 py-3">
                                 <h5 class="card-title mb-0 d-flex align-items-center">
-                                    <i class="bi bi-briefcase text-info me-2"></i>
+                                    <i class="bi bi-briefcase text-danger me-2"></i>
                                     Thông tin công việc
                                 </h5>
                             </div>
@@ -213,13 +221,21 @@
                                 <div class="row g-4">
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label for="department" class="form-label">
+                                            <label for="department_id" class="form-label">
                                                 <i class="bi bi-building text-info me-1"></i>
                                                 Phòng ban <span class="text-danger">*</span>
                                             </label>
-                                            <input type="text" class="form-control @error('department') is-invalid @enderror" 
-                                                   id="department" name="department" value="{{ old('department', $intern->department) }}" required>
-                                            @error('department')
+                                            <select class="form-select @error('department_id') is-invalid @enderror" 
+                                                    id="department_id" name="department_id" required>
+                                                <option value="">Chọn phòng ban</option>
+                                                @foreach($departments as $department)
+                                                    <option value="{{ $department->department_id }}" 
+                                                            {{ old('department_id', $intern->department_id) == $department->department_id ? 'selected' : '' }}>
+                                                        {{ $department->name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            @error('department_id')
                                                 <span class="invalid-feedback">{{ $message }}</span>
                                             @enderror
                                         </div>
@@ -267,9 +283,9 @@
 
                         <!-- Document Information -->
                         <div class="card border-0 shadow-sm mb-4">
-                            <div class="card-header bg-warning bg-opacity-10 border-0 py-3">
+                            <div class="card-header bg-danger bg-opacity-10 border-0 py-3">
                                 <h5 class="card-title mb-0 d-flex align-items-center">
-                                    <i class="bi bi-file-earmark-text text-warning me-2"></i>
+                                    <i class="bi bi-file-earmark-text text-danger me-2"></i>
                                     Thông tin giấy tờ
                                 </h5>
                             </div>
@@ -431,4 +447,43 @@
         margin-top: 0.25rem;
     }
 </style>
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(form);
+        
+        fetch(form.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'X-HTTP-Method-Override': 'PUT'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showSuccess('Cập nhật thông tin thực tập sinh thành công!');
+                setTimeout(() => {
+                    window.location.href = '{{ route("admin.interns.index") }}';
+                }, 1500);
+            } else {
+                showError(data.message || 'Có lỗi xảy ra khi cập nhật thông tin!');
+            }
+        })
+        .catch(error => {
+            showError('Có lỗi xảy ra khi cập nhật thông tin!');
+            console.error('Error:', error);
+        });
+    });
+});
+</script>
+@endpush
+
 @endsection 

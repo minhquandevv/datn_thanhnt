@@ -61,10 +61,25 @@
                         <label class="form-label text-muted small mb-1">Trường học</label>
                         <div class="d-flex align-items-center">
                             <i class="bi bi-building text-primary me-2"></i>
-                            <span>{{ $candidate->school->name }}</span>
+                            <span>
+                                @if($candidate->university)
+                                    {{ $candidate->university->name }}
+                                @else
+                                    Chưa cập nhật
+                                @endif
+                            </span>
                         </div>
                     </div>
                 </div>
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <h6>Ảnh phòng ban</h6>
+                @if($candidate->image_company)
+                    <img src="{{ asset('uploads/' . $candidate->image_company) }}" alt="Department" class="img-thumbnail" style="max-width: 200px;">
+                @else
+                    <p class="text-muted">Chưa có ảnh phòng ban</p>
+                @endif
             </div>
         </div>
 
@@ -161,12 +176,19 @@
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Trường</label>
+                        <label class="form-label">Trường học</label>
                         <div class="input-group">
                             <span class="input-group-text bg-light">
                                 <i class="bi bi-building text-primary"></i>
                             </span>
-                            <input type="text" class="form-control" name="school" value="{{ $candidate->school->name }}" required>
+                            <select class="form-select" name="university_id" required>
+                                <option value="">Chọn trường học</option>
+                                @foreach($universities as $university)
+                                    <option value="{{ $university->university_id }}" {{ $candidate->university_id == $university->university_id ? 'selected' : '' }}>
+                                        {{ $university->name }}
+                                    </option>
+                                @endforeach
+                            </select>
                         </div>
                     </div>
                     <div class="mb-3">

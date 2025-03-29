@@ -8,10 +8,10 @@
                 <div class="card-header bg-white py-3">
                     <div class="d-flex justify-content-between align-items-center">
                         <div class="d-flex align-items-center">
-                            <i class="bi bi-person-plus text-primary fs-4 me-2"></i>
+                            <i class="bi bi-person-plus text-danger fs-4 me-2"></i>
                             <h3 class="card-title mb-0">Thêm Thực tập sinh mới</h3>
                         </div>
-                        <a href="{{ route('admin.interns.index') }}" class="btn btn-secondary">
+                        <a href="{{ route('admin.interns.index') }}" class="btn btn-outline-danger">
                             <i class="bi bi-arrow-left"></i> Quay lại
                         </a>
                     </div>
@@ -22,9 +22,9 @@
                         
                         <!-- Personal Information -->
                         <div class="card border-0 shadow-sm mb-4">
-                            <div class="card-header bg-primary bg-opacity-10 border-0 py-3">
+                            <div class="card-header bg-danger bg-opacity-10 border-0 py-3">
                                 <h5 class="card-title mb-0 d-flex align-items-center">
-                                    <i class="bi bi-person text-primary me-2"></i>
+                                    <i class="bi bi-person text-danger me-2"></i>
                                     Thông tin cá nhân
                                 </h5>
                             </div>
@@ -33,7 +33,7 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="fullname" class="form-label">
-                                                <i class="bi bi-person-circle text-primary me-1"></i>
+                                                <i class="bi bi-person-circle text-danger me-1"></i>
                                                 Họ và tên <span class="text-danger">*</span>
                                             </label>
                                             <input type="text" class="form-control @error('fullname') is-invalid @enderror" 
@@ -46,7 +46,7 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="email" class="form-label">
-                                                <i class="bi bi-envelope text-primary me-1"></i>
+                                                <i class="bi bi-envelope text-danger me-1"></i>
                                                 Email <span class="text-danger">*</span>
                                             </label>
                                             <input type="email" class="form-control @error('email') is-invalid @enderror" 
@@ -62,7 +62,7 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="phone" class="form-label">
-                                                <i class="bi bi-telephone text-primary me-1"></i>
+                                                <i class="bi bi-telephone text-danger me-1"></i>
                                                 Số điện thoại <span class="text-danger">*</span>
                                             </label>
                                             <input type="text" class="form-control @error('phone') is-invalid @enderror" 
@@ -75,7 +75,7 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="birthdate" class="form-label">
-                                                <i class="bi bi-calendar text-primary me-1"></i>
+                                                <i class="bi bi-calendar text-danger me-1"></i>
                                                 Ngày sinh
                                             </label>
                                             <input type="date" class="form-control @error('birthdate') is-invalid @enderror" 
@@ -91,7 +91,7 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="gender" class="form-label">
-                                                <i class="bi bi-gender-ambiguous text-primary me-1"></i>
+                                                <i class="bi bi-gender-ambiguous text-danger me-1"></i>
                                                 Giới tính
                                             </label>
                                             <select class="form-select @error('gender') is-invalid @enderror" 
@@ -109,7 +109,7 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="address" class="form-label">
-                                                <i class="bi bi-geo-alt text-primary me-1"></i>
+                                                <i class="bi bi-geo-alt text-danger me-1"></i>
                                                 Địa chỉ
                                             </label>
                                             <textarea class="form-control @error('address') is-invalid @enderror" 
@@ -125,9 +125,9 @@
 
                         <!-- Education Information -->
                         <div class="card border-0 shadow-sm mb-4">
-                            <div class="card-header bg-success bg-opacity-10 border-0 py-3">
+                            <div class="card-header bg-danger bg-opacity-10 border-0 py-3">
                                 <h5 class="card-title mb-0 d-flex align-items-center">
-                                    <i class="bi bi-mortarboard text-success me-2"></i>
+                                    <i class="bi bi-mortarboard text-danger me-2"></i>
                                     Thông tin học tập
                                 </h5>
                             </div>
@@ -135,13 +135,21 @@
                                 <div class="row g-4">
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label for="university" class="form-label">
-                                                <i class="bi bi-building text-success me-1"></i>
-                                                Trường học <span class="text-danger">*</span>
+                                            <label for="university_id" class="form-label">
+                                                <i class="bi bi-building text-danger me-1"></i>
+                                                Trường đại học <span class="text-danger">*</span>
                                             </label>
-                                            <input type="text" class="form-control @error('university') is-invalid @enderror" 
-                                                   id="university" name="university" value="{{ old('university') }}" required>
-                                            @error('university')
+                                            <select class="form-select @error('university_id') is-invalid @enderror" 
+                                                    id="university_id" name="university_id" required>
+                                                <option value="">Chọn trường đại học</option>
+                                                @foreach($universities as $university)
+                                                    <option value="{{ $university->university_id }}" 
+                                                            {{ old('university_id') == $university->university_id ? 'selected' : '' }}>
+                                                        {{ $university->name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            @error('university_id')
                                                 <span class="invalid-feedback">{{ $message }}</span>
                                             @enderror
                                         </div>
@@ -149,7 +157,7 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="major" class="form-label">
-                                                <i class="bi bi-book text-success me-1"></i>
+                                                <i class="bi bi-book text-danger me-1"></i>
                                                 Chuyên ngành <span class="text-danger">*</span>
                                             </label>
                                             <input type="text" class="form-control @error('major') is-invalid @enderror" 
@@ -165,7 +173,7 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="degree" class="form-label">
-                                                <i class="bi bi-award text-success me-1"></i>
+                                                <i class="bi bi-award text-danger me-1"></i>
                                                 Bằng cấp
                                             </label>
                                             <input type="text" class="form-control @error('degree') is-invalid @enderror" 
@@ -178,7 +186,7 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="degree_image" class="form-label">
-                                                <i class="bi bi-image text-success me-1"></i>
+                                                <i class="bi bi-image text-danger me-1"></i>
                                                 Ảnh bằng cấp
                                             </label>
                                             <input type="file" class="form-control @error('degree_image') is-invalid @enderror" 
@@ -194,9 +202,9 @@
 
                         <!-- Work Information -->
                         <div class="card border-0 shadow-sm mb-4">
-                            <div class="card-header bg-info bg-opacity-10 border-0 py-3">
+                            <div class="card-header bg-danger bg-opacity-10 border-0 py-3">
                                 <h5 class="card-title mb-0 d-flex align-items-center">
-                                    <i class="bi bi-briefcase text-info me-2"></i>
+                                    <i class="bi bi-briefcase text-danger me-2"></i>
                                     Thông tin công việc
                                 </h5>
                             </div>
@@ -204,13 +212,21 @@
                                 <div class="row g-4">
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label for="department" class="form-label">
-                                                <i class="bi bi-building text-info me-1"></i>
+                                            <label for="department_id" class="form-label">
+                                                <i class="bi bi-building text-danger me-1"></i>
                                                 Phòng ban <span class="text-danger">*</span>
                                             </label>
-                                            <input type="text" class="form-control @error('department') is-invalid @enderror" 
-                                                   id="department" name="department" value="{{ old('department') }}" required>
-                                            @error('department')
+                                            <select class="form-select @error('department_id') is-invalid @enderror" 
+                                                    id="department_id" name="department_id" required>
+                                                <option value="">Chọn phòng ban</option>
+                                                @foreach($departments as $department)
+                                                    <option value="{{ $department->department_id }}" 
+                                                            {{ old('department_id') == $department->department_id ? 'selected' : '' }}>
+                                                        {{ $department->name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            @error('department_id')
                                                 <span class="invalid-feedback">{{ $message }}</span>
                                             @enderror
                                         </div>
@@ -218,7 +234,7 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="position" class="form-label">
-                                                <i class="bi bi-person-badge text-info me-1"></i>
+                                                <i class="bi bi-person-badge text-danger me-1"></i>
                                                 Vị trí <span class="text-danger">*</span>
                                             </label>
                                             <input type="text" class="form-control @error('position') is-invalid @enderror" 
@@ -234,7 +250,7 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="mentor_id" class="form-label">
-                                                <i class="bi bi-person-workspace text-info me-1"></i>
+                                                <i class="bi bi-person-workspace text-danger me-1"></i>
                                                 Mentor <span class="text-danger">*</span>
                                             </label>
                                             <select class="form-select @error('mentor_id') is-invalid @enderror" 
@@ -258,9 +274,9 @@
 
                         <!-- Document Information -->
                         <div class="card border-0 shadow-sm mb-4">
-                            <div class="card-header bg-warning bg-opacity-10 border-0 py-3">
+                            <div class="card-header bg-danger bg-opacity-10 border-0 py-3">
                                 <h5 class="card-title mb-0 d-flex align-items-center">
-                                    <i class="bi bi-file-earmark-text text-warning me-2"></i>
+                                    <i class="bi bi-file-earmark-text text-danger me-2"></i>
                                     Thông tin giấy tờ
                                 </h5>
                             </div>
@@ -269,7 +285,7 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="citizen_id" class="form-label">
-                                                <i class="bi bi-card-heading text-warning me-1"></i>
+                                                <i class="bi bi-card-heading text-danger me-1"></i>
                                                 Số CCCD
                                             </label>
                                             <input type="text" class="form-control @error('citizen_id') is-invalid @enderror" 
@@ -282,7 +298,7 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="citizen_id_image" class="form-label">
-                                                <i class="bi bi-image text-warning me-1"></i>
+                                                <i class="bi bi-image text-danger me-1"></i>
                                                 Ảnh CCCD
                                             </label>
                                             <input type="file" class="form-control @error('citizen_id_image') is-invalid @enderror" 
@@ -337,10 +353,10 @@
                         </div>
 
                         <div class="form-group text-center">
-                            <button type="submit" class="btn btn-primary btn-lg px-5">
+                            <button type="submit" class="btn btn-danger btn-lg px-5">
                                 <i class="bi bi-check-circle"></i> Lưu thông tin
                             </button>
-                            <a href="{{ route('admin.interns.index') }}" class="btn btn-secondary btn-lg px-5 ms-2">
+                            <a href="{{ route('admin.interns.index') }}" class="btn btn-outline-danger btn-lg px-5 ms-2">
                                 <i class="bi bi-x-circle"></i> Hủy
                             </a>
                         </div>
@@ -360,8 +376,8 @@
     }
 
     .form-control:focus, .form-select:focus {
-        border-color: var(--bs-primary);
-        box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), 0.1);
+        border-color: var(--danger-color);
+        box-shadow: 0 0 0 0.25rem rgba(var(--danger-rgb), 0.1);
     }
 
     .form-label {
@@ -411,4 +427,42 @@
         margin-top: 0.25rem;
     }
 </style>
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(form);
+        
+        fetch(form.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showSuccess('Thêm thực tập sinh thành công!');
+                setTimeout(() => {
+                    window.location.href = '{{ route("admin.interns.index") }}';
+                }, 1500);
+            } else {
+                showError(data.message || 'Có lỗi xảy ra khi thêm thực tập sinh!');
+            }
+        })
+        .catch(error => {
+            showError('Có lỗi xảy ra khi thêm thực tập sinh!');
+            console.error('Error:', error);
+        });
+    });
+});
+</script>
+@endpush
+
 @endsection 

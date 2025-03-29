@@ -50,45 +50,117 @@
     padding: 0.4rem 0.8rem;
 }
 .table-hover tbody tr:hover {
-    background-color: #f8f9fa;
+    background-color: rgba(220, 53, 69, 0.05);
 }
 .alert {
     border: none;
     border-radius: 0.5rem;
     padding: 1rem 1.5rem;
 }
+.avatar-circle {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
+}
+.icon-box {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 </style>
 @endpush
 
 @section('content')
 <div class="container-fluid">
-    @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <i class="bi bi-check-circle me-2"></i>{{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    @endif
-
-    @if(session('error'))
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <i class="bi bi-exclamation-circle me-2"></i>{{ session('error') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    @endif
-
     <div class="row">
-        <div class="col-12">
+        <div class="col-12 mx-auto">
             <div class="card shadow-sm">
-                <div class="card-header bg-white py-3">
-                    <h3 class="card-title m-0">
-                        <i class="bi bi-person-gear me-2"></i>
-                        Quản lý người dùng
-                    </h3>
+                <div class="d-flex justify-content-between align-items-center p-3">
+                    <div>
+                        <h1 class="h4 text-danger fw-bold mb-0">
+                            <i class="bi bi-person-badge me-2"></i>                        
+                            Quản lý người dùng
+                        </h1>
+                    </div>
+                    <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#addUserModal">
+                        <i class="bi bi-plus-lg me-2"></i>Thêm người dùng
+                    </button>
                 </div>
                 <div class="card-body">
+                    <!-- Stats Cards -->
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-3">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center">
+                                        <div class="icon-box bg-danger bg-opacity-10 rounded-circle p-3 me-3">
+                                            <i class="bi bi-people text-danger fs-4"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="text-muted mb-1">Tổng số người dùng</h6>
+                                            <h3 class="mb-0 text-danger">{{ $users->count() }}</h3>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center">
+                                        <div class="icon-box bg-danger bg-opacity-10 rounded-circle p-3 me-3">
+                                            <i class="bi bi-person-check text-danger fs-4"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="text-muted mb-1">Đã xác thực</h6>
+                                            <h3 class="mb-0 text-danger">{{ $users->where('email_verified_at', '!=', null)->count() }}</h3>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center">
+                                        <div class="icon-box bg-danger bg-opacity-10 rounded-circle p-3 me-3">
+                                            <i class="bi bi-person-x text-danger fs-4"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="text-muted mb-1">Chưa xác thực</h6>
+                                            <h3 class="mb-0 text-danger">{{ $users->where('email_verified_at', null)->count() }}</h3>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center">
+                                        <div class="icon-box bg-danger bg-opacity-10 rounded-circle p-3 me-3">
+                                            <i class="bi bi-shield-check text-danger fs-4"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="text-muted mb-1">Quản trị viên</h6>
+                                            <h3 class="mb-0 text-danger">{{ $users->where('role', 'admin')->count() }}</h3>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <div class="d-flex gap-2">
-                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addUserModal">
+                            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#addUserModal">
                                 <i class="bi bi-plus-lg me-2"></i>Thêm người dùng
                             </button>
                         </div>
@@ -98,22 +170,56 @@
                         <table class="table table-hover align-middle">
                             <thead class="table-light">
                                 <tr>
-                                    <th>ID</th>
-                                    <th>Tên</th>
-                                    <th>Email</th>
-                                    <th>Vai trò</th>
-                                    <th>Trạng thái Email</th>
-                                    <th>Ngày tạo</th>
-                                    <th>Thao tác</th>
+                                    <th class="text-center" style="width: 120px">Thao tác</th>
+                                    <th class="text-center" style="width: 60px">ID</th>
+                                    <th style="min-width: 200px">Tên</th>
+                                    <th style="min-width: 250px">Email</th>
+                                    <th class="text-center" style="width: 120px">Vai trò</th>
+                                    <th class="text-center" style="width: 120px">Trạng thái</th>
+                                    <th style="min-width: 150px">Ngày tạo</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach($users as $user)
                                 <tr>
-                                    <td>{{ $user->id }}</td>
-                                    <td class="fw-medium">{{ $user->name }}</td>
-                                    <td>{{ $user->email }}</td>
+                                    <td class="text-center">
+                                        @if(Auth::id() !== $user->id)
+                                            <div class="btn-group">
+                                                <button type="button" class="btn btn-sm btn-outline-danger me-2" 
+                                                        data-bs-toggle="modal" 
+                                                        data-bs-target="#editUserModal{{ $user->id }}">
+                                                    <i class="bi bi-pencil"></i>
+                                                </button>
+                                                <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" class="d-inline">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger" 
+                                                            onclick="return confirm('Bạn có chắc chắn muốn xóa người dùng {{ $user->name }}?')">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        @else
+                                            <span class="badge bg-danger-subtle text-danger">
+                                                <i class="bi bi-person-check me-1"></i>Tài khoản hiện tại
+                                            </span>
+                                        @endif
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="avatar-circle bg-danger bg-opacity-10 text-danger mx-auto">
+                                            {{ $user->id }}
+                                        </div>
+                                    </td>
                                     <td>
+                                        <div class="fw-bold">{{ $user->name }}</div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <i class="bi bi-envelope text-danger me-2"></i>
+                                            <span>{{ $user->email }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="text-center">
                                         @php
                                             $roleColors = [
                                                 'admin' => 'danger',
@@ -130,30 +236,18 @@
                                             {{ $roleNames[$user->role] ?? ucfirst($user->role) }}
                                         </span>
                                     </td>
-                                    <td>
+                                    <td class="text-center">
                                         <span class="badge bg-{{ $user->email_verified_at ? 'success' : 'warning' }}">
                                             {{ $user->email_verified_at ? 'Đã xác thực' : 'Chưa xác thực' }}
                                         </span>
                                     </td>
-                                    <td>{{ $user->created_at->format('d/m/Y H:i') }}</td>
                                     <td>
-                                        @if(Auth::id() !== $user->id)
-                                            <button type="button" class="btn btn-sm btn-outline-info" 
-                                                    data-bs-toggle="modal" 
-                                                    data-bs-target="#editUserModal{{ $user->id }}">
-                                                <i class="bi bi-pencil"></i>
-                                            </button>
-                                            <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" class="d-inline">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Bạn có chắc chắn muốn xóa người dùng {{ $user->name }}?')">
-                                                    <i class="bi bi-trash"></i>
-                                                </button>
-                                            </form>
-                                        @else
-                                            <span class="badge bg-info">Tài khoản hiện tại</span>
-                                        @endif
+                                        <div class="d-flex align-items-center">
+                                            <i class="bi bi-calendar text-danger me-2"></i>
+                                            <span>{{ $user->created_at->format('d/m/Y H:i') }}</span>
+                                        </div>
                                     </td>
+                                    
                                 </tr>
                                 @endforeach
                             </tbody>
@@ -169,7 +263,7 @@
 <div class="modal fade" id="addUserModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header bg-primary text-white">
+            <div class="modal-header bg-danger text-white">
                 <h5 class="modal-title">
                     <i class="bi bi-person-plus me-2"></i>Thêm người dùng mới
                 </h5>
@@ -181,28 +275,28 @@
                     <div class="mb-4">
                         <label class="form-label">Tên người dùng</label>
                         <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-person"></i></span>
+                            <span class="input-group-text"><i class="bi bi-person text-danger"></i></span>
                             <input type="text" class="form-control" name="name" required placeholder="Nhập tên người dùng">
                         </div>
                     </div>
                     <div class="mb-4">
                         <label class="form-label">Email</label>
                         <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                            <span class="input-group-text"><i class="bi bi-envelope text-danger"></i></span>
                             <input type="email" class="form-control" name="email" required placeholder="Nhập địa chỉ email">
                         </div>
                     </div>
                     <div class="mb-4">
                         <label class="form-label">Mật khẩu</label>
                         <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-key"></i></span>
+                            <span class="input-group-text"><i class="bi bi-key text-danger"></i></span>
                             <input type="password" class="form-control" name="password" required placeholder="Nhập mật khẩu">
                         </div>
                     </div>
                     <div class="mb-4">
                         <label class="form-label">Vai trò</label>
                         <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-person-badge"></i></span>
+                            <span class="input-group-text"><i class="bi bi-person-badge text-danger"></i></span>
                             <select class="form-select" name="role" required>
                                 <option value="" disabled selected>Chọn vai trò</option>
                                 <option value="candidate">Ứng viên</option>
@@ -216,7 +310,7 @@
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
                         <i class="bi bi-x-circle me-2"></i>Hủy
                     </button>
-                    <button type="submit" class="btn btn-primary">
+                    <button type="submit" class="btn btn-danger">
                         <i class="bi bi-check-circle me-2"></i>Thêm
                     </button>
                 </div>
@@ -230,7 +324,7 @@
 <div class="modal fade" id="editUserModal{{ $user->id }}" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header bg-info text-white">
+            <div class="modal-header bg-danger text-white">
                 <h5 class="modal-title">
                     <i class="bi bi-person-check me-2"></i>Cập nhật thông tin người dùng
                 </h5>
@@ -243,21 +337,21 @@
                     <div class="mb-4">
                         <label class="form-label">Tên người dùng</label>
                         <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-person"></i></span>
+                            <span class="input-group-text"><i class="bi bi-person text-danger"></i></span>
                             <input type="text" class="form-control" name="name" required value="{{ $user->name }}">
                         </div>
                     </div>
                     <div class="mb-4">
                         <label class="form-label">Email</label>
                         <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                            <span class="input-group-text"><i class="bi bi-envelope text-danger"></i></span>
                             <input type="email" class="form-control" name="email" required value="{{ $user->email }}">
                         </div>
                     </div>
                     <div class="mb-4">
                         <label class="form-label">Mật khẩu mới</label>
                         <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-key"></i></span>
+                            <span class="input-group-text"><i class="bi bi-key text-danger"></i></span>
                             <input type="password" class="form-control @error('password') is-invalid @enderror" 
                                    name="password" 
                                    placeholder="Nhập mật khẩu mới (để trống nếu không muốn thay đổi)">
@@ -275,7 +369,7 @@
                     <div class="mb-4">
                         <label class="form-label">Vai trò</label>
                         <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-person-badge"></i></span>
+                            <span class="input-group-text"><i class="bi bi-person-badge text-danger"></i></span>
                             <select class="form-select" name="role" required>
                                 <option value="candidate" {{ $user->role == 'candidate' ? 'selected' : '' }}>Ứng viên</option>
                                 <option value="hr" {{ $user->role == 'hr' ? 'selected' : '' }}>HR</option>
@@ -288,7 +382,7 @@
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
                         <i class="bi bi-x-circle me-2"></i>Hủy
                     </button>
-                    <button type="submit" class="btn btn-info text-white">
+                    <button type="submit" class="btn btn-danger">
                         <i class="bi bi-check-circle me-2"></i>Cập nhật
                     </button>
                 </div>

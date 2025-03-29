@@ -5,6 +5,7 @@
 @section('content')
 <div class="container-fluid px-4 py-5">
     <!-- Hero Section -->
+    @if(!Auth::check() || Auth::user()->role !== 'admin')
     <div class="row align-items-center mb-5">
         <div class="col-lg-6">
             <h1 class="display-4 fw-bold text-black mb-3">Tìm việc làm phù hợp</h1>
@@ -13,12 +14,15 @@
                 <a href="#job-listings" class="btn btn-danger btn-lg">
                     <i class="bi bi-search me-2"></i>Xem việc làm
                 </a>
-                <a href="{{ route('candidate.profile') }}" class="btn btn-outline-danger btn-lg">
-                    <i class="bi bi-person me-2"></i>Hồ sơ của tôi
-                </a>
+                
+                    <a href="{{ route('candidate.profile') }}" class="btn btn-outline-danger btn-lg">
+                        <i class="bi bi-person me-2"></i>Hồ sơ của tôi
+                    </a>
             </div>
         </div>
     </div>
+    @endif
+
 
     <!-- Job Listings Section -->
     <div id="job-listings">
@@ -47,7 +51,7 @@
                                         <div class="me-4">
                                             <h5 class="card-title mb-1 text-dark">{{ $job->job_name }}</h5>
                                             <p class="text-muted mb-0">
-                                                <i class="bi bi-building text-primary me-1"></i>{{ $job->company->title }}
+                                                <i class="bi bi-building text-primary me-1"></i>{{ $job->department ? $job->department->name : 'Chưa phân công' }}
                                             </p>
                                         </div>
                                         @if($job->job_quantity > 0 && \Carbon\Carbon::parse($job->expiration_date)->isFuture())
@@ -60,7 +64,7 @@
                                     </div>
                                     
                                     <p class="card-text text-muted mb-3">
-                                        <i class="bi bi-geo-alt text-primary me-2"></i>{{ $job->company->location }}
+                                        <i class="bi bi-geo-alt text-primary me-2"></i>{{ $job->department->location ?? 'Không có địa chỉ' }}
                                     </p>
                                     
                                     <p class="card-text text-dark mb-3">{{ Str::limit($job->job_detail, 100) }}</p>

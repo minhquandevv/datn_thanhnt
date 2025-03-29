@@ -7,7 +7,7 @@
     <!-- Welcome Section -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h4 class="text-primary fw-bold mb-1">Xin chào, {{ $candidate->fullname }}!</h4>
+            <h4 class="text-dark fw-bold mb-1">Xin chào, {{ $candidate->fullname }}!</h4>
             <p class="text-muted mb-0">Chào mừng bạn đến với hệ thống quản lý ứng tuyển</p>
         </div>
         <div class="d-flex gap-2">
@@ -84,7 +84,7 @@
                             <thead>
                                 <tr>
                                     <th>Vị trí</th>
-                                    <th>Công ty</th>
+                                    <th>Phòng ban</th>
                                     <th>Ngày nộp</th>
                                     <th>Trạng thái</th>
                                     <th class="text-center">Thao tác</th>
@@ -114,22 +114,22 @@
                                             @endif
                                         </td>
                                         <td>
-                                            @if($application->jobOffer && $application->jobOffer->company)
+                                            @if($application->jobOffer && $application->jobOffer->department)
                                                 <div class="d-flex align-items-center">
                                                     <i class="bi bi-building text-primary me-2"></i>
                                                     <div>
-                                                        <div class="fw-medium">{{ $application->jobOffer->company->title }}</div>
-                                                        @if($application->jobOffer->company->location)
+                                                        <div class="fw-medium">{{ $application->jobOffer->department->name }}</div>
+                                                        @if($application->jobOffer->department->location)
                                                             <small class="text-muted">
                                                                 <i class="bi bi-geo-alt me-1"></i>
-                                                                {{ $application->jobOffer->company->location }}
+                                                                {{ $application->jobOffer->department->location }}
                                                             </small>
                                                         @endif
                                                     </div>
                                                 </div>
                                             @else
                                                 <span class="text-muted">
-                                                    <i class="bi bi-exclamation-circle me-2"></i>Công ty không tồn tại
+                                                    <i class="bi bi-exclamation-circle me-2"></i>Phòng ban chưa phân công
                                                 </span>
                                             @endif
                                         </td>
@@ -246,6 +246,7 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize tooltips
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
     var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
         return new bootstrap.Tooltip(tooltipTriggerEl)

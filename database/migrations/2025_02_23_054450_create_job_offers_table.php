@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('job_name');
             $table->foreignId('company_id')->constrained('companies')->onDelete('cascade');
+            $table->foreignId('department_id')->nullable()->constrained('departments', 'department_id')->nullOnDelete();
             $table->foreignId('job_category_id')->nullable()->constrained('job_categories')->nullOnDelete();
             $table->date('expiration_date');
             $table->text('job_detail')->nullable();

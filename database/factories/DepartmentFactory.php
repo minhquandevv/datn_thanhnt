@@ -17,7 +17,6 @@ class DepartmentFactory extends Factory
     {
         return [
             'name' => $this->faker->word,
-            'company_id' => Company::factory(),
         ];
     }
 }

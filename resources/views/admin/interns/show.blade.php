@@ -62,9 +62,9 @@
                             <div class="row g-4">
                                 <div class="col-md-6">
                                     <div class="card h-100 border-0 shadow-sm">
-                                        <div class="card-header bg-primary bg-opacity-10 border-0 py-3">
+                                        <div class="card-header bg-danger bg-opacity-10 border-0 py-3">
                                             <h5 class="card-title mb-0 d-flex align-items-center">
-                                                <i class="bi bi-mortarboard text-primary me-2"></i>
+                                                <i class="bi bi-mortarboard text-danger me-2"></i>
                                                 Thông tin học tập
                                             </h5>
                                         </div>
@@ -72,7 +72,7 @@
                                             <div class="info-grid">
                                                 <div class="info-item mb-3">
                                                     <label class="text-muted small mb-1">Trường học</label>
-                                                    <p class="mb-0">{{ $intern->university }}</p>
+                                                    <p class="mb-0">{{ $intern->university ? $intern->university->name : 'Chưa phân công' }}</p>
                                                 </div>
                                                 <div class="info-item mb-3">
                                                     <label class="text-muted small mb-1">Chuyên ngành</label>
@@ -84,12 +84,10 @@
                                                 </div>
                                             </div>
                                             @if($intern->degree_image)
-                                                <div class="mt-4">
-                                                    <label class="text-muted small mb-2">Ảnh bằng cấp</label>
+                                                <div class="mb-2">
                                                     <div class="image-preview rounded overflow-hidden">
                                                         <img src="{{ asset('uploads/documents/' . $intern->degree_image) }}" 
-                                                             alt="Ảnh bằng cấp" 
-                                                             class="img-fluid">
+                                                             alt="Ảnh bằng cấp" class="img-fluid">
                                                     </div>
                                                 </div>
                                             @endif
@@ -98,9 +96,9 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="card h-100 border-0 shadow-sm">
-                                        <div class="card-header bg-success bg-opacity-10 border-0 py-3">
+                                        <div class="card-header bg-danger bg-opacity-10 border-0 py-3">
                                             <h5 class="card-title mb-0 d-flex align-items-center">
-                                                <i class="bi bi-briefcase text-success me-2"></i>
+                                                <i class="bi bi-briefcase text-danger me-2"></i>
                                                 Thông tin công việc
                                             </h5>
                                         </div>
@@ -108,7 +106,7 @@
                                             <div class="info-grid">
                                                 <div class="info-item mb-3">
                                                     <label class="text-muted small mb-1">Phòng ban</label>
-                                                    <p class="mb-0">{{ $intern->department }}</p>
+                                                    <p class="mb-0">{{ $intern->department ? $intern->department->name : 'Chưa phân công' }}</p>
                                                 </div>
                                                 <div class="info-item mb-3">
                                                     <label class="text-muted small mb-1">Vị trí</label>
@@ -130,9 +128,9 @@
                     <div class="row g-4 mt-2">
                         <div class="col-md-6">
                             <div class="card h-100 border-0 shadow-sm">
-                                <div class="card-header bg-info bg-opacity-10 border-0 py-3">
+                                <div class="card-header bg-danger bg-opacity-10 border-0 py-3">
                                     <h5 class="card-title mb-0 d-flex align-items-center">
-                                        <i class="bi bi-file-earmark-text text-info me-2"></i>
+                                        <i class="bi bi-file-earmark-text text-danger me-2"></i>
                                         Thông tin giấy tờ
                                     </h5>
                                 </div>
@@ -160,9 +158,9 @@
                         </div>
                         <div class="col-md-6">
                             <div class="card h-100 border-0 shadow-sm">
-                                <div class="card-header bg-warning bg-opacity-10 border-0 py-3">
+                                <div class="card-header bg-danger bg-opacity-10 border-0 py-3">
                                     <h5 class="card-title mb-0 d-flex align-items-center">
-                                        <i class="bi bi-shield-lock text-warning me-2"></i>
+                                        <i class="bi bi-shield-lock text-danger me-2"></i>
                                         Thông tin tài khoản
                                     </h5>
                                 </div>
@@ -183,6 +181,54 @@
                                         <div class="info-item">
                                             <label class="text-muted small mb-1">Cập nhật lúc</label>
                                             <p class="mb-0">{{ $intern->updated_at ? date('d/m/Y H:i', strtotime($intern->updated_at)) : 'N/A' }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- University and Department Info -->
+                    <div class="row g-4 mt-2">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="card-title mb-0">
+                                        <i class="bi bi-building text-danger me-1"></i>
+                                        Thông tin trường đại học
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <p><strong>Tên trường:</strong> {{ $intern->university ? $intern->university->name : 'Chưa phân công' }}</p>
+                                            <p><strong>Địa chỉ:</strong> {{ $intern->university ? $intern->university->address : 'N/A' }}</p>
+                                            <p><strong>Website:</strong> 
+                                                @if($intern->university && $intern->university->website)
+                                                    <a href="{{ $intern->university->website }}" target="_blank">{{ $intern->university->website }}</a>
+                                                @else
+                                                    N/A
+                                                @endif
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="card-title mb-0">
+                                        <i class="bi bi-building text-danger me-1"></i>
+                                        Thông tin phòng ban
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <p><strong>Tên phòng ban:</strong> {{ $intern->department ? $intern->department->name : 'Chưa phân công' }}</p>
+                                            <p><strong>Địa chỉ:</strong> {{ $intern->department ? $intern->department->location : 'N/A' }}</p>
+                                            <p><strong>Mô tả:</strong> {{ $intern->department ? $intern->department->description : 'N/A' }}</p>
                                         </div>
                                     </div>
                                 </div>

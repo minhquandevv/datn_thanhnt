@@ -7,7 +7,7 @@
     <!-- Header Section -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h4 class="text-primary fw-bold mb-1">Danh sách đơn ứng tuyển</h4>
+            <h4 class="text-dark fw-bold mb-1">Danh sách đơn ứng tuyển</h4>
             <p class="text-muted mb-0">Quản lý và theo dõi các đơn ứng tuyển của bạn</p>
         </div>
         <a href="{{ route('candidate.dashboard') }}" class="btn btn-outline-primary">
@@ -54,22 +54,22 @@
                                     @endif
                                 </td>
                                 <td>
-                                    @if($application->jobOffer && $application->jobOffer->company)
+                                    @if($application->jobOffer && $application->jobOffer->department)
                                         <div class="d-flex align-items-center">
                                             <i class="bi bi-building text-primary me-2"></i>
                                             <div>
-                                                <div class="fw-medium">{{ $application->jobOffer->company->title }}</div>
-                                                @if($application->jobOffer->company->location)
+                                                <div class="fw-medium">{{ $application->jobOffer->department->name }}</div>
+                                                @if($application->jobOffer->department->location)
                                                     <small class="text-muted">
                                                         <i class="bi bi-geo-alt me-1"></i>
-                                                        {{ $application->jobOffer->company->location }}
+                                                        {{ $application->jobOffer->department->location }}
                                                     </small>
                                                 @endif
                                             </div>
                                         </div>
                                     @else
                                         <span class="text-muted">
-                                            <i class="bi bi-exclamation-circle me-2"></i>Công ty không tồn tại
+                                            <i class="bi bi-exclamation-circle me-2"></i>Phòng ban chưa phân công
                                         </span>
                                     @endif
                                 </td>
@@ -212,10 +212,10 @@
                                         <i class="bi bi-building text-primary me-2 mt-1"></i>
                                         <div>
                                             <div class="fw-medium">Công ty:</div>
-                                            @if($application->jobOffer && $application->jobOffer->company)
-                                                <div>{{ $application->jobOffer->company->title }}</div>
+                                            @if($application->jobOffer && $application->jobOffer->department)
+                                                <div>{{ $application->jobOffer->department->name }}</div>
                                             @else
-                                                <span class="text-muted">Công ty không tồn tại</span>
+                                                <span class="text-muted">Phòng ban chưa phân công</span>
                                             @endif
                                         </div>
                                     </div>
@@ -234,8 +234,8 @@
                                         <i class="bi bi-geo-alt text-primary me-2 mt-1"></i>
                                         <div>
                                             <div class="fw-medium">Địa điểm:</div>
-                                            @if($application->jobOffer && $application->jobOffer->company)
-                                                <div>{{ $application->jobOffer->company->location }}</div>
+                                            @if($application->jobOffer && $application->jobOffer->department)
+                                                <div>{{ $application->jobOffer->department->location }}</div>
                                             @else
                                                 <span class="text-muted">Không có thông tin</span>
                                             @endif
@@ -424,6 +424,7 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize tooltips
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
     var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
         return new bootstrap.Tooltip(tooltipTriggerEl)

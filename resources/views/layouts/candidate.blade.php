@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title') - Quản lý ứng viên</title>
+    <title>@yield('title') - Quản lý thông tin</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
     
@@ -137,7 +137,7 @@
         <div class="container">
             <a class="navbar-brand" href="{{ route('candidate.dashboard') }}">
                 <i class="bi bi-person-badge me-2"></i>
-                Quản lý ứng viên
+                Quản lý thông tin
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -219,5 +219,58 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        // Common notification functions
+        function showSuccess(message) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Thành công!',
+                text: message,
+                timer: 2000,
+                showConfirmButton: false
+            });
+        }
+
+        function showError(message) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi!',
+                text: message
+            });
+        }
+
+        function showConfirm(title, text, callback) {
+            Swal.fire({
+                title: title,
+                text: text,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Đồng ý',
+                cancelButtonText: 'Hủy'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    callback();
+                }
+            });
+        }
+
+        // Show session messages
+        @if(session('success'))
+            showSuccess('{{ session('success') }}');
+        @endif
+
+        @if(session('error'))
+            showError('{{ session('error') }}');
+        @endif
+
+        // Show validation errors
+        @if($errors->any())
+            showError('Vui lòng kiểm tra lại thông tin');
+        @endif
+    </script>
+    @stack('scripts')
 </body>
 </html> 

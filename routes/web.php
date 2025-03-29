@@ -7,15 +7,19 @@ use App\Http\Controllers\admin\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\public\HomeController;
 use App\Http\Controllers\JobApplicationController;
-use App\Http\Controllers\admin\SchoolController;
+use App\Http\Controllers\admin\UniversityController;
 use App\Http\Controllers\CandidateController;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\admin\CompanyController;
-use App\Http\Controllers\admin\ManagerInternController;
+use App\Http\Controllers\admin\InternController;
 use App\Http\Controllers\Intern\InternDashboardController;
 use App\Http\Controllers\Intern\ProfileController;
 use App\Http\Controllers\admin\MentorController;
 use App\Http\Controllers\Mentor\MentorDashboardController;
+use App\Http\Controllers\admin\DepartmentController;
+use App\Http\Controllers\admin\HRDashboardController;
+use App\Http\Controllers\admin\RecruitmentPlanController;
+use App\Http\Controllers\admin\AdminDashboardController;
 
 // Authentication Routes
 Route::middleware('guest')->group(function () {
@@ -52,21 +56,25 @@ Route::middleware(['auth:candidate'])->group(function () {
     
     // Education routes
     Route::post('/candidate/education', [CandidateController::class, 'storeEducation'])->name('candidate.education.store');
+    Route::get('/candidate/education/{id}/edit', [CandidateController::class, 'editEducation'])->name('candidate.education.edit');
     Route::put('/candidate/education/{id}', [CandidateController::class, 'updateEducation'])->name('candidate.education.update');
     Route::delete('/candidate/education/{id}', [CandidateController::class, 'deleteEducation'])->name('candidate.education.delete');
     
     // Experience routes
     Route::post('/candidate/experience', [CandidateController::class, 'storeExperience'])->name('candidate.experience.store');
+    Route::get('/candidate/experience/{id}/edit', [CandidateController::class, 'editExperience'])->name('candidate.experience.edit');
     Route::put('/candidate/experience/{id}', [CandidateController::class, 'updateExperience'])->name('candidate.experience.update');
     Route::delete('/candidate/experience/{id}', [CandidateController::class, 'deleteExperience'])->name('candidate.experience.delete');
     
     // Skill routes
     Route::post('/candidate/skill', [CandidateController::class, 'storeSkill'])->name('candidate.skill.store');
+    Route::get('/candidate/skill/{id}/edit', [CandidateController::class, 'editSkill'])->name('candidate.skill.edit');
     Route::put('/candidate/skill/{id}', [CandidateController::class, 'updateSkill'])->name('candidate.skill.update');
     Route::delete('/candidate/skill/{id}', [CandidateController::class, 'deleteSkill'])->name('candidate.skill.delete');
     
     // Certificate routes
     Route::post('/candidate/certificate', [CandidateController::class, 'storeCertificate'])->name('candidate.certificate.store');
+    Route::get('/candidate/certificate/{id}/edit', [CandidateController::class, 'editCertificate'])->name('candidate.certificate.edit');
     Route::put('/candidate/certificate/{id}', [CandidateController::class, 'updateCertificate'])->name('candidate.certificate.update');
     Route::delete('/candidate/certificate/{id}', [CandidateController::class, 'deleteCertificate'])->name('candidate.certificate.delete');
     
@@ -75,8 +83,8 @@ Route::middleware(['auth:candidate'])->group(function () {
 });
 
 //Admin routes
-Route::middleware(['auth:web', 'admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+Route::middleware(['auth', 'check.role:admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
     Route::get('/candidates', [AdminController::class, 'candidate'])->name('candidates');
     Route::get('/candidates/{id}', [AdminController::class, 'showCandidate'])->name('candidates.show');
     Route::post('/candidates', [AdminController::class, 'storeCandidate'])->name('candidates.store');
@@ -92,14 +100,14 @@ Route::middleware(['auth:web', 'admin'])->prefix('admin')->name('admin.')->group
     Route::put('/job-offers/{id}', [JobOfferController::class, 'update'])->name('job-offers.update');
     Route::delete('/job-offers/{id}', [JobOfferController::class, 'destroy'])->name('job-offers.destroy');
     
-    // School routes
-    Route::resource('schools', SchoolController::class)->names([
-        'index' => 'schools.index',
-        'create' => 'schools.create',
-        'store' => 'schools.store',
-        'edit' => 'schools.edit',
-        'update' => 'schools.update',
-        'destroy' => 'schools.destroy'
+    // University routes
+    Route::resource('universities', UniversityController::class)->names([
+        'index' => 'universities.index',
+        'create' => 'universities.create',
+        'store' => 'universities.store',
+        'edit' => 'universities.edit',
+        'update' => 'universities.update',
+        'destroy' => 'universities.destroy'
     ]);
 
     // User management routes
@@ -112,10 +120,28 @@ Route::middleware(['auth:web', 'admin'])->prefix('admin')->name('admin.')->group
     Route::resource('companies', CompanyController::class);
 
     // Intern management routes
-    Route::resource('interns', ManagerInternController::class);
+    Route::resource('interns', InternController::class);
 
     // Mentor management routes
     Route::resource('mentors', MentorController::class);
+
+    // Department routes
+    Route::get('/departments', [DepartmentController::class, 'index'])->name('departments.index');
+    Route::get('/departments/create', [DepartmentController::class, 'create'])->name('departments.create');
+    Route::post('/departments', [DepartmentController::class, 'store'])->name('departments.store');
+    Route::get('/departments/{department}/edit', [DepartmentController::class, 'edit'])->name('departments.edit');
+    Route::put('/departments/{department}', [DepartmentController::class, 'update'])->name('departments.update');
+    Route::delete('/departments/{department}', [DepartmentController::class, 'destroy'])->name('departments.destroy');
+
+    // Recruitment plan routes
+    Route::resource('recruitment-plans', RecruitmentPlanController::class);
+    Route::post('/recruitment-plans/{recruitmentPlan}/submit', [RecruitmentPlanController::class, 'submit'])->name('recruitment-plans.submit');
+
+    // Recruitment plan review routes
+    Route::get('/recruitment-plans', [RecruitmentPlanController::class, 'index'])->name('recruitment-plans.index');
+    Route::get('/recruitment-plans/{recruitmentPlan}', [RecruitmentPlanController::class, 'show'])->name('recruitment-plans.show');
+    Route::post('/recruitment-plans/{recruitmentPlan}/approve', [RecruitmentPlanController::class, 'approve'])->name('recruitment-plans.approve');
+    Route::post('/recruitment-plans/{recruitmentPlan}/reject', [RecruitmentPlanController::class, 'reject'])->name('recruitment-plans.reject');
 });
 
 // Mentor login routes
@@ -175,4 +201,11 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/jobs/{job}', [JobController::class, 'show'])->name('jobs.show');
 Route::middleware(['auth:candidate'])->group(function () {
     Route::post('/jobs/{job}/apply', [JobController::class, 'apply'])->name('jobs.apply');
+});
+
+// HR routes
+Route::middleware(['auth', 'check.role:hr'])->prefix('hr')->name('hr.')->group(function () {
+    Route::get('/dashboard', [HRDashboardController::class, 'index'])->name('dashboard');
+    Route::resource('recruitment-plans', RecruitmentPlanController::class);
+    Route::post('recruitment-plans/{recruitmentPlan}/submit', [RecruitmentPlanController::class, 'submit'])->name('recruitment-plans.submit');
 });

@@ -5,37 +5,43 @@ namespace App\Http\Controllers\admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\JobOffer;
-use App\Models\Company;
+use App\Models\Department;
 use App\Models\Skill;
 use App\Models\Benefit;
 use App\Models\JobCategory;
+use App\Models\JobSkill;
+use App\Models\JobBenefit;
 
 class JobOfferController extends Controller
 {
     public function index(Request $request)
     {
-        $query = JobOffer::query()->with(['company', 'skills', 'benefits']);
+        $query = JobOffer::query()->with(['department' => function($query) {
+            $query->select('department_id', 'name');
+        }, 'skills', 'benefits']);
 
         if ($request->filled('job_name')) {
             $query->where('job_name', 'like', '%' . $request->job_name . '%');
         }
 
-        if ($request->filled('company_id')) {
-            $query->where('company_id', $request->company_id);
+        if ($request->filled('department_id')) {
+            $query->where('department_id', $request->department_id);
         }
 
         $jobOffers = $query->latest()->get();
-        $companies = Company::all();
+        $departments = Department::select('department_id', 'name')->orderBy('name')->get();
         $jobCategories = JobCategory::all();
+        $jobSkills = JobSkill::all();
+        $jobBenefits = JobBenefit::all();
 
-        return view('admin.quanlytintuyendung', compact('jobOffers', 'companies', 'jobCategories'));
+        return view('admin.quanlytintuyendung', compact('jobOffers', 'departments', 'jobCategories', 'jobSkills', 'jobBenefits'));
     }
 
     public function store(Request $request)
     {
         $data = $request->validate([
             'job_name' => 'required|string|max:255',
-            'company_id' => 'required|exists:companies,id',
+            'department_id' => 'nullable|exists:departments,department_id',
             'job_category_id' => 'nullable|exists:job_categories,id',
             'job_position' => 'nullable|string|max:255',
             'job_salary' => 'nullable|numeric|min:0',
@@ -61,18 +67,18 @@ class JobOfferController extends Controller
 
     public function show($id)
     {
-        $jobOffer = JobOffer::with(['company', 'skills', 'benefits'])->findOrFail($id);
-        $companies = Company::all();
+        $jobOffer = JobOffer::with(['department', 'skills', 'benefits'])->findOrFail($id);
+        $departments = Department::all();
         $jobCategories = JobCategory::all();
-        return view('admin.chitiettintuyendung', compact('jobOffer', 'companies', 'jobCategories'));
+        return view('admin.chitiettintuyendung', compact('jobOffer', 'departments', 'jobCategories'));
     }
 
     public function edit($id)
     {
-        $jobOffer = JobOffer::with(['company', 'skills', 'benefits'])->findOrFail($id);
-        $companies = Company::all();
+        $jobOffer = JobOffer::with(['department', 'skills', 'benefits'])->findOrFail($id);
+        $departments = Department::all();
         $jobCategories = JobCategory::all();
-        return view('admin.chitiettintuyendung', compact('jobOffer', 'companies', 'jobCategories'));
+        return view('admin.chitiettintuyendung', compact('jobOffer', 'departments', 'jobCategories'));
     }
 
     public function update(Request $request, $id)
@@ -81,7 +87,7 @@ class JobOfferController extends Controller
 
         $data = $request->validate([
             'job_name' => 'required|string|max:255',
-            'company_id' => 'required|exists:companies,id',
+            'department_id' => 'nullable|exists:departments,department_id',
             'job_category_id' => 'nullable|exists:job_categories,id',
             'job_position' => 'nullable|string|max:255',
             'job_salary' => 'nullable|numeric|min:0',

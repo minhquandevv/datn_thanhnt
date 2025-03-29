@@ -10,10 +10,27 @@ class Department extends Model
     //
     use HasFactory;
 
-    protected $fillable = ['name', 'company_id'];
+    protected $primaryKey = 'department_id';
 
-    public function company()
+    protected $fillable = ['name'];
+    
+    public function users()
     {
-        return $this->belongsTo(Company::class);
+        return $this->hasMany(User::class);
+    }
+
+    public function jobOffers()
+    {
+        return $this->hasMany(JobOffer::class, 'department_id', 'department_id');
+    }
+
+    public function interns()
+    {
+        return $this->hasMany(Intern::class, 'department_id', 'department_id');
+    }
+
+    public function mentors()
+    {
+        return $this->hasMany(Mentor::class, 'department_id', 'department_id');
     }
 }

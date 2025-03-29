@@ -7,40 +7,44 @@
     $jobSkills = \App\Models\JobSkill::all();
     $jobBenefits = \App\Models\JobBenefit::all();
 @endphp
-<div class="content-container">
-    <div class="page-header mb-4">
-        <h4 class="page-title">
-            <i class="bi bi-briefcase text-primary me-2"></i>Chi tiết tin tuyển dụng
-        </h4>
+<div class="container-fluid px-2 py-3">
+    <!-- Header Section -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h4 text-danger fw-bold mb-0">
+                <i class="bi bi-briefcase me-2"></i>Chi tiết tin tuyển dụng
+            </h1>
+            <p class="text-muted mb-0 small">Xem và chỉnh sửa thông tin chi tiết tin tuyển dụng</p>
+        </div>
     </div>
 
-    <div class="card shadow-sm">
+    <div class="card border-0 shadow-sm">
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
-                    <h4 class="card-title mb-1">
+                    <h4 class="card-title mb-1 text-danger">
                         <span class="editable" data-field="job_name" data-original="{{ $jobOffer->job_name }}">
                             {{ $jobOffer->job_name }}
                         </span>
                     </h4>
                     <p class="text-muted mb-0">
-                        <i class="bi bi-building text-primary me-1"></i>{{ $jobOffer->company->title }}
+                        <i class="bi bi-building text-danger me-1"></i>{{ $jobOffer->department->name }}
                     </p>
                 </div>
                 <div class="d-flex align-items-center gap-2">
                     <div id="saveIndicator" class="alert alert-success mb-0 py-2 px-3" style="display: none;">
                         <i class="bi bi-check-circle me-2"></i>Đã lưu
                     </div>
-                    <button class="btn btn-primary" id="saveChanges" style="display: none;">
+                    <button class="btn btn-danger" id="saveChanges" style="display: none;">
                         <i class="bi bi-save me-2"></i>Lưu thay đổi
                     </button>
-                    <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editJobModal">
+                    <button class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#editJobModal">
                         <i class="bi bi-pencil-square me-2"></i>Sửa thông tin
                     </button>
                     <form action="{{ route('admin.job-offers.destroy', $jobOffer->id) }}" method="POST" class="d-inline">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="btn btn-danger" onclick="return confirm('Bạn có chắc muốn xóa?')">
+                        <button type="submit" class="btn btn-outline-danger" onclick="return confirm('Bạn có chắc muốn xóa?')">
                             <i class="bi bi-trash me-2"></i>Xóa
                         </button>
                     </form>
@@ -51,7 +55,7 @@
                 <div class="col-md-8">
                     <div class="card h-100 border-0 bg-light">
                         <div class="card-body">
-                            <h5 class="card-title text-primary mb-4">
+                            <h5 class="card-title text-danger mb-4">
                                 <i class="bi bi-file-text me-2"></i>Thông tin công việc
                             </h5>
                             
@@ -80,7 +84,7 @@
                                 <h6 class="text-muted mb-2">Kỹ năng yêu cầu:</h6>
                                 <div class="d-flex flex-wrap gap-2">
                                     @foreach($jobOffer->skills as $skill)
-                                        <span class="badge bg-primary">{{ $skill->name }}</span>
+                                        <span class="badge bg-danger bg-opacity-10 text-danger">{{ $skill->name }}</span>
                                     @endforeach
                                 </div>
                             </div>
@@ -101,34 +105,6 @@
                                     @endforeach
                                 </div>
                             </div>
-
-                            <!-- Kỹ năng yêu cầu -->
-                            <div class="info-group">
-                                <label class="info-label">
-                                    <i class="bi bi-tools text-primary me-2"></i>Kỹ năng yêu cầu
-                                </label>
-                                <div class="info-content">
-                                    <div class="d-flex flex-wrap gap-2">
-                                        @foreach($jobOffer->skills as $skill)
-                                            <span class="badge bg-primary">{{ $skill->name }}</span>
-                                        @endforeach
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Phúc lợi -->
-                            <div class="info-group">
-                                <label class="info-label">
-                                    <i class="bi bi-gift text-primary me-2"></i>Phúc lợi
-                                </label>
-                                <div class="info-content">
-                                    <div class="d-flex flex-wrap gap-2">
-                                        @foreach($jobOffer->benefits as $benefit)
-                                            <span class="badge bg-success">{{ $benefit->title }}</span>
-                                        @endforeach
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -136,18 +112,18 @@
                 <div class="col-md-4">
                     <div class="card h-100 border-0 bg-light">
                         <div class="card-body">
-                            <h5 class="card-title text-primary mb-4">
+                            <h5 class="card-title text-danger mb-4">
                                 <i class="bi bi-info-circle me-2"></i>Thông tin bổ sung
                             </h5>
                             
                             <div class="mb-4">
                                 <label class="form-label text-muted">
-                                    <i class="bi bi-building text-primary me-2"></i>Công ty
+                                    <i class="bi bi-building text-danger me-2"></i>Phòng ban
                                 </label>
-                                <select class="form-select editable" data-field="company_id" data-original="{{ $jobOffer->company_id }}">
-                                    @foreach($companies as $company)
-                                        <option value="{{ $company->id }}" {{ $jobOffer->company_id == $company->id ? 'selected' : '' }}>
-                                            {{ $company->title }}
+                                <select class="form-select editable" data-field="department_id" data-original="{{ $jobOffer->department_id }}">
+                                    @foreach($departments as $department)
+                                        <option value="{{ $department->department_id }}" {{ $jobOffer->department_id == $department->department_id ? 'selected' : '' }}>
+                                            {{ $department->name }}
                                         </option>
                                     @endforeach
                                 </select>
@@ -155,7 +131,7 @@
 
                             <div class="mb-4">
                                 <label class="form-label text-muted">
-                                    <i class="bi bi-grid text-primary me-2"></i>Danh mục công việc
+                                    <i class="bi bi-grid text-danger me-2"></i>Danh mục công việc
                                 </label>
                                 <select class="form-select editable" data-field="job_category_id" data-original="{{ $jobOffer->job_category_id }}">
                                     <option value="">Chọn danh mục</option>
@@ -169,7 +145,7 @@
 
                             <div class="mb-4">
                                 <label class="form-label text-muted">
-                                    <i class="bi bi-person-badge text-primary me-2"></i>Vị trí
+                                    <i class="bi bi-person-badge text-danger me-2"></i>Vị trí
                                 </label>
                                 <input type="text" class="form-control editable" data-field="job_position" 
                                     value="{{ $jobOffer->job_position }}" data-original="{{ $jobOffer->job_position }}">
@@ -177,7 +153,7 @@
 
                             <div class="mb-4">
                                 <label class="form-label text-muted">
-                                    <i class="bi bi-cash text-primary me-2"></i>Mức lương
+                                    <i class="bi bi-cash text-danger me-2"></i>Mức lương
                                 </label>
                                 <div class="input-group">
                                     <input type="number" class="form-control editable" data-field="job_salary" 
@@ -188,7 +164,7 @@
 
                             <div class="mb-4">
                                 <label class="form-label text-muted">
-                                    <i class="bi bi-people text-primary me-2"></i>Số lượng tuyển
+                                    <i class="bi bi-people text-danger me-2"></i>Số lượng tuyển
                                 </label>
                                 <input type="number" class="form-control editable" data-field="job_quantity" 
                                     value="{{ $jobOffer->job_quantity }}" data-original="{{ $jobOffer->job_quantity }}" min="1">
@@ -196,21 +172,21 @@
 
                             <div class="mb-4">
                                 <label class="form-label text-muted">
-                                    <i class="bi bi-geo-alt text-primary me-2"></i>Địa điểm
+                                    <i class="bi bi-geo-alt text-danger me-2"></i>Địa điểm
                                 </label>
                                 <div class="d-flex align-items-center">
-                                    <i class="bi bi-geo-alt-fill text-primary me-2"></i>
-                                    <span>{{ $jobOffer->company->location }}</span>
+                                    <i class="bi bi-geo-alt-fill text-danger me-2"></i>
+                                    <span>{{ $jobOffer->department->location ?? 'Không có địa chỉ' }}</span>
                                 </div>
                             </div>
 
                             <div class="mb-4">
                                 <label class="form-label text-muted">
-                                    <i class="bi bi-calendar text-primary me-2"></i>Hạn nộp
+                                    <i class="bi bi-calendar text-danger me-2"></i>Hạn nộp
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-white">
-                                        <i class="bi bi-calendar-check text-primary"></i>
+                                        <i class="bi bi-calendar-check text-danger"></i>
                                     </span>
                                     <input type="date" class="form-control editable" data-field="expiration_date" 
                                         value="{{ $jobOffer->expiration_date ? date('Y-m-d', strtotime($jobOffer->expiration_date)) : '' }}" 
@@ -220,10 +196,10 @@
 
                             <div>
                                 <label class="form-label text-muted">
-                                    <i class="bi bi-clock text-primary me-2"></i>Thời gian tạo
+                                    <i class="bi bi-clock text-danger me-2"></i>Thời gian tạo
                                 </label>
                                 <div class="d-flex align-items-center">
-                                    <i class="bi bi-clock-fill text-primary me-2"></i>
+                                    <i class="bi bi-clock-fill text-danger me-2"></i>
                                     <span>{{ $jobOffer->created_at->format('d/m/Y H:i') }}</span>
                                 </div>
                             </div>
@@ -240,8 +216,8 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header bg-light">
-                <h5 class="modal-title">
-                    <i class="bi bi-pencil-square text-warning me-2"></i>Chỉnh sửa thông tin tuyển dụng
+                <h5 class="modal-title text-danger">
+                    <i class="bi bi-pencil-square me-2"></i>Chỉnh sửa thông tin tuyển dụng
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
@@ -252,31 +228,31 @@
                     <div class="row g-4">
                         <!-- Thông tin cơ bản -->
                         <div class="col-12">
-                            <h6 class="text-primary mb-3">
+                            <h6 class="text-danger mb-3">
                                 <i class="bi bi-info-circle me-2"></i>Thông tin cơ bản
                             </h6>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">
-                                <i class="bi bi-briefcase text-primary me-1"></i>Tên công việc
+                                <i class="bi bi-briefcase text-danger me-1"></i>Tên công việc
                             </label>
                             <input type="text" class="form-control" name="job_name" value="{{ $jobOffer->job_name }}" required>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">
-                                <i class="bi bi-building text-primary me-1"></i>Công ty
+                                <i class="bi bi-building text-danger me-1"></i>Phòng ban
                             </label>
-                            <select class="form-select" name="company_id" required>
-                                @foreach($companies as $company)
-                                    <option value="{{ $company->id }}" {{ $jobOffer->company_id == $company->id ? 'selected' : '' }}>
-                                        {{ $company->title }}
+                            <select class="form-select" name="department_id" required>
+                                @foreach($departments as $department)
+                                    <option value="{{ $department->department_id }}" {{ $jobOffer->department_id == $department->department_id ? 'selected' : '' }}>
+                                        {{ $department->name }}
                                     </option>
                                 @endforeach
                             </select>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">
-                                <i class="bi bi-grid text-primary me-1"></i>Danh mục công việc
+                                <i class="bi bi-grid text-danger me-1"></i>Danh mục công việc
                             </label>
                             <select class="form-select" name="job_category_id">
                                 <option value="">Chọn danh mục</option>
@@ -289,20 +265,20 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">
-                                <i class="bi bi-person-badge text-primary me-1"></i>Vị trí
+                                <i class="bi bi-person-badge text-danger me-1"></i>Vị trí
                             </label>
                             <input type="text" class="form-control" name="job_position" value="{{ $jobOffer->job_position }}">
                         </div>
 
                         <!-- Thông tin về lương và số lượng -->
                         <div class="col-12 mt-4">
-                            <h6 class="text-primary mb-3">
-                                <i class="bi bi-cash-stack text-primary me-2"></i>Thông tin về lương và số lượng
+                            <h6 class="text-danger mb-3">
+                                <i class="bi bi-cash-stack text-danger me-2"></i>Thông tin về lương và số lượng
                             </h6>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">
-                                <i class="bi bi-cash text-primary me-1"></i>Mức lương
+                                <i class="bi bi-cash text-danger me-1"></i>Mức lương
                             </label>
                             <div class="input-group">
                                 <input type="number" class="form-control" name="job_salary" value="{{ $jobOffer->job_salary }}" min="0" step="100000">
@@ -311,24 +287,24 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">
-                                <i class="bi bi-people text-primary me-1"></i>Số lượng tuyển
+                                <i class="bi bi-people text-danger me-1"></i>Số lượng tuyển
                             </label>
                             <input type="number" class="form-control" name="job_quantity" value="{{ $jobOffer->job_quantity }}" min="1" required>
                         </div>
 
                         <!-- Thời gian -->
                         <div class="col-12 mt-4">
-                            <h6 class="text-primary mb-3">
-                                <i class="bi bi-clock text-primary me-2"></i>Thời gian
+                            <h6 class="text-danger mb-3">
+                                <i class="bi bi-clock text-danger me-2"></i>Thời gian
                             </h6>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">
-                                <i class="bi bi-calendar-check text-primary me-1"></i>Hạn nộp
+                                <i class="bi bi-calendar-check text-danger me-1"></i>Hạn nộp
                             </label>
                             <div class="input-group">
                                 <span class="input-group-text bg-light">
-                                    <i class="bi bi-calendar text-primary"></i>
+                                    <i class="bi bi-calendar text-danger"></i>
                                 </span>
                                 <input type="date" class="form-control" name="expiration_date" 
                                     value="{{ $jobOffer->expiration_date ? date('Y-m-d', strtotime($jobOffer->expiration_date)) : '' }}" required>
@@ -337,33 +313,33 @@
 
                         <!-- Mô tả chi tiết -->
                         <div class="col-12 mt-4">
-                            <h6 class="text-primary mb-3">
-                                <i class="bi bi-file-text text-primary me-2"></i>Mô tả chi tiết
+                            <h6 class="text-danger mb-3">
+                                <i class="bi bi-file-text text-danger me-2"></i>Mô tả chi tiết
                             </h6>
                         </div>
                         <div class="col-12">
                             <label class="form-label">
-                                <i class="bi bi-list-check text-primary me-1"></i>Chi tiết công việc
+                                <i class="bi bi-list-check text-danger me-1"></i>Chi tiết công việc
                             </label>
                             <textarea class="form-control" name="job_detail" rows="3" required>{{ $jobOffer->job_detail }}</textarea>
                         </div>
                         <div class="col-12">
                             <label class="form-label">
-                                <i class="bi bi-card-text text-primary me-1"></i>Mô tả công việc
+                                <i class="bi bi-card-text text-danger me-1"></i>Mô tả công việc
                             </label>
                             <textarea class="form-control" name="job_description" rows="3" required>{{ $jobOffer->job_description }}</textarea>
                         </div>
                         <div class="col-12">
                             <label class="form-label">
-                                <i class="bi bi-clipboard-check text-primary me-1"></i>Yêu cầu
+                                <i class="bi bi-clipboard-check text-danger me-1"></i>Yêu cầu
                             </label>
                             <textarea class="form-control" name="job_requirement" rows="3" required>{{ $jobOffer->job_requirement }}</textarea>
                         </div>
 
                         <!-- Kỹ năng -->
                         <div class="col-12 mt-4">
-                            <h6 class="text-primary mb-3">
-                                <i class="bi bi-tools text-primary me-2"></i>Kỹ năng yêu cầu
+                            <h6 class="text-danger mb-3">
+                                <i class="bi bi-tools text-danger me-2"></i>Kỹ năng yêu cầu
                             </h6>
                         </div>
                         <div class="col-12">
@@ -385,8 +361,8 @@
 
                         <!-- Phúc lợi -->
                         <div class="col-12 mt-4">
-                            <h6 class="text-primary mb-3">
-                                <i class="bi bi-gift text-primary me-2"></i>Phúc lợi
+                            <h6 class="text-danger mb-3">
+                                <i class="bi bi-gift text-danger me-2"></i>Phúc lợi
                             </h6>
                         </div>
                         <div class="col-12">
@@ -407,10 +383,10 @@
                         </div>
                     </div>
                     <div class="modal-footer bg-light">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
                             <i class="bi bi-x-circle me-2"></i>Hủy
                         </button>
-                        <button type="submit" class="btn btn-primary">
+                        <button type="submit" class="btn btn-danger">
                             <i class="bi bi-save me-2"></i>Lưu thay đổi
                         </button>
                     </div>
@@ -496,14 +472,14 @@ document.addEventListener('DOMContentLoaded', function() {
     transition: all 0.3s ease;
 }
 .editable:hover {
-    border-color: #80bdff;
-    box-shadow: 0 0 0 0.2rem rgba(0,123,255,.15);
+    border-color: var(--danger-color);
+    box-shadow: 0 0 0 0.2rem rgba(var(--danger-rgb), 0.15);
 }
 .editable:focus {
     background-color: #fff !important;
-    border-color: #80bdff;
+    border-color: var(--danger-color);
     outline: 0;
-    box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+    box-shadow: 0 0 0 0.2rem rgba(var(--danger-rgb), 0.25);
 }
 #saveIndicator {
     position: fixed;
@@ -533,7 +509,7 @@ document.addEventListener('DOMContentLoaded', function() {
     transition: all 0.3s ease;
 }
 .list-group-item:hover {
-    background-color: rgba(0,0,0,.02);
+    background-color: rgba(var(--danger-rgb), 0.02);
 }
 
 /* Thêm styles cho modal */
@@ -556,8 +532,8 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 
 .form-control:focus, .form-select:focus {
-    border-color: #80bdff;
-    box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+    border-color: var(--danger-color);
+    box-shadow: 0 0 0 0.2rem rgba(var(--danger-rgb), 0.25);
 }
 
 .input-group-text {

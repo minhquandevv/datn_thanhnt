@@ -21,10 +21,9 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        Company::factory(5)->create()->each(function ($company) {
-            // Mỗi công ty có từ 2-5 phòng ban
-            Department::factory(rand(2, 5))->create(['company_id' => $company->id]);
-        });
+        $this->call([
+            DepartmentSeeder::class,
+        ]);
 
         // Seed dữ liệu cho bảng job_categories
         JobCategory::factory(5)->create();

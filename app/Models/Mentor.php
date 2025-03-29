@@ -5,20 +5,22 @@ namespace App\Models;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class Mentor extends Authenticatable
 {
-    use HasApiTokens, Notifiable;
+    use HasApiTokens, Notifiable, HasFactory;
 
     protected $table = 'mentors';
     protected $primaryKey = 'mentor_id';
 
     protected $fillable = [
         'mentor_name',
+        'department_id',
+        'position',
         'username',
         'password',
-        'department',
-        'position',
         'status',
         'avatar'
     ];
@@ -32,6 +34,11 @@ class Mentor extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function department()
+    {
+        return $this->belongsTo(Department::class, 'department_id', 'department_id');
+    }
 
     public function interns()
     {

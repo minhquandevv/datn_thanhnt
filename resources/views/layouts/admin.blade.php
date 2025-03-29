@@ -5,8 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Admin Dashboard')</title>
+    
+    <!-- CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+    
+    @stack('styles')
     
     <style>
         :root {
@@ -296,7 +302,7 @@
                     <div class="user-name">{{ Auth::user()->name }}</div>
                     <div class="user-role">
                         <i class="bi bi-shield-check"></i>
-                        Quản trị viên
+                        {{ Auth::user()->role === 'admin' ? 'Quản trị viên' : 'Nhân viên HR' }}
                     </div>
                 </div>
             </div>
@@ -305,27 +311,15 @@
                 <div class="nav-section-title">Quản lý</div>
                 <ul class="nav flex-column">
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('home') }}">
-                            <i class="bi bi-house"></i>
-                            Quay về trang chủ
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}" href="{{ route('admin.dashboard') }}">
-                            <i class="bi bi-speedometer2"></i>
-                            Đề xuất tuyển dụng
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('admin.job-offers') ? 'active' : '' }}" href="{{ route('admin.job-offers') }}">
+                        <a class="nav-link {{ request()->routeIs('admin.job-offers.*') ? 'active' : '' }}" href="{{ route('admin.job-offers') }}">
                             <i class="bi bi-briefcase"></i>
                             Quản lý tin tuyển dụng
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('admin.schools.*') ? 'active' : '' }}" href="{{ route('admin.schools.index') }}">
+                        <a class="nav-link {{ request()->routeIs('admin.universities.*') ? 'active' : '' }}" href="{{ route('admin.universities.index') }}">
                             <i class="bi bi-building"></i>
-                            Quản lý trường học
+                            Quản lý trường đại học
                         </a>
                     </li>
                     <li class="nav-item">
@@ -341,12 +335,6 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('admin.companies.*') ? 'active' : '' }}" href="{{ route('admin.companies.index') }}">
-                            <i class="bi bi-building"></i>
-                            Quản lý công ty
-                        </a>
-                    </li>
-                    <li class="nav-item">
                         <a class="nav-link {{ request()->routeIs('admin.interns.*') ? 'active' : '' }}" href="{{ route('admin.interns.index') }}">
                             <i class="bi bi-person-badge"></i>
                             Quản lý thực tập sinh
@@ -358,6 +346,30 @@
                             Quản lý mentor
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('admin.departments.*') ? 'active' : '' }}" href="{{ route('admin.departments.index') }}">
+                            <i class="bi bi-building"></i>
+                            <span>Quản lý phòng ban</span>
+                        </a>
+                    </li>
+
+                    @if(Auth::user()->role === 'hr')
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('hr.recruitment-plans.*') ? 'active' : '' }}" href="{{ route('hr.recruitment-plans.index') }}">
+                            <i class="bi bi-file-earmark-text"></i>
+                            <span>Quản lý kế hoạch tuyển dụng</span>
+                        </a>
+                    </li>
+                    @endif
+
+                    @if(Auth::user()->role === 'admin')
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('admin.recruitment-plans.*') ? 'active' : '' }}" href="{{ route('admin.recruitment-plans.index') }}">
+                            <i class="bi bi-clipboard-check"></i>
+                            <span>Duyệt kế hoạch tuyển dụng</span>
+                        </a>
+                    </li>
+                    @endif
                 </ul>
             </div>
 
@@ -398,6 +410,69 @@
         </div>
     </div>
 
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <script>
+        // Common notification functions
+        function showSuccess(message) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Thành công!',
+                text: message,
+                timer: 3000,
+                showConfirmButton: false,
+                position: 'top-end',
+                toast: true
+            });
+        }
+
+        function showError(message) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi!',
+                text: message,
+                position: 'top-end',
+                toast: true
+            });
+        }
+
+        function showConfirm(title, text, callback) {
+            Swal.fire({
+                title: title,
+                text: text,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Đồng ý',
+                cancelButtonText: 'Hủy'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    callback();
+                }
+            });
+        }
+
+        // Handle form submission errors
+        document.addEventListener('DOMContentLoaded', function() {
+            const errors = @json($errors->all());
+            if (errors.length > 0) {
+                showError(errors.join('<br>'));
+            }
+
+            // Handle success message
+            const successMessage = @json(session('success'));
+            if (successMessage) {
+                showSuccess(successMessage);
+            }
+        });
+    </script>
+    
+    @stack('scripts')
 </body>
 </html>

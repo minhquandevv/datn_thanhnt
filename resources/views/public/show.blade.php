@@ -317,9 +317,9 @@
                     </a>
                 @endif
             </div>
-            <p class="text-muted mt-2"><i class="bi bi-building me-1"></i> {{ $jobOffer->company->title }}</p>
+            <p class="text-muted mt-2"><i class="bi bi-building me-1"></i> {{ $jobOffer->department ? $jobOffer->department->name : 'Chưa phân công' }}</p>
             <p class="text-muted">
-                <i class="bi bi-geo-alt me-1"></i> {{ $jobOffer->company->location }} &nbsp;
+                <i class="bi bi-geo-alt me-1"></i> {{ $jobOffer->department ? $jobOffer->department->location : 'Không có địa chỉ' }} &nbsp;
                 <i class="bi bi-calendar me-1"></i> Ngày hết hạn:
                 {{ \Carbon\Carbon::parse($jobOffer->expiration_date)->format('d/m/Y') }}
             </p>
@@ -332,8 +332,8 @@
                 </li>
                 <span class="text-muted mx-1"></span>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link px-4 py-2 rounded-pill" id="company-tab" data-bs-toggle="tab" data-bs-target="#company" type="button" role="tab">
-                        <i class="bi bi-buildings"></i> Thông tin công ty
+                    <button class="nav-link px-4 py-2 rounded-pill" id="department-tab" data-bs-toggle="tab" data-bs-target="#department" type="button" role="tab">
+                        <i class="bi bi-buildings"></i> Thông tin phòng ban
                     </button>
                 </li>
             </ul>
@@ -342,14 +342,18 @@
                 <div class="tab-pane fade show active" id="detail" role="tabpanel">
                     <p class="text-muted">{{ $jobOffer->job_detail }}</p>
                 </div>
-                <div class="tab-pane fade" id="company" role="tabpanel">
+                <div class="tab-pane fade" id="department" role="tabpanel">
                     <div class="job-info-card">
-                        <h5 class="text-danger fw-bold"><i class="bi bi-building"></i> {{ $jobOffer->company->title }}</h5>
-                        <p class="mb-1"><i class="bi bi-geo-alt"></i> {{ $jobOffer->company->location }}</p>
-                        <p class="mb-1"><i class="bi bi-file-text"></i> {{ $jobOffer->company->description }}</p>
-                        <p class="mb-1"><i class="bi bi-people"></i> Nhân viên: {{ $jobOffer->company->amount_staff }}</p>
-                        <img src="{{ filter_var($jobOffer->company->image_company, FILTER_VALIDATE_URL) ? $jobOffer->company->image_company : asset('uploads/companies/' . $jobOffer->company->image_company) }}"
-                            alt="Company image" class="img-fluid rounded shadow-sm mt-3">
+                        @if($jobOffer->department)
+                            <h5 class="text-danger fw-bold"><i class="bi bi-building"></i> {{ $jobOffer->department->name }}</h5>
+                            <p class="mb-1"><i class="bi bi-geo-alt"></i> {{ $jobOffer->department->location ?? 'Không có địa chỉ' }}</p>
+                            <p class="mb-1"><i class="bi bi-people"></i> Số nhân viên: {{ $jobOffer->department->employee_count ?? 'Chưa cập nhật' }}</p>
+                            <p class="mb-1"><i class="bi bi-info-circle"></i> {{ $jobOffer->department->description ?? 'Chưa có mô tả' }}</p>
+                        @else
+                            <div class="text-center text-muted">
+                                <i class="bi bi-building me-2"></i>Chưa phân công phòng ban
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>

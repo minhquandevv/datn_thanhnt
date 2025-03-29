@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\Intern;
 use App\Models\Mentor;
+use App\Models\Department;
 
 class Task extends Model
 {
@@ -47,5 +48,10 @@ class Task extends Model
     public function reports()
     {
         return $this->hasMany(TaskReports::class, 'task_id');
+    }
+
+    public function department()
+    {
+        return $this->hasOneThrough(Department::class, Mentor::class, 'mentor_id', 'department_id', 'assigned_by', 'mentor_id');
     }
 } 

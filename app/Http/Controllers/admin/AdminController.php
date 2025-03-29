@@ -4,7 +4,7 @@ namespace App\Http\Controllers\admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Candidate;
-use App\Models\School;
+use App\Models\University;
 use Illuminate\Support\Facades\Storage;
 use App\Models\JobApplication;
 
@@ -37,13 +37,13 @@ class AdminController extends Controller
             $query->where('phone', 'like', '%' . $request->phone . '%');
         }
 
-        if ($request->filled('school_id')) {
-            $query->where('school_id', $request->school_id);
+        if ($request->filled('university_id')) {
+            $query->where('university_id', $request->university_id);
         }
 
         $candidates = $query->with([
-            'school', 
-            'jobApplications.jobOffer.company',
+            'university', 
+            'jobApplications.jobOffer.department',
             'education',
             'experience',
             'skills',
@@ -51,16 +51,16 @@ class AdminController extends Controller
             'desires'
         ])->get();
         
-        $schools = School::all();
+        $universities = University::all();
 
-        return view('admin.quanlyungvien', compact('candidates', 'schools'));
+        return view('admin.quanlyungvien', compact('candidates', 'universities'));
     }
 
     public function showCandidate($id)
     {
         $candidate = Candidate::findOrFail($id);
-        $schools = School::all();
-        return view('admin.chitietungvien', compact('candidate', 'schools'));
+        $universities = University::all();
+        return view('admin.chitietungvien', compact('candidate', 'universities'));
     }
 
     public function storeCandidate(Request $request)
@@ -72,7 +72,7 @@ class AdminController extends Controller
             'gender' => 'required|in:male,female,other',
             'dob' => 'required|date',
             'address' => 'required|string',
-            'school_id' => 'required|exists:schools,id',
+            'university_id' => 'required|exists:universities,university_id',
             'experience_year' => 'nullable|string',
             'cv' => 'required|file|mimes:pdf|max:2048',
             'is_finding_job' => 'boolean',
@@ -95,7 +95,7 @@ class AdminController extends Controller
             'email' => $request->email,
             'phone' => $request->phone,
             'address' => $request->address,
-            'school_id' => $request->school_id,
+            'university_id' => $request->university_id,
             'experience_year' => $request->experience_year,
             'cv' => 'cvs/' . $cvFileName,
             'is_finding_job' => $request->boolean('is_finding_job'),
@@ -129,7 +129,7 @@ class AdminController extends Controller
             'gender' => 'required|in:male,female,other',
             'dob' => 'required|date',
             'address' => 'required|string',
-            'school_id' => 'required|exists:schools,id',
+            'university_id' => 'required|exists:universities,university_id',
             'experience_year' => 'nullable|string',
             'cv' => 'nullable|file|mimes:pdf|max:2048',
             'is_finding_job' => 'boolean',
@@ -160,7 +160,7 @@ class AdminController extends Controller
             'email' => $request->email,
             'phone' => $request->phone,
             'address' => $request->address,
-            'school_id' => $request->school_id,
+            'university_id' => $request->university_id,
             'experience_year' => $request->experience_year,
             'is_finding_job' => $request->boolean('is_finding_job'),
             'status' => $request->status,

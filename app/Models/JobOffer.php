@@ -10,7 +10,7 @@ class JobOffer extends Model
     use HasFactory;
 
     protected $fillable = [
-        'job_name', 'company_id', 'expiration_date', 'job_detail', 
+        'job_name', 'department_id', 'expiration_date', 'job_detail', 
         'job_description', 'job_requirement', 'job_position', 'job_salary', 'job_quantity', 'job_category_id', 'status'
     ];
 
@@ -33,9 +33,9 @@ class JobOffer extends Model
         return $this->belongsToMany(JobBenefit::class, 'job_offer_job_benefits');
     }
 
-    public function company()
+    public function department()
     {
-        return $this->belongsTo(Company::class, 'company_id');
+        return $this->belongsTo(Department::class, 'department_id');
     }
 
     public function applications()

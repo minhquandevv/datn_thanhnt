@@ -24,11 +24,11 @@
                 <div class="card-body p-4">
                     <div class="d-flex align-items-center mb-4">
                         <div class="flex-shrink-0">
-                            @if($application->jobOffer && $application->jobOffer->company)
-                                <img src="{{ asset('uploads/companies/' . $application->jobOffer->company->logo) }}" 
-                                     alt="Company Logo" 
-                                     class="rounded"
-                                     style="width: 64px; height: 64px; object-fit: cover;">
+                            @if($application->jobOffer && $application->jobOffer->department)
+                                <div class="rounded bg-light d-flex align-items-center justify-content-center"
+                                     style="width: 64px; height: 64px;">
+                                    <i class="bi bi-building text-primary" style="font-size: 2rem;"></i>
+                                </div>
                             @else
                                 <div class="rounded bg-light d-flex align-items-center justify-content-center"
                                      style="width: 64px; height: 64px;">
@@ -45,10 +45,10 @@
                                 @endif
                             </h5>
                             <p class="text-muted mb-0">
-                                @if($application->jobOffer && $application->jobOffer->company)
-                                    {{ $application->jobOffer->company->title }}
+                                @if($application->jobOffer && $application->jobOffer->department)
+                                    {{ $application->jobOffer->department->name }}
                                 @else
-                                    Công ty không tồn tại
+                                    Phòng ban chưa phân công
                                 @endif
                             </p>
                         </div>
@@ -89,8 +89,8 @@
                                 <div>
                                     <div class="text-muted small">Địa điểm</div>
                                     <div class="fw-medium">
-                                        @if($application->jobOffer && $application->jobOffer->company)
-                                            {{ $application->jobOffer->company->location }}
+                                        @if($application->jobOffer && $application->jobOffer->department)
+                                            {{ $application->jobOffer->department->location }}
                                         @else
                                             <span class="text-muted">Chưa cập nhật</span>
                                         @endif
@@ -288,5 +288,13 @@
     font-weight: 500;
 }
 </style>
+@endpush
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize any necessary components
+});
+</script>
 @endpush
 @endsection 

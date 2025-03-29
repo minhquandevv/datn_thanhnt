@@ -24,9 +24,10 @@ return new class extends Migration
             $table->string('degree_image')->nullable();
             $table->string('username')->unique();
             $table->string('password')->nullable();
-            $table->string('department')->nullable();
             $table->string('position')->nullable();
-            $table->foreignId('mentor_id')->nullable()->constrained('mentors', 'mentor_id')->onDelete('set null');            $table->rememberToken();
+            $table->foreignId('mentor_id')->nullable()->constrained('mentors', 'mentor_id')->onDelete('set null');        
+            $table->foreignId('department_id')->nullable()->constrained('departments', 'department_id')->onDelete('set null');
+            $table->rememberToken();
             $table->timestamps();
         });
     }

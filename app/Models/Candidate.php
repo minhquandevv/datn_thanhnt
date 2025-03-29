@@ -5,6 +5,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Model;
 
 class Candidate extends Authenticatable
 {
@@ -24,6 +25,7 @@ class Candidate extends Authenticatable
         'address',
         'experience_year',
         'department_id',
+        'university_id',
         'candidate_profile_id',
         'reference_name',
         'reference_number',
@@ -33,9 +35,7 @@ class Candidate extends Authenticatable
         'r_company',
         'url_avatar',
         'finding_job',
-        'avatar',
-        'id_card_front',
-        'id_card_back',
+        'active'
     ];
 
     protected $hidden = [
@@ -48,6 +48,7 @@ class Candidate extends Authenticatable
         'password' => 'hashed',
         'dob' => 'date',
         'finding_job' => 'boolean',
+        'active' => 'boolean'
     ];
 
     public function jobApplications()
@@ -95,9 +96,14 @@ class Candidate extends Authenticatable
         return $this->hasMany(Experience::class);
     }
 
-    public function school()
+    public function university()
     {
-        return $this->belongsTo(School::class);
+        return $this->belongsTo(University::class, 'university_id', 'university_id');
+    }
+
+    public function cvs()
+    {
+        return $this->hasMany(CV::class);
     }
 
     // Boot method to ensure relationships are loaded
@@ -108,6 +114,7 @@ class Candidate extends Authenticatable
         static::with([
             'profile',
             'department',
+            'university',
             'skills',
             'languages',
             'desires',
