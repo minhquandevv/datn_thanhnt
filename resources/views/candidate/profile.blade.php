@@ -37,25 +37,11 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" id="experience-tab" data-bs-toggle="tab" href="#experience" role="tab">
-                    <i class="bi bi-briefcase me-2"></i>Kinh nghiệm
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" id="skills-tab" data-bs-toggle="tab" href="#skills" role="tab">
-                    <i class="bi bi-tools me-2"></i>Kỹ năng
-                </a>
-            </li>
-            <li class="nav-item">
                 <a class="nav-link" id="certificates-tab" data-bs-toggle="tab" href="#certificates" role="tab">
                     <i class="bi bi-award me-2"></i>Chứng chỉ
                 </a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" id="desires-tab" data-bs-toggle="tab" href="#desires" role="tab">
-                    <i class="bi bi-heart me-2"></i>Mong muốn
-                </a>
-            </li>
+
         </ul>
 
         <!-- Tab Content -->
@@ -223,26 +209,6 @@
                                         @enderror
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="form-label">Ảnh công ty</label>
-                                        <div class="input-group">
-                                            <span class="input-group-text bg-light">
-                                                <i class="bi bi-building text-primary"></i>
-                                            </span>
-                                            <input type="file" class="form-control" name="image_company" accept="image/*">
-                                        </div>
-                                        @if($candidate->image_company)
-                                            <div class="mt-2">
-                                                <img src="{{ asset('uploads/' . $candidate->image_company) }}" 
-                                                     alt="Company Image" 
-                                                     class="img-thumbnail"
-                                                     style="max-height: 100px;">
-                                            </div>
-                                        @endif
-                                        @error('image_company')
-                                            <div class="text-danger small mt-1">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                    <div class="col-md-6">
                                         <div class="form-check mt-4">
                                             <input type="checkbox" class="form-check-input" name="finding_job" value="1" {{ old('finding_job', $candidate->finding_job) ? 'checked' : '' }}>
                                             <label class="form-check-label">Đang tìm việc</label>
@@ -306,95 +272,6 @@
                 </div>
             </div>
 
-            <!-- Experience Tab -->
-            <div class="tab-pane fade" id="experience" role="tabpanel">
-                <div class="card border-0 shadow-sm">
-                    <div class="card-body p-4">
-                        <div class="d-flex justify-content-between align-items-center mb-4">
-                            <h5 class="mb-0">
-                                <i class="bi bi-briefcase text-primary me-2"></i>Danh sách kinh nghiệm
-                            </h5>
-                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addExperienceModal">
-                                <i class="bi bi-plus-circle me-2"></i>Thêm kinh nghiệm
-                            </button>
-                        </div>
-                        <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>Công ty</th>
-                                        <th>Vị trí</th>
-                                        <th>Thời gian</th>
-                                        <th>Mô tả</th>
-                                        <th class="text-center">Thao tác</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach($candidate->experience as $exp)
-                                    <tr>
-                                        <td>{{ $exp->company_name }}</td>
-                                        <td>{{ $exp->position }}</td>
-                                        <td>{{ $exp->date_start }} - {{ $exp->date_end }}</td>
-                                        <td>{{ Str::limit($exp->description, 50) }}</td>
-                                        <td class="text-center">
-                                            <button type="button" class="btn btn-sm btn-primary" onclick="editExperience({{ $exp->id }})">
-                                                <i class="bi bi-pencil"></i>
-                                            </button>
-                                            <button type="button" class="btn btn-sm btn-danger" onclick="deleteExperience({{ $exp->id }})">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Skills Tab -->
-            <div class="tab-pane fade" id="skills" role="tabpanel">
-                <div class="card border-0 shadow-sm">
-                    <div class="card-body p-4">
-                        <div class="d-flex justify-content-between align-items-center mb-4">
-                            <h5 class="mb-0">
-                                <i class="bi bi-tools text-primary me-2"></i>Danh sách kỹ năng
-                            </h5>
-                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addSkillModal">
-                                <i class="bi bi-plus-circle me-2"></i>Thêm kỹ năng
-                            </button>
-                        </div>
-                        <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>Tên kỹ năng</th>
-                                        <th>Mô tả</th>
-                                        <th class="text-center">Thao tác</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach($candidate->skills as $skill)
-                                    <tr>
-                                        <td>{{ $skill->skill_name }}</td>
-                                        <td>{{ Str::limit($skill->skill_desc, 50) }}</td>
-                                        <td class="text-center">
-                                            <button type="button" class="btn btn-sm btn-primary" onclick="editSkill({{ $skill->id }})">
-                                                <i class="bi bi-pencil"></i>
-                                            </button>
-                                            <button type="button" class="btn btn-sm btn-danger" onclick="deleteSkill({{ $skill->id }})">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
             <!-- Certificates Tab -->
             <div class="tab-pane fade" id="certificates" role="tabpanel">
@@ -454,44 +331,7 @@
             </div>
 
             <!-- Desires Tab -->
-            <div class="tab-pane fade" id="desires" role="tabpanel">
-                <div class="card border-0 shadow-sm">
-                    <div class="card-body p-4">
-                        <div class="d-flex justify-content-between align-items-center mb-4">
-                            <h5 class="mb-0">
-                                <i class="bi bi-heart text-primary me-2"></i>Thông tin mong muốn
-                            </h5>
-                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editDesiresModal">
-                                <i class="bi bi-pencil me-2"></i>Chỉnh sửa
-                            </button>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="card bg-light border-0">
-                                    <div class="card-body">
-                                        <h6 class="card-title text-primary mb-3">
-                                            <i class="bi bi-cash me-2"></i>Mức lương mong muốn
-                                        </h6>
-                                        <p class="mb-0">
-                                            {{ $candidate->desires->pay_from ?? 'Chưa cập nhật' }} - {{ $candidate->desires->pay_to ?? 'Chưa cập nhật' }}
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="card bg-light border-0">
-                                    <div class="card-body">
-                                        <h6 class="card-title text-primary mb-3">
-                                            <i class="bi bi-geo-alt me-2"></i>Địa điểm mong muốn
-                                        </h6>
-                                        <p class="mb-0">{{ $candidate->desires->location ?? 'Chưa cập nhật' }}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            
         </div>
     </form>
 </div>
@@ -628,147 +468,6 @@
     </div>
 </div>
 
-<!-- Add Experience Modal -->
-<div class="modal fade" id="addExperienceModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Thêm kinh nghiệm</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <form action="{{ route('candidate.experience.store') }}" method="POST">
-                @csrf
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label">Tên công ty</label>
-                        <input type="text" class="form-control" name="company_name" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Vị trí</label>
-                        <input type="text" class="form-control" name="position" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Thời gian bắt đầu</label>
-                        <input type="date" class="form-control" name="date_start" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Thời gian kết thúc</label>
-                        <input type="date" class="form-control" name="date_end" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Mô tả công việc</label>
-                        <textarea class="form-control" name="description" rows="3" required></textarea>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                    <button type="submit" class="btn btn-primary">Thêm</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<!-- Edit Experience Modal -->
-<div class="modal fade" id="editExperienceModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Chỉnh sửa kinh nghiệm</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <form id="editExperienceForm" method="POST">
-                @csrf
-                @method('PUT')
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label">Tên công ty</label>
-                        <input type="text" class="form-control" name="company_name" id="edit_company_name" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Vị trí</label>
-                        <input type="text" class="form-control" name="position" id="edit_position" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Thời gian bắt đầu</label>
-                        <input type="date" class="form-control" name="date_start" id="edit_date_start" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Thời gian kết thúc</label>
-                        <input type="date" class="form-control" name="date_end" id="edit_date_end" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Mô tả công việc</label>
-                        <textarea class="form-control" name="description" id="edit_description" rows="3" required></textarea>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                    <button type="submit" class="btn btn-primary">Cập nhật</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<!-- Add Skill Modal -->
-<div class="modal fade" id="addSkillModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Thêm kỹ năng</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <form action="{{ route('candidate.skill.store') }}" method="POST">
-                @csrf
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label">Tên kỹ năng</label>
-                        <input type="text" class="form-control" name="skill_name" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Mô tả</label>
-                        <textarea class="form-control" name="skill_desc" rows="3" required></textarea>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                    <button type="submit" class="btn btn-primary">Thêm</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<!-- Edit Skill Modal -->
-<div class="modal fade" id="editSkillModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Chỉnh sửa kỹ năng</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <form id="editSkillForm" method="POST">
-                @csrf
-                @method('PUT')
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label">Tên kỹ năng</label>
-                        <input type="text" class="form-control" name="skill_name" id="edit_skill_name" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Mô tả</label>
-                        <textarea class="form-control" name="skill_desc" id="edit_skill_desc" rows="3" required></textarea>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                    <button type="submit" class="btn btn-primary">Cập nhật</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
 
 <!-- Add Certificate Modal -->
 <div class="modal fade" id="addCertificateModal" tabindex="-1">
@@ -854,42 +553,6 @@
     </div>
 </div>
 
-<!-- Edit Desires Modal -->
-<div class="modal fade" id="editDesiresModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Chỉnh sửa mong muốn</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <form action="{{ route('candidate.desires.update') }}" method="POST">
-                @csrf
-                @method('PUT')
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label">Mức lương mong muốn (VNĐ)</label>
-                        <div class="row">
-                            <div class="col">
-                                <input type="number" class="form-control" name="pay_from" placeholder="Từ" value="{{ $candidate->desires->pay_from ?? '' }}">
-                            </div>
-                            <div class="col">
-                                <input type="number" class="form-control" name="pay_to" placeholder="Đến" value="{{ $candidate->desires->pay_to ?? '' }}">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Địa điểm mong muốn</label>
-                        <input type="text" class="form-control" name="location" value="{{ $candidate->desires->location ?? '' }}">
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                    <button type="submit" class="btn btn-primary">Cập nhật</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
 
 @push('styles')
 <style>

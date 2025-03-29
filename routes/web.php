@@ -36,8 +36,13 @@ Route::get('/job-offers/{id}', [HomeController::class, 'show'])->name('public.sh
 Route::resource('users', UserController::class);
 
 //Candidate routes
-Route::middleware(['auth:candidate', 'candidate'])->group(function () {
+Route::middleware(['auth:candidate'])->group(function () {
     Route::post('/apply', [JobApplicationController::class, 'store'])->name('job_applications.store');
+    
+    // Job Applications routes
+    Route::get('/job-applications', [JobApplicationController::class, 'index'])->name('candidate.job-applications.index');
+    Route::put('/job-applications/{application}/cv', [JobApplicationController::class, 'updateCv'])->name('candidate.job-applications.update-cv');
+    Route::delete('/job-applications/{application}', [JobApplicationController::class, 'destroy'])->name('candidate.job-applications.destroy');
     
     // Candidate management routes
     Route::prefix('candidate')->group(function () {

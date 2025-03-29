@@ -407,6 +407,52 @@
                         <input type="hidden" name="job_offer_id" value="{{ $jobOffer->id }}">
                         <input type="hidden" name="candidate_id" value="{{ Auth::guard('candidate')->id() }}">
 
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="fullname" class="form-label">Họ và tên</label>
+                                <input type="text" class="form-control @error('fullname') is-invalid @enderror" 
+                                    id="fullname" name="fullname" value="{{ old('fullname', $candidate->fullname) }}" required>
+                                @error('fullname')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="col-md-6">
+                                <label for="university_id" class="form-label">Trường học</label>
+                                <select class="form-select @error('university_id') is-invalid @enderror" 
+                                    id="university_id" name="university_id" required>
+                                    <option value="">Chọn trường học</option>
+                                    @foreach(\App\Models\University::orderBy('name')->get() as $university)
+                                        <option value="{{ $university->university_id }}" 
+                                            {{ old('university_id', $candidate->university_id) == $university->university_id ? 'selected' : '' }}>
+                                            {{ $university->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('university_id')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="phone_number" class="form-label">Số điện thoại</label>
+                                <input type="tel" class="form-control @error('phone_number') is-invalid @enderror" 
+                                    id="phone_number" name="phone_number" value="{{ old('phone_number', $candidate->phone_number) }}" required>
+                                @error('phone_number')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="col-md-6">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control @error('email') is-invalid @enderror" 
+                                    id="email" name="email" value="{{ old('email', $candidate->email) }}" required>
+                                @error('email')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
                         <div class="mb-3">
                             <label for="cover_letter" class="form-label">Thư xin việc</label>
                             <textarea class="form-control @error('cover_letter') is-invalid @enderror" 

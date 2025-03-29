@@ -14,7 +14,7 @@
             <div class="card bg-primary text-white mb-4">
                 <div class="card-body">
                     <h5 class="card-title">Tổng số công việc</h5>
-                    <h2 class="mb-0">{{ $tasks->count() }}</h2>
+                    <h2 class="mb-0">{{ $allTasks->count() }}</h2>
                 </div>
             </div>
         </div>
@@ -22,7 +22,7 @@
             <div class="card bg-success text-white mb-4">
                 <div class="card-body">
                     <h5 class="card-title">Đã hoàn thành</h5>
-                    <h2 class="mb-0">{{ $tasks->where('status', 'Hoàn thành')->count() }}</h2>
+                    <h2 class="mb-0">{{ $allTasks->where('status', 'Hoàn thành')->count() }}</h2>
                 </div>
             </div>
         </div>
@@ -30,7 +30,7 @@
             <div class="card bg-warning text-white mb-4">
                 <div class="card-body">
                     <h5 class="card-title">Đang thực hiện</h5>
-                    <h2 class="mb-0">{{ $tasks->where('status', 'Đang thực hiện')->count() }}</h2>
+                    <h2 class="mb-0">{{ $allTasks->where('status', 'Đang thực hiện')->count() }}</h2>
                 </div>
             </div>
         </div>
@@ -38,9 +38,35 @@
             <div class="card bg-danger text-white mb-4">
                 <div class="card-body">
                     <h5 class="card-title">Chưa bắt đầu</h5>
-                    <h2 class="mb-0">{{ $tasks->where('status', 'Chưa bắt đầu')->count() }}</h2>
+                    <h2 class="mb-0">{{ $allTasks->where('status', 'Chưa bắt đầu')->count() }}</h2>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Filter Section -->
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <form action="{{ route('mentor.tasks.index') }}" method="GET" class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label">Trạng thái</label>
+                    <select name="status" class="form-select">
+                        <option value="">Tất cả trạng thái</option>
+                        <option value="Chưa bắt đầu" {{ request('status') == 'Chưa bắt đầu' ? 'selected' : '' }}>Chưa bắt đầu</option>
+                        <option value="Đang thực hiện" {{ request('status') == 'Đang thực hiện' ? 'selected' : '' }}>Đang thực hiện</option>
+                        <option value="Hoàn thành" {{ request('status') == 'Hoàn thành' ? 'selected' : '' }}>Hoàn thành</option>
+                        <option value="Trễ hạn" {{ request('status') == 'Trễ hạn' ? 'selected' : '' }}>Trễ hạn</option>
+                    </select>
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary me-2">
+                        <i class="bi bi-search"></i> Lọc
+                    </button>
+                    <a href="{{ route('mentor.tasks.index') }}" class="btn btn-secondary">
+                        <i class="bi bi-x-circle"></i> Xóa bộ lọc
+                    </a>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -60,7 +86,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($tasks as $task)
+                        @forelse($tasks as $task)
                         <tr>
                             <td>{{ $task->task_id }}</td>
                             <td>{{ $task->project_name }}</td>
@@ -118,10 +144,25 @@
                                 </div>
                             </td>
                         </tr>
-                        @endforeach
+                        @empty
+                        <tr>
+                            <td colspan="7" class="text-center py-4">
+                                <div class="text-muted">
+                                    <i class="bi bi-inbox display-4 mb-3"></i>
+                                    <p class="mb-0">Không tìm thấy công việc nào</p>
+                                </div>
+                            </td>
+                        </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>
+
+            @if($tasks instanceof \Illuminate\Pagination\LengthAwarePaginator)
+                <div class="mt-4">
+                    {{ $tasks->appends(request()->query())->links() }}
+                </div>
+            @endif
         </div>
     </div>
 </div>

@@ -336,62 +336,77 @@ footer ul li a:hover {
                     <li class="nav-item"><a class="nav-link" href="{{ route('home') }}">Trang chủ</a></li>
                     <li class="nav-item"><a class="nav-link" href="#">Về chúng tôi</a></li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Tuyển dụng</a>
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Việc làm</a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">Chương trình thực tập</a></li>
-                            <li><a class="dropdown-item" href="#">Tin tuyển dụng</a></li>
-                            <li><a class="dropdown-item" href="#">Hướng dẫn ứng tuyển</a></li>
+                            <li><a class="dropdown-item" href="#">Việc làm đã lưu</a></li>
+                            <li><a class="dropdown-item" href="#">Việc làm đã ứng tuyển</a></li>
                         </ul>
                     </li>
-                    <li class="nav-item"><a class="nav-link" href="#">Đãi ngộ</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Liên hệ</a></li>
                 </ul>
                 <div class="ms-3">
                     @auth('candidate')
                         <div class="d-flex align-items-center">
-                            @if(Auth::guard('candidate')->user()->url_avatar)
-                                <img src="{{ asset('uploads/' . Auth::guard('candidate')->user()->url_avatar) }}" alt="Avatar" class="user-avatar">
-                            @else
-                                <div class="user-avatar bg-secondary text-white d-flex align-items-center justify-content-center">
-                                    {{ substr(Auth::guard('candidate')->user()->fullname, 0, 1) }}
-                                </div>
-                            @endif
-                            <div class="user-info">
-                                <div class="user-name">{{ Auth::guard('candidate')->user()->fullname }}</div>
-                                <div class="user-role">Ứng viên</div>
+                            <div class="dropdown">
+                                <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                                    @if(Auth::guard('candidate')->user()->url_avatar)
+                                        <img src="{{ asset('uploads/' . Auth::guard('candidate')->user()->url_avatar) }}" alt="Avatar" class="user-avatar me-2">
+                                    @else
+                                        <div class="user-avatar bg-secondary text-white d-flex align-items-center justify-content-center me-2">
+                                            {{ substr(Auth::guard('candidate')->user()->fullname, 0, 1) }}
+                                        </div>
+                                    @endif
+                                    <span class="user-name">{{ Auth::guard('candidate')->user()->fullname }}</span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li><a class="dropdown-item" href="{{ route('candidate.profile') }}">
+                                        <i class="bi bi-person-badge me-2"></i>Thông tin cá nhân
+                                    </a></li>
+                                    <li><a class="dropdown-item" href="#">
+                                        <i class="bi bi-key me-2"></i>Đổi mật khẩu
+                                    </a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <form action="{{ route('logout') }}" method="POST">
+                                            @csrf
+                                            <button type="submit" class="dropdown-item text-danger">
+                                                <i class="bi bi-box-arrow-right me-2"></i>Đăng xuất
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
                             </div>
-                        </div>
-                        <div class="d-flex gap-2 mt-2">
-                            <a href="{{ route('candidate.profile') }}" class="btn btn-outline-primary btn-sm">
-                                <i class="bi bi-person-badge me-1"></i>Quản lý thông tin
-                            </a>
-                            <form action="{{ route('logout') }}" method="POST" style="display: inline;">
-                                @csrf
-                                <button type="submit" class="btn btn-outline-danger btn-sm">Đăng xuất</button>
-                            </form>
                         </div>
                     @elseif(Auth::check() && (Auth::user()->role === 'admin' || Auth::user()->role === 'hr'))
                         <div class="d-flex align-items-center">
-                            @if(Auth::user()->url_avatar)
-                                <img src="{{ asset('uploads/' . Auth::user()->url_avatar) }}" alt="Avatar" class="user-avatar">
-                            @else
-                                <div class="user-avatar bg-secondary text-white d-flex align-items-center justify-content-center">
-                                    {{ substr(Auth::user()->name, 0, 1) }}
-                                </div>
-                            @endif
-                            <div class="user-info">
-                                <div class="user-name">{{ Auth::user()->name }}</div>
-                                <div class="user-role">{{ ucfirst(Auth::user()->role) }}</div>
+                            <div class="dropdown">
+                                <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                                    @if(Auth::user()->url_avatar)
+                                        <img src="{{ asset('uploads/' . Auth::user()->url_avatar) }}" alt="Avatar" class="user-avatar me-2">
+                                    @else
+                                        <div class="user-avatar bg-secondary text-white d-flex align-items-center justify-content-center me-2">
+                                            {{ substr(Auth::user()->name, 0, 1) }}
+                                        </div>
+                                    @endif
+                                    <span class="user-name">{{ Auth::user()->name }}</span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li><a class="dropdown-item" href="{{ route('admin.home') }}">
+                                        <i class="bi bi-briefcase me-2"></i>Quản lý tuyển dụng
+                                    </a></li>
+                                    <li><a class="dropdown-item" href="#">
+                                        <i class="bi bi-key me-2"></i>Đổi mật khẩu
+                                    </a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <form action="{{ route('logout') }}" method="POST">
+                                            @csrf
+                                            <button type="submit" class="dropdown-item text-danger">
+                                                <i class="bi bi-box-arrow-right me-2"></i>Đăng xuất
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
                             </div>
-                        </div>
-                        <div class="d-flex gap-2 mt-2">
-                            <a href="{{ route('admin.home') }}" class="btn btn-outline-primary btn-sm">
-                                <i class="bi bi-briefcase me-1"></i>Quản lý tuyển dụng
-                            </a>
-                            <form action="{{ route('logout') }}" method="POST" style="display: inline;">
-                                @csrf
-                                <button type="submit" class="btn btn-outline-danger btn-sm">Đăng xuất</button>
-                            </form>
                         </div>
                     @else
                         <a href="{{ route('login') }}" class="btn btn-danger btn-apply">Đăng nhập</a>

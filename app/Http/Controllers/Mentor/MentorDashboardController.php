@@ -89,10 +89,24 @@ class MentorDashboardController extends Controller
 
     public function tasks()
     {
-        $mentor = Auth::guard('mentor')->user();
-        $tasks = $mentor->assignedTasks;
-        $interns = $mentor->interns;
-        return view('mentor.tasks.index', compact('tasks', 'interns'));
+        $mentor = auth()->guard('mentor')->user();
+        
+        $query = Task::where('assigned_by', $mentor->mentor_id)
+                     ->with(['intern'])
+                     ->orderBy('created_at', 'desc');
+
+        // Apply status filter if provided
+        if (request()->has('status') && request('status') !== '') {
+            $query->where('status', request('status'));
+        }
+
+        // Get paginated tasks
+        $tasks = $query->paginate(10);
+
+        // Get all tasks for statistics
+        $allTasks = Task::where('assigned_by', $mentor->mentor_id)->get();
+
+        return view('mentor.tasks.index', compact('tasks', 'allTasks'));
     }
 
     public function profile()

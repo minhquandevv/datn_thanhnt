@@ -18,16 +18,30 @@
     <!-- Main Card -->
     <div class="card border-0 shadow-sm">
         <div class="card-body p-4">
+            @if(session('success'))
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
+
+            @if(session('error'))
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="bi bi-exclamation-circle-fill me-2"></i>{{ session('error') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
+
             <div class="table-responsive">
                 <table class="table table-hover">
                     <thead>
                         <tr>
-                            <th>Vị trí ứng tuyển</th>
-                            <th>Công ty</th>
+                            <th>Vị trí</th>
+                            <th>Phòng ban</th>
                             <th>Ngày ứng tuyển</th>
                             <th>Trạng thái</th>
-                            <th>Phản hồi</th>
                             <th class="text-center">Thao tác</th>
+                            <th>Chi tiết</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -53,113 +67,126 @@
                                         </span>
                                     @endif
                                 </td>
+                                <td>{{ $application->jobOffer->department->name ?? 'Chưa phân công' }}</td>
+                                <td>{{ $application->created_at->format('d/m/Y') }}</td>
                                 <td>
-                                    @if($application->jobOffer && $application->jobOffer->department)
-                                        <div class="d-flex align-items-center">
-                                            <i class="bi bi-building text-primary me-2"></i>
-                                            <div>
-                                                <div class="fw-medium">{{ $application->jobOffer->department->name }}</div>
-                                                @if($application->jobOffer->department->location)
-                                                    <small class="text-muted">
-                                                        <i class="bi bi-geo-alt me-1"></i>
-                                                        {{ $application->jobOffer->department->location }}
-                                                    </small>
-                                                @endif
-                                            </div>
-                                        </div>
-                                    @else
-                                        <span class="text-muted">
-                                            <i class="bi bi-exclamation-circle me-2"></i>Phòng ban chưa phân công
-                                        </span>
-                                    @endif
-                                </td>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <i class="bi bi-clock-history text-secondary me-2"></i>
-                                        {{ $application->created_at->format('d/m/Y H:i') }}
-                                    </div>
-                                </td>
-                                <td>
-                                    @php
-                                        $statusMap = [
-                                            'pending' => [
-                                                'icon' => 'hourglass-split',
-                                                'color' => 'warning',
-                                                'text' => 'Chờ xử lý'
-                                            ],
-                                            'submitted' => [
-                                                'icon' => 'send',
-                                                'color' => 'info',
-                                                'text' => 'Đã nộp'
-                                            ],
-                                            'pending_review' => [
-                                                'icon' => 'hourglass-split',
-                                                'color' => 'warning',
-                                                'text' => 'Chờ xem xét'
-                                            ],
-                                            'interview_scheduled' => [
-                                                'icon' => 'calendar-check',
-                                                'color' => 'primary',
-                                                'text' => 'Đã lên lịch PV'
-                                            ],
-                                            'result_pending' => [
-                                                'icon' => 'hourglass',
-                                                'color' => 'secondary',
-                                                'text' => 'Chờ kết quả'
-                                            ],
-                                            'approved' => [
-                                                'icon' => 'check-circle-fill',
-                                                'color' => 'success',
-                                                'text' => 'Đã duyệt'
-                                            ],
-                                            'rejected' => [
-                                                'icon' => 'x-circle-fill',
-                                                'color' => 'danger',
-                                                'text' => 'Từ chối'
-                                            ]
-                                        ];
-
-                                        $status = $statusMap[$application->status] ?? $statusMap['pending'];
-                                    @endphp
-                                    <span class="badge bg-{{ $status['color'] }} d-inline-flex align-items-center">
-                                        <i class="bi bi-{{ $status['icon'] }} me-1"></i>
-                                        {{ $status['text'] }}
-                                    </span>
-                                </td>
-                                <td>
-                                    @if($application->feedback)
-                                        <div class="d-flex align-items-center">
-                                            <i class="bi bi-chat-left-quote text-success me-2"></i>
-                                            <span class="text-truncate" style="max-width: 200px;" title="{{ $application->feedback }}">
-                                                {{ Str::limit($application->feedback, 50) }}
-                                            </span>
-                                        </div>
-                                    @else
-                                        <span class="text-muted">
-                                            <i class="bi bi-chat-left me-2"></i>
-                                            Chưa có phản hồi
-                                        </span>
-                                    @endif
+                                    @switch($application->status)
+                                        @case('pending')
+                                            <span class="badge bg-warning">Chờ xem xét</span>
+                                            @break
+                                        @case('approved')
+                                            <span class="badge bg-success">Đã duyệt</span>
+                                            @break
+                                        @case('rejected')
+                                            <span class="badge bg-danger">Từ chối</span>
+                                            @break
+                                    @endswitch
                                 </td>
                                 <td class="text-center">
+                                    <div class="btn-group">
+                                        <a href="{{ asset('uploads/' . $application->cv_path) }}" 
+                                           class="btn btn-sm btn-outline-primary" 
+                                           target="_blank"
+                                           title="Xem CV">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        
+                                        <button type="button" 
+                                                class="btn btn-sm btn-outline-success" 
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#updateCvModal{{ $application->id }}"
+                                                title="Đổi CV">
+                                            <i class="bi bi-arrow-repeat"></i>
+                                        </button>
+
+                                        <button type="button" 
+                                                class="btn btn-sm btn-outline-danger" 
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#cancelModal{{ $application->id }}"
+                                                title="Hủy ứng tuyển">
+                                            <i class="bi bi-x-circle"></i>
+                                        </button>
+                                    </div>
+
+                                    <!-- Modal Đổi CV -->
+                                    <div class="modal fade" id="updateCvModal{{ $application->id }}" tabindex="-1">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">Đổi CV</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                </div>
+                                                <form action="{{ route('candidate.job-applications.update-cv', $application->id) }}" 
+                                                      method="POST" 
+                                                      enctype="multipart/form-data">
+                                                    @csrf
+                                                    @method('PUT')
+                                                    <div class="modal-body">
+                                                        <div class="mb-3">
+                                                            <label class="form-label">CV mới</label>
+                                                            <input type="file" 
+                                                                   class="form-control" 
+                                                                   name="cv" 
+                                                                   accept=".pdf,.doc,.docx" 
+                                                                   required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                                                        <button type="submit" class="btn btn-primary">Cập nhật</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Modal Hủy ứng tuyển -->
+                                    <div class="modal fade" id="cancelModal{{ $application->id }}" tabindex="-1">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">Hủy ứng tuyển</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <p>Bạn có chắc chắn muốn hủy đơn ứng tuyển này?</p>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                                                    <form action="{{ route('candidate.job-applications.destroy', $application->id) }}" 
+                                                          method="POST" 
+                                                          style="display: inline;">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="btn btn-danger">Xác nhận</button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td>
                                     <button type="button" 
-                                            class="btn btn-sm btn-outline-primary"
-                                            data-bs-toggle="modal" 
-                                            data-bs-target="#applicationModal{{ $application->id }}"
-                                            data-bs-toggle="tooltip"
-                                            title="Xem chi tiết">
-                                        <i class="bi bi-eye"></i>
-                                    </button>
+                                class="btn btn-sm btn-outline-primary"
+                                data-bs-toggle="modal" 
+                                data-bs-target="#applicationModal{{ $application->id }}"
+                                data-bs-toggle="tooltip"
+                                title="Xem chi tiết">
+                            <i class="bi bi-eye"></i>
+                        </button>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="text-center py-5">
+                                <td colspan="5" class="text-center py-5">
                                     <div class="text-muted">
                                         <i class="bi bi-inbox display-4 mb-3"></i>
                                         <p class="mb-0">Bạn chưa có đơn ứng tuyển nào</p>
                                     </div>
                                 </td>
+
+                                
                             </tr>
                         @endforelse
                     </tbody>
@@ -387,7 +414,6 @@
     </div>
 </div>
 @endforeach
-
 @push('styles')
 <style>
 .card {
