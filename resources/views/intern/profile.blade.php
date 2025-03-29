@@ -43,7 +43,7 @@
                         </button>
                     </div>
                     <h4 class="mb-1">{{ $intern->fullname }}</h4>
-                    <p class="text-muted mb-4">{{ $intern->position }} - {{ $intern->department }}</p>
+                    <p class="text-muted mb-4">{{ $intern->position }} - {{ $intern->department->name }}</p>
                     
                     <div class="d-grid gap-2">
                         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editProfileModal">

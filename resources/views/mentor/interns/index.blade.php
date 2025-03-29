@@ -38,7 +38,7 @@
                             <tr>
                                 <td>{{ $intern->fullname }}</td>
                                 <td>{{ $intern->email }}</td>
-                                <td>{{ $intern->department }}</td>
+                                <td>{{ $intern->department->name }}</td>
                                 <td>{{ $intern->position }}</td>
                                 <td>
                                     <div class="btn-group">

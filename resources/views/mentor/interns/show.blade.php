@@ -54,7 +54,7 @@
                 <div class="card-body">
                     <div class="mb-3">
                         <h6 class="text-muted">Trường học</h6>
-                        <p class="mb-0">{{ $intern->university }}</p>
+                        <p class="mb-0">{{ $intern->university->name }}</p>
                     </div>
                     <div class="mb-3">
                         <h6 class="text-muted">Chuyên ngành</h6>
@@ -73,7 +73,7 @@
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <h6 class="text-muted">Phòng ban</h6>
-                            <p class="mb-0">{{ $intern->department }}</p>
+                            <p class="mb-0">{{ $intern->department->name }}</p>
                         </div>
                         <div class="col-md-6">
                             <h6 class="text-muted">Vị trí</h6>

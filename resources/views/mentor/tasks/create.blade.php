@@ -90,24 +90,7 @@
                 </div>
 
                 <div class="row">
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label for="status" class="form-label">Trạng thái <span class="text-danger">*</span></label>
-                            <select class="form-select @error('status') is-invalid @enderror" 
-                                    id="status" 
-                                    name="status" 
-                                    required>
-                                <option value="">Chọn trạng thái</option>
-                                <option value="Chưa bắt đầu" {{ old('status', 'Chưa bắt đầu') == 'Chưa bắt đầu' ? 'selected' : '' }}>Chưa bắt đầu</option>
-                                <option value="Đang thực hiện" {{ old('status') == 'Đang thực hiện' ? 'selected' : '' }}>Đang thực hiện</option>
-                                <option value="Hoàn thành" {{ old('status') == 'Hoàn thành' ? 'selected' : '' }}>Hoàn thành</option>
-                                <option value="Trễ hạn" {{ old('status') == 'Trễ hạn' ? 'selected' : '' }}>Trễ hạn</option>
-                            </select>
-                            @error('status')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-                    </div>
+                    <input type="hidden" name="status" value="Chưa bắt đầu">
 
                     <div class="col-md-6">
                         <div class="mb-3">

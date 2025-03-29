@@ -118,32 +118,97 @@
             <!-- Báo cáo công việc -->
             <div class="card shadow mb-4">
                 <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Báo cáo công việc</h6>
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="bi bi-clipboard-data me-2"></i>
+                        Báo cáo công việc
+                    </h6>
                 </div>
                 <div class="card-body">
                     @if($task->reports->count() > 0)
-                        @foreach($task->reports as $report)
-                        <div class="border-bottom pb-3 mb-3">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <h6 class="mb-0">Báo cáo ngày {{ \Carbon\Carbon::parse($report->report_date)->format('d/m/Y') }}</h6>
-                            </div>
-                            <div class="mb-2">
-                                <h6 class="text-muted">Công việc đã làm</h6>
-                                <p class="mb-0">{{ $report->work_done }}</p>
-                            </div>
-                            <div>
-                                <h6 class="text-muted">Kế hoạch ngày mai</h6>
-                                <p class="mb-0">{{ $report->next_day_plan }}</p>
-                            </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="border-0">Ngày báo cáo</th>
+                                        <th class="border-0">Công việc đã làm</th>
+                                        <th class="border-0">Kế hoạch ngày mai</th>
+                                        <th class="border-0 text-center">Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($task->reports->sortByDesc('created_at') as $report)
+                                    <tr>
+                                        <td class="text-gray-700">
+                                            <i class="bi bi-calendar-event text-primary me-2"></i>
+                                            {{ \Carbon\Carbon::parse($report->report_date)->format('d/m/Y') }}
+                                        </td>
+                                        <td class="text-gray-700">
+                                            <i class="bi bi-check-circle text-success me-2"></i>
+                                            {{ $report->work_done }}
+                                        </td>
+                                        <td class="text-gray-700">
+                                            <i class="bi bi-calendar-check text-info me-2"></i>
+                                            {{ $report->next_day_plan }}
+                                        </td>
+                                        <td class="text-center">
+                                            <button type="button" 
+                                                    class="btn btn-sm btn-outline-primary" 
+                                                    data-bs-toggle="modal" 
+                                                    data-bs-target="#reportModal{{ $report->report_id }}">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
                         </div>
-                        @endforeach
                     @else
-                        <div class="text-center py-3">
-                            <p class="text-muted mb-0">Chưa có báo cáo nào</p>
+                        <div class="text-center py-5">
+                            <i class="bi bi-clipboard-x text-muted" style="font-size: 3rem;"></i>
+                            <p class="text-muted mt-3 mb-0">Chưa có báo cáo nào</p>
                         </div>
                     @endif
                 </div>
             </div>
+
+            <!-- Modal chi tiết báo cáo -->
+            @foreach($task->reports as $report)
+            <div class="modal fade" id="reportModal{{ $report->report_id }}" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">
+                                <i class="bi bi-clipboard-data text-primary me-2"></i>
+                                Chi tiết báo cáo ngày {{ \Carbon\Carbon::parse($report->report_date)->format('d/m/Y') }}
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-4">
+                                <h6 class="text-primary fw-bold mb-3">
+                                    <i class="bi bi-check-circle me-2"></i>
+                                    Công việc đã làm
+                                </h6>
+                                <p class="mb-0 text-gray-700">{{ $report->work_done }}</p>
+                            </div>
+                            <div>
+                                <h6 class="text-primary fw-bold mb-3">
+                                    <i class="bi bi-calendar-check me-2"></i>
+                                    Kế hoạch ngày mai
+                                </h6>
+                                <p class="mb-0 text-gray-700">{{ $report->next_day_plan }}</p>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                <i class="bi bi-x-circle me-2"></i>Đóng
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @endforeach
         </div>
 
         <div class="col-md-4">
@@ -158,7 +223,7 @@
                     </div>
                     <div class="mb-3">
                         <h6 class="text-muted">Phòng ban</h6>
-                        <p class="mb-0">{{ $task->intern->department }}</p>
+                        <p class="mb-0">{{ $task->intern->department->name }}</p>
                     </div>
                     <div class="mb-3">
                         <h6 class="text-muted">Vị trí</h6>
