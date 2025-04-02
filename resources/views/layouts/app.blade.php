@@ -326,7 +326,7 @@ footer ul li a:hover {
         <div class="container">
             <a class="navbar-brand" href="#">
                 <img src="{{ asset('assets/Logo_viettel.png') }}" alt="Logo" style="width: 200px; height: auto;">
-                <p class="m-0 fs-3">Tuyển dụnggggggg</p>
+                <p class="m-0 fs-3">Tuyển dụng</p>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
