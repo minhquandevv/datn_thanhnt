@@ -77,4 +77,3 @@ jobs:
             php artisan queue:restart
 
             echo "✅ Done!"
-          EOF

@@ -144,7 +144,6 @@ Route::middleware(['auth', 'check.role:admin'])->prefix('admin')->name('admin.')
 
     // Recruitment plan review routes
     Route::get('/recruitment-plans', [RecruitmentPlanController::class, 'index'])->name('recruitment-plans.index');
-    Route::get('/recruitment-plans/{recruitmentPlan}', [RecruitmentPlanController::class, 'show'])->name('recruitment-plans.show');
     Route::post('/recruitment-plans/{recruitmentPlan}/approve', [RecruitmentPlanController::class, 'approve'])->name('recruitment-plans.approve');
     Route::post('/recruitment-plans/{recruitmentPlan}/reject', [RecruitmentPlanController::class, 'reject'])->name('recruitment-plans.reject');
 });
