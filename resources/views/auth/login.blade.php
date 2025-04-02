@@ -9,7 +9,7 @@
                     <p class="text-muted">Chào mừng bạn quay lại! Vui lòng đăng nhập để tiếp tục.</p>
                 </div>
 
-                <div class="card border-0 shadow-lg">
+                <div class="card border-0 shadow-lg" id="loginForm">
                     <div class="card-body p-4 p-md-5">
                         <form method="POST" action="{{ route('login') }}">
                             @csrf
@@ -89,6 +89,20 @@
             </div>
         </div>
     </div>
+
+    <script>
+        window.onload = function() {
+            const loginForm = document.getElementById('loginForm');
+            if (loginForm) {
+                setTimeout(() => {
+                    loginForm.scrollIntoView({ 
+                        behavior: 'smooth',
+                        block: 'center'
+                    });
+                }, 100);
+            }
+        };
+    </script>
 
     @push('styles')
     <style>

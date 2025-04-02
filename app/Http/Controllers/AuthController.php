@@ -127,7 +127,7 @@ class AuthController extends Controller
                 'candidate_desires' => $candidate->desires
             ]);
 
-            return redirect()->intended('candidate/dashboard');
+            return redirect()->intended('/');
         }
 
         throw ValidationException::withMessages([

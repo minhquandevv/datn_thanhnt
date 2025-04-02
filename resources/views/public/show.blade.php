@@ -227,6 +227,19 @@
             <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Tìm phần tử chứa job offers
+                const jobOffersSection = document.querySelector('.card.shadow-lg');
+                if (jobOffersSection) {
+                    // Scroll đến phần tử với hiệu ứng mượt
+                    jobOffersSection.scrollIntoView({ 
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        </script>
     @endif
 
     @if(session('error'))

@@ -121,7 +121,7 @@
                 <div class="card-header bg-white d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">Công việc gần đây</h5>
                     <a href="{{ route('intern.tasks.index') }}" class="btn btn-sm btn-primary">
-                        <i class="bi bi-plus-lg me-1"></i>Xem tất cả
+                        <i class="bi bi-list-ul me-2"></i>Xem tất cả
                     </a>
                 </div>
                 <div class="card-body">
@@ -231,7 +231,7 @@
                 <div class="card-header bg-white d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">Chứng chỉ gần đây</h5>
                     <a href="#" class="btn btn-sm btn-primary">
-                        <i class="bi bi-plus-lg me-1"></i>Xem tất cả
+                        <i class="bi bi-list-ul me-2"></i>Xem tất cả
                     </a>
                 </div>
                 <div class="card-body">

@@ -11,9 +11,14 @@
                             <i class="bi bi-person-plus text-danger fs-4 me-2"></i>
                             <h3 class="card-title mb-0">Thêm Thực tập sinh mới</h3>
                         </div>
-                        <a href="{{ route('admin.interns.index') }}" class="btn btn-outline-danger">
-                            <i class="bi bi-arrow-left"></i> Quay lại
-                        </a>
+                        <div>
+                            <button type="button" class="btn btn-outline-danger me-2" data-bs-toggle="modal" data-bs-target="#importModal">
+                                <i class="bi bi-file-earmark-excel"></i> Import từ Excel
+                            </button>
+                            <a href="{{ route('admin.interns.index') }}" class="btn btn-outline-danger">
+                                <i class="bi bi-arrow-left"></i> Quay lại
+                            </a>
+                        </div>
                     </div>
                 </div>
                 <div class="card-body">
@@ -341,8 +346,13 @@
                                                 <i class="bi bi-key text-danger me-1"></i>
                                                 Mật khẩu <span class="text-danger">*</span>
                                             </label>
-                                            <input type="password" class="form-control @error('password') is-invalid @enderror" 
-                                                   id="password" name="password" required>
+                                            <div class="input-group">
+                                                <input type="text" class="form-control @error('password') is-invalid @enderror" 
+                                                       id="password" name="password" value="{{ old('password', Str::random(8)) }}" readonly>
+                                                <button type="button" class="btn btn-outline-danger" onclick="generatePassword()">
+                                                    <i class="bi bi-arrow-clockwise"></i>
+                                                </button>
+                                            </div>
                                             @error('password')
                                                 <span class="invalid-feedback">{{ $message }}</span>
                                             @enderror
@@ -362,6 +372,37 @@
                         </div>
                     </form>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Import Modal -->
+<div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="importModalLabel">Import từ Excel</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="{{ route('admin.interns.import') }}" method="POST" enctype="multipart/form-data" id="importForm">
+                    @csrf
+                    <div class="mb-3">
+                        <label for="excel_file" class="form-label">Chọn file Excel</label>
+                        <input type="file" class="form-control" id="excel_file" name="excel_file" accept=".xlsx,.xls" required>
+                        <div class="form-text">File Excel phải có định dạng .xlsx hoặc .xls</div>
+                    </div>
+                    <div class="mb-3">
+                        <a href="{{ asset('templates/intern_template.xlsx') }}" class="btn btn-outline-primary">
+                            <i class="bi bi-download"></i> Tải mẫu Excel
+                        </a>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="submit" form="importForm" class="btn btn-danger">Import</button>
             </div>
         </div>
     </div>
@@ -430,6 +471,17 @@
 
 @push('scripts')
 <script>
+function generatePassword() {
+    const length = 8;
+    const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
+    let password = "";
+    for (let i = 0; i < length; i++) {
+        const randomIndex = Math.floor(Math.random() * charset.length);
+        password += charset[randomIndex];
+    }
+    document.getElementById('password').value = password;
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.querySelector('form');
     
@@ -461,8 +513,41 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Error:', error);
         });
     });
+
+    // Handle import form submission
+    const importForm = document.getElementById('importForm');
+    if (importForm) {
+        importForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            
+            fetch(this.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showSuccess('Import thành công!');
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1500);
+                } else {
+                    showError(data.message || 'Có lỗi xảy ra khi import!');
+                }
+            })
+            .catch(error => {
+                showError('Có lỗi xảy ra khi import!');
+                console.error('Error:', error);
+            });
+        });
+    }
 });
 </script>
 @endpush
 
-@endsection 
+@endsection

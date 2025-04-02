@@ -17,7 +17,7 @@ class LoginController extends Controller
             case 'hr':
                 return redirect()->route('hr.dashboard');
             case 'candidate':
-                return redirect()->route('candidate.dashboard');
+                return redirect()->route('home');
             default:
                 return redirect()->route('home');
         }

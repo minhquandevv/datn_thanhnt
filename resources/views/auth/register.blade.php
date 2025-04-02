@@ -5,7 +5,7 @@
         <h2 class="text-center mb-4">Đăng ký tài khoản ứng viên</h2>
         <div class="row justify-content-center">
             <div class="col-md-8">
-                <div class="card shadow-sm">
+                <div class="card shadow-sm" id="registerForm">
                     <div class="card-body">
                         <form method="POST" action="{{ route('register') }}">
                             @csrf
@@ -116,6 +116,20 @@
             </div>
         </div>
     </div>
+
+    <script>
+        window.onload = function() {
+            const registerForm = document.getElementById('registerForm');
+            if (registerForm) {
+                setTimeout(() => {
+                    registerForm.scrollIntoView({ 
+                        behavior: 'smooth',
+                        block: 'center'
+                    });
+                }, 100);
+            }
+        };
+    </script>
 
     <style>
         .container {

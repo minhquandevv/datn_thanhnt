@@ -126,6 +126,7 @@ Route::middleware(['auth', 'check.role:admin'])->prefix('admin')->name('admin.')
 
     // Intern management routes
     Route::resource('interns', InternController::class);
+    Route::post('/interns/import', [InternController::class, 'import'])->name('interns.import');
 
     // Mentor management routes
     Route::resource('mentors', MentorController::class);
