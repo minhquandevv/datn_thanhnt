@@ -20,16 +20,17 @@ jobs:
           echo "${{ secrets.VPS_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
+          
+      - name: Push code to host
+        run: |
+          scp /home/runner/work/datn_thanhnt/datn_thanhnt -i ~/.ssh/id_rsa ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/home/quanvm/var/www
+          
       - name: SSH and Deploy
         run: |
           ssh -i ~/.ssh/id_rsa ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
             echo "📥 Pulling latest code"
             cd /var/www || exit 1
-      
-            if [ ! -d "datn_thanhnt" ]; then
-              git clone https://github.com/minhquandevv/datn_thanhnt.git
-            fi
-      
+
             cd datn_thanhnt
             git pull origin main
       
