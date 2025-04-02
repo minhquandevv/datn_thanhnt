@@ -13,7 +13,8 @@ jobs:
     steps:
       - name: SSH and Deploy Laravel
         run: |
-            git clone git@github.com:minhquandevv/datn_thanhnt.git
+            git clone https://github.com/minhquandevv/datn_thanhnt.git
+            cd datn_thanhnt
             git checkout main
             git pull origin main
 
