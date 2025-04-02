@@ -11,9 +11,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: SSH and Deploy Laravel
+      - name: SSH and Deploy
         run: |
-            ssh -i ~/.ssh/id_rsa ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
+          ssh -i ~/.ssh/id_rsa ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
             echo "📥 Pulling latest code"
             cd /var/www || exit 1
       
@@ -39,3 +39,4 @@ jobs:
             php artisan queue:restart
       
             echo "✅ Done!"
+          EOF
