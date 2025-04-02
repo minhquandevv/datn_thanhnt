@@ -1,4 +1,4 @@
-name: Laravel Web Deploy
+name: CI/CD Web
 
 on:
   push:
@@ -9,45 +9,45 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
+    
     steps:
-      - name: SSH and Deploy Laravel
+      - name: Checkout code
+        uses: actions/checkout@v3
+        
+      - name: 🔐 Setup SSH Key
         run: |
-            git clone git@github.com:minhquandevv/datn_thanhnt.git
-            git checkout main
-            git pull origin main
+          mkdir -p ~/.ssh
+          echo "${{ secrets.VPS_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
+          
+      - name: SSH and Deploy
+        run: |
+          ssh -i ~/.ssh/id_rsa ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
+            echo "📥 Pulling latest code"
+            
+            sudo chown -R $USER:www-data /var/www/datn_thanhnt
+            cd /var/www/datn_thanhnt || exit 1
 
+            if [ -n "$(git status --porcelain)" ]; then
+              git reset --hard
+            fi
+            
+            git pull origin main
+      
             echo "📦 Composer install"
             composer install --no-dev --optimize-autoloader
-
+      
             echo "⚙️ Migrate DB"
             php artisan migrate --force
-
+      
             echo "🔧 Cache clear/build"
             php artisan config:cache
             php artisan route:cache
             php artisan view:clear
-
+      
             echo "♻️ Restart queue (nếu có)"
             php artisan queue:restart
-
+      
             echo "✅ Done!"
-
-            cd /var/www/datn_thanhnt
-            git pull origin main
-
-            echo "📦 Composer install"
-            composer install --no-dev --optimize-autoloader
-
-            echo "⚙️ Migrate DB"
-            php artisan migrate --force
-
-            echo "🔧 Cache clear/build"
-            php artisan config:cache
-            php artisan route:cache
-            php artisan view:clear
-
-            echo "♻️ Restart queue (nếu có)"
-            php artisan queue:restart
-
-            echo "✅ Done!"
+          EOF
