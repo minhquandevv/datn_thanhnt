@@ -29,6 +29,10 @@ jobs:
             sudo chown -R $USER:www-data /var/www/datn_thanhnt
             cd /var/www/datn_thanhnt || exit 1
 
+            if [ -n "$(git status --porcelain)" ]; then
+              git reset --hard
+            fi
+            
             git pull origin main
       
             echo "📦 Composer install"
