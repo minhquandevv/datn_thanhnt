@@ -1,4 +1,4 @@
-name: Laravel Web Deploy
+name: CI/CD Web
 
 on:
   push:
@@ -25,6 +25,8 @@ jobs:
         run: |
           ssh -i ~/.ssh/id_rsa ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
             echo "📥 Pulling latest code"
+            
+            sudo chown -R $USER:www-data /var/www/datn_thanhnt
             cd /var/www/datn_thanhnt || exit 1
 
             git pull origin main
