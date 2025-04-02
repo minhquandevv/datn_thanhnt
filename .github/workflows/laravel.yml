@@ -23,7 +23,7 @@ jobs:
           
       - name: Push code to host
         run: |
-          scp /home/runner/work/datn_thanhnt/datn_thanhnt -i ~/.ssh/id_rsa ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/home/ducpa/var/www
+          scp /home/runner/work/datn_thanhnt/datn_thanhnt -i ~/.ssh/id_rsa ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/home/quanvm/deploy
           
       - name: SSH and Deploy
         run: |
