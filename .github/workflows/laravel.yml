@@ -21,17 +21,12 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
           
-      - name: Push code to host
-        run: |
-          scp /home/runner/work/datn_thanhnt/datn_thanhnt -i ~/.ssh/id_rsa ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/home/quanvm/deploy
-          
       - name: SSH and Deploy
         run: |
           ssh -i ~/.ssh/id_rsa ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
             echo "📥 Pulling latest code"
-            cd /var/www || exit 1
+            cd /var/www/datn_thanhnt || exit 1
 
-            cd datn_thanhnt
             git pull origin main
       
             echo "📦 Composer install"
