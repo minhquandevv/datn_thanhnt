@@ -37,7 +37,6 @@
                         @endif
                         <div>
                             <h4 class="mb-1">Xin chào, {{ session('intern_name') }}!</h4>
-                            <p class="text-muted mb-0">{{ session('intern_position') }} - {{ session('intern_department') }}</p>
                             @if($mentor)
                             <p class="text-muted small mb-0 mt-1">
                                 <i class="bi bi-person-badge me-1"></i>Mentor: {{ $mentor->mentor_name }}
