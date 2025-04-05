@@ -472,13 +472,15 @@
 @push('scripts')
 <script>
 function generatePassword() {
-    const length = 8;
-    const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
-    let password = "";
-    for (let i = 0; i < length; i++) {
-        const randomIndex = Math.floor(Math.random() * charset.length);
-        password += charset[randomIndex];
+    const timestamp = Date.now().toString(36);
+    const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
+    
+    let randomPart = "";
+    for (let i = 0; i < 4; i++) {
+        randomPart += chars.charAt(Math.floor(Math.random() * chars.length));
     }
+
+    const password = (randomPart + timestamp).slice(0, 10);
     document.getElementById('password').value = password;
 }
 
