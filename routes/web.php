@@ -20,6 +20,7 @@ use App\Http\Controllers\admin\DepartmentController;
 use App\Http\Controllers\admin\HRDashboardController;
 use App\Http\Controllers\admin\RecruitmentPlanController;
 use App\Http\Controllers\admin\AdminDashboardController;
+use App\Http\Controllers\hr\JobApplicationController as HRJobApplicationController;
 
 // Authentication Routes
 Route::middleware('guest')->group(function () {
@@ -147,6 +148,11 @@ Route::middleware(['auth', 'check.role:admin'])->prefix('admin')->name('admin.')
     Route::get('/recruitment-plans', [RecruitmentPlanController::class, 'index'])->name('recruitment-plans.index');
     Route::post('/recruitment-plans/{recruitmentPlan}/approve', [RecruitmentPlanController::class, 'approve'])->name('recruitment-plans.approve');
     Route::post('/recruitment-plans/{recruitmentPlan}/reject', [RecruitmentPlanController::class, 'reject'])->name('recruitment-plans.reject');
+
+    // Job Applications Routes
+    Route::get('/job-applications', [JobApplicationController::class, 'index'])->name('job-applications.index');
+    Route::post('/job-applications/update-status', [JobApplicationController::class, 'updateStatus'])->name('job-applications.update-status');
+    Route::get('/job-applications/{id}/download-cv', [JobApplicationController::class, 'downloadCV'])->name('job-applications.download-cv');
 });
 
 // Mentor login routes
@@ -213,4 +219,9 @@ Route::middleware(['auth', 'check.role:hr'])->prefix('hr')->name('hr.')->group(f
     Route::get('/dashboard', [HRDashboardController::class, 'index'])->name('dashboard');
     Route::resource('recruitment-plans', RecruitmentPlanController::class);
     Route::post('recruitment-plans/{recruitmentPlan}/submit', [RecruitmentPlanController::class, 'submit'])->name('recruitment-plans.submit');
+    
+    // Job Applications Routes
+    Route::get('/job-applications', [HRJobApplicationController::class, 'index'])->name('job-applications.index');
+    Route::post('/job-applications/update-status', [HRJobApplicationController::class, 'updateStatus'])->name('job-applications.update-status');
+    Route::get('/job-applications/{id}/download-cv', [HRJobApplicationController::class, 'downloadCV'])->name('job-applications.download-cv');
 });

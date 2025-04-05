@@ -115,7 +115,7 @@
                         <div class="col-md-6">
                             <div class="p-3 rounded-3 bg-light">
                                 <label class="form-label text-muted small mb-1">Trường đại học</label>
-                                <p class="mb-0">{{ $intern->university ?? 'Chưa cập nhật' }}</p>
+                                <p class="mb-0">{{ $intern->university->name}}</p>
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -272,7 +272,7 @@
                         <div class="col-md-6">
                             <div class="p-3 rounded-3 bg-light">
                                 <label class="form-label">Trường đại học</label>
-                                <input type="text" class="form-control" name="university" value="{{ $intern->university }}">
+                                <input type="text" class="form-control" name="university" value="{{ $intern->university->name ? $intern->university->name : 'Chưa có thông tin' }}">
                             </div>
                         </div>
                         <div class="col-md-6">
