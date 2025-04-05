@@ -11,7 +11,8 @@ class JobOffer extends Model
 
     protected $fillable = [
         'job_name', 'department_id', 'expiration_date', 'job_detail', 
-        'job_description', 'job_requirement', 'job_position', 'job_salary', 'job_quantity', 'job_category_id', 'status'
+        'job_description', 'job_requirement', 'job_position', 'job_salary', 'job_quantity', 'job_category_id', 'status',     'position_id',
+        'recruitment_plan_id',
     ];
 
     protected $casts = [
@@ -41,5 +42,16 @@ class JobOffer extends Model
     public function applications()
     {
         return $this->hasMany(JobApplication::class, 'job_offer_id');
+    }
+
+        public function recruitmentPlan()
+    {
+        return $this->belongsTo(RecruitmentPlan::class, 'recruitment_plan_id');
+    }
+
+// Trong App\Models\JobOffer
+    public function position()
+    {
+        return $this->belongsTo(RecruitmentPosition::class, 'position_id');
     }
 }

@@ -10,6 +10,11 @@ use App\Models\Mentor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\InternsImport;
+use Illuminate\Support\Str;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class InternController extends Controller
 {
@@ -224,5 +229,63 @@ class InternController extends Controller
 
             return back()->withErrors(['error' => 'Có lỗi xảy ra: ' . $e->getMessage()]);
         }
+    }
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'excel_file' => 'required|mimes:xlsx,xls'
+        ]);
+
+        try {
+            Excel::import(new InternsImport, $request->file('excel_file'));
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Import thực tập sinh thành công!'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra khi import: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function downloadTemplate()
+    {
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Set headers
+        $headers = [
+            'ho_ten', 'email', 'so_dien_thoai', 'ngay_sinh', 'gioi_tinh', 
+            'dia_chi', 'truong_dai_hoc_id', 'chuyen_nganh', 'bang_cap', 
+            'phong_ban_id', 'vi_tri', 'mentor_id', 'so_cccd', 'ten_dang_nhap'
+        ];
+        
+        $sheet->fromArray($headers, NULL, 'A1');
+
+        // Add sample data
+        $sampleData = [
+            'Nguyễn Văn A', 'nguyenvana@example.com', '0123456789', '2000-01-01', 'Nam',
+            '123 Đường ABC, Quận 1, TP.HCM', '1', 'Công nghệ thông tin', 'Cử nhân',
+            '1', 'Thực tập sinh', '1', '123456789', 'nguyenvana'
+        ];
+        
+        $sheet->fromArray($sampleData, NULL, 'A2');
+
+        // Set column widths
+        foreach(range('A','N') as $column) {
+            $sheet->getColumnDimension($column)->setAutoSize(true);
+        }
+
+        // Create writer and save to temporary file
+        $writer = new Xlsx($spreadsheet);
+        $tempFile = tempnam(sys_get_temp_dir(), 'intern_template');
+        $writer->save($tempFile);
+
+        // Return the file as download
+        return response()->download($tempFile, 'intern_template.xlsx')->deleteFileAfterSend(true);
     }
 } 

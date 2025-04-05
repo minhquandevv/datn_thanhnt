@@ -16,7 +16,7 @@
             <i class="bi bi-plus-lg me-1"></i>Thêm mới
         </button>
     </div>
-
+    
     <!-- Stats Cards -->
     <div class="row g-2 mb-2">
         <div class="col-sm-6 col-md-3">
@@ -26,7 +26,7 @@
                         <div>
                             <h6 class="card-subtitle mb-0 opacity-75 small">Tổng số tin</h6>
                             <h4 class="card-title mb-0 fw-bold">{{ $jobOffers->count() }}</h4>
-                        </div>
+        </div>
                         <div class="icon-box rounded-circle bg-white bg-opacity-25 p-1">
                             <i class="bi bi-briefcase"></i>
                         </div>
@@ -43,7 +43,7 @@
                             <h4 class="card-title mb-0 fw-bold">
                                 {{ $jobOffers->where('expiration_date', '>', now())->count() }}
                             </h4>
-                        </div>
+                            </div>
                         <div class="icon-box rounded-circle bg-white bg-opacity-25 p-1">
                             <i class="bi bi-person-plus"></i>
                         </div>
@@ -60,26 +60,9 @@
                             <h4 class="card-title mb-0 fw-bold">
                                 {{ $jobOffers->where('expiration_date', '<=', now())->count() }}
                             </h4>
-                        </div>
+                            </div>
                         <div class="icon-box rounded-circle bg-white bg-opacity-25 p-1">
                             <i class="bi bi-clock-history"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-sm-6 col-md-3">
-            <div class="card border-0 shadow-sm bg-gradient-danger text-white h-100">
-                <div class="card-body p-2">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="card-subtitle mb-0 opacity-75 small">Chưa phân công</h6>
-                            <h4 class="card-title mb-0 fw-bold">
-                                {{ $jobOffers->whereNull('department_id')->count() }}
-                            </h4>
-                        </div>
-                        <div class="icon-box rounded-circle bg-white bg-opacity-25 p-1">
-                            <i class="bi bi-building"></i>
                         </div>
                     </div>
                 </div>
@@ -139,12 +122,10 @@
                     <thead class="bg-light">
                         <tr>
                             <th class="px-2 py-1 text-center" style="width: 150px">Thao tác</th>
-                            <th class="px-2 py-1 text-center" style="width: 40px">ID</th>
-                            <th class="px-2 py-1">Tên công việc</th>
-                            <th class="px-2 py-1">Phòng ban</th>
+                            <th class="px-2 py-1 text-center" >Tên vị trí</th>
+                            <th class="px-2 py-1">Số lượng</th>  
+                            <th class="px-2 py-1">Phúc lợi</th>  
                             <th class="px-2 py-1 text-center" style="width: 100px">Hạn nộp</th>
-                            <th class="px-2 py-1">Kỹ năng</th>
-
                         </tr>
                     </thead>
                     <tbody>
@@ -155,24 +136,18 @@
                                     <a href="{{ route('admin.job-offers.show', $job->id) }}" 
                                        class="btn btn-outline-danger btn-sm">
                                         <i class="bi bi-eye"></i>
-                                        <span class="d-none d-md-inline ms-1">Xem</span>
                                     </a>
                                     <button class="btn btn-outline-danger btn-sm"
                                             data-bs-toggle="modal" 
                                             data-bs-target="#editModal{{ $job->id }}">
                                         <i class="bi bi-pencil"></i>
-                                        <span class="d-none d-md-inline ms-1">Sửa</span>
                                     </button>
                                     <button type="button"
                                             class="btn btn-outline-danger btn-sm"
                                             onclick="deleteJobOffer({{ $job->id }})">
                                         <i class="bi bi-trash"></i>
-                                        <span class="d-none d-md-inline ms-1">Xóa</span>
                                     </button>
                                 </div>
-                            </td>
-                            <td class="px-2 text-center">
-                                <span class="badge bg-danger rounded-pill">{{ $job->id }}</span>
                             </td>
                             <td class="px-2">
                                 <div class="d-flex align-items-center">
@@ -181,35 +156,31 @@
                                     </div>
                                     <div>
                                         <h6 class="mb-0 fw-bold">{{ $job->job_name }}</h6>
-                                        <div class="text-muted small">
-                                            <p class="mb-0">{{ Str::limit($job->job_detail, 50) }}</p>
-                                        </div>
                                     </div>
                                 </div>
                             </td>
                             <td class="px-2">
                                 <div class="d-flex align-items-center">
                                     <div class="avatar-circle me-2 bg-danger bg-opacity-10">
-                                        <i class="bi bi-building text-danger"></i>
+                                        <i class="bi bi-people-fill text-danger"></i>
                                     </div>
                                     <div>
                                         <h6 class="mb-0 fw-bold">
-                                            {{ $job->department ? $job->department->name : 'Chưa phân công' }}
+                                            {{ $job->job_quantity }}
                                         </h6>
                                     </div>
                                 </div>
+                            </td>
+                            <td class="px-2">
+                                @foreach($job->benefits as $benefit)
+                                    <span class="badge bg-danger bg-opacity-10 text-danger me-1 mb-1">{{ $benefit->title }}</span>
+                                @endforeach
                             </td>
                             <td class="px-2 text-center">
                                 <span class="badge {{ \Carbon\Carbon::parse($job->expiration_date)->isPast() ? 'bg-danger-subtle text-danger' : 'bg-success-subtle text-success' }} border {{ \Carbon\Carbon::parse($job->expiration_date)->isPast() ? 'border-danger-subtle' : 'border-success-subtle' }}">
                                     {{ \Carbon\Carbon::parse($job->expiration_date)->format('d/m/Y') }}
                                 </span>
                             </td>
-                            <td class="px-2">
-                                @foreach($job->skills as $skill)
-                                    <span class="badge bg-danger bg-opacity-10 text-danger me-1 mb-1">{{ $skill->name }}</span>
-                                @endforeach
-                            </td>
-                            
                         </tr>
                         @endforeach
                     </tbody>
@@ -391,29 +362,12 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">
-                                <i class="bi bi-briefcase text-danger me-1"></i>Tên công việc
+                                <i class="bi bi-file-text text-danger me-1"></i>Kế hoạch tuyển dụng
                             </label>
-                            <input type="text" class="form-control" name="job_name" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">
-                                <i class="bi bi-building text-danger me-1"></i>Phòng ban
-                            </label>
-                            <select class="form-select" name="department_id">
-                                <option value="">Chọn phòng ban</option>
-                                @foreach($departments as $department)
-                                    <option value="{{ $department->department_id }}">{{ $department->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">
-                                <i class="bi bi-grid text-danger me-1"></i>Danh mục công việc
-                            </label>
-                            <select class="form-select" name="job_category_id">
-                                <option value="">Chọn danh mục</option>
-                                @foreach($jobCategories as $category)
-                                    <option value="{{ $category->id }}">{{ $category->name }}</option>
+                            <select class="form-select" id="recruitment_plan" name="recruitment_plan_id">
+                                <option value="">Chọn kế hoạch tuyển dụng</option>
+                                @foreach($recruitmentPlans as $plan)
+                                    <option value="{{ $plan->plan_id }}">{{ $plan->name }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -421,7 +375,9 @@ document.addEventListener('DOMContentLoaded', function() {
                             <label class="form-label">
                                 <i class="bi bi-person-badge text-danger me-1"></i>Vị trí
                             </label>
-                            <input type="text" class="form-control" name="job_position">
+                            <select class="form-select" id="position" name="position" required>
+                                <option value="">Chọn vị trí</option>
+                            </select>
                         </div>
 
                         <!-- Thông tin về lương và số lượng -->
@@ -430,20 +386,21 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <i class="bi bi-cash-stack me-2"></i>Thông tin về lương và số lượng
                             </h6>
                         </div>
+
                         <div class="col-md-6">
                             <label class="form-label">
                                 <i class="bi bi-cash text-danger me-1"></i>Mức lương
                             </label>
                             <div class="input-group">
-                                <input type="number" class="form-control" name="job_salary" min="0" step="100000">
-                                <span class="input-group-text bg-light">VNĐ</span>
+                                <input type="number" class="form-control" name="job_salary" placeholder="Thỏa thuận" min="0" readonly>
                             </div>
                         </div>
+
                         <div class="col-md-6">
                             <label class="form-label">
                                 <i class="bi bi-people text-danger me-1"></i>Số lượng tuyển
                             </label>
-                            <input type="number" class="form-control" name="job_quantity" value="1" min="1" required>
+                            <input type="number" class="form-control" name="job_quantity" id="job_quantity" value="1" min="1" required>
                         </div>
 
                         <!-- Thời gian -->
@@ -462,29 +419,11 @@ document.addEventListener('DOMContentLoaded', function() {
                                 </span>
                                 <input type="date" class="form-control" name="expiration_date" required>
                             </div>
+                            <small class="text-danger d-none" id="expirationDateError">
+                                Hạn nộp phải nhỏ hơn hoặc bằng ngày kết thúc kế hoạch.
+                            </small>
                         </div>
-
-                        <!-- Kỹ năng -->
-                        <div class="col-12 mt-4">
-                            <h6 class="text-danger mb-3">
-                                <i class="bi bi-tools me-2"></i>Kỹ năng yêu cầu
-                            </h6>
-                        </div>
-                        <div class="col-12">
-                            <div class="row g-2">
-                                @foreach($jobSkills as $skill)
-                                <div class="col-md-4">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="job_skills[]" value="{{ $skill->id }}" id="skill{{ $skill->id }}">
-                                        <label class="form-check-label" for="skill{{ $skill->id }}">
-                                            {{ $skill->name }}
-                                        </label>
-                                    </div>
-                                </div>
-                                @endforeach
-                            </div>
-                        </div>
-
+                        <!-- Phúc lợi -->
                         <!-- Phúc lợi -->
                         <div class="col-12 mt-4">
                             <h6 class="text-danger mb-3">
@@ -492,9 +431,9 @@ document.addEventListener('DOMContentLoaded', function() {
                             </h6>
                         </div>
                         <div class="col-12">
-                            <div class="row g-2">
+                            <div class="row g-2" id="benefits-container">
                                 @foreach($jobBenefits as $benefit)
-                                <div class="col-md-4">
+                                <div class="col-md-4 benefit-item">
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" name="job_benefits[]" value="{{ $benefit->id }}" id="benefit{{ $benefit->id }}">
                                         <label class="form-check-label" for="benefit{{ $benefit->id }}">
@@ -504,19 +443,19 @@ document.addEventListener('DOMContentLoaded', function() {
                                 </div>
                                 @endforeach
                             </div>
+
+                            <!-- Nhập phúc lợi khác -->
+                            <div class="input-group mt-2">
+                                <input type="text" id="new-benefit" class="form-control" placeholder="Nhập phúc lợi khác...">
+                                <button class="btn btn-outline-danger" id="add-benefit-btn" type="button">
+                                    <i class="bi bi-plus-lg"></i>
+                                </button>
                         </div>
 
-                        <!-- Mô tả chi tiết -->
-                        <div class="col-12 mt-4">
-                            <h6 class="text-danger mb-3">
-                                <i class="bi bi-file-text me-2"></i>Mô tả chi tiết
-                            </h6>
+                            <!-- Danh sách phúc lợi thêm mới -->
+                            <div id="added-benefits-list" class="mt-2">
+                                <!-- phúc lợi thêm mới sẽ hiển thị tại đây -->
                         </div>
-                        <div class="col-12">
-                            <label class="form-label">
-                                <i class="bi bi-list-check text-danger me-1"></i>Chi tiết công việc
-                            </label>
-                            <textarea class="form-control" name="job_detail" rows="3" required></textarea>
                         </div>
                         <div class="col-12">
                             <label class="form-label">
@@ -528,7 +467,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <label class="form-label">
                                 <i class="bi bi-clipboard-check text-danger me-1"></i>Yêu cầu
                             </label>
-                            <textarea class="form-control" name="job_requirement" rows="3" required></textarea>
+                            <textarea class="form-control" name="job_requirement" id="job_requirement" rows="3" required></textarea>
                         </div>
                     </div>
                     <div class="modal-footer bg-light">
@@ -545,7 +484,6 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
 </div>
 
-<!-- Modal Chỉnh sửa -->
 @foreach($jobOffers as $job)
 <div class="modal fade" id="editModal{{ $job->id }}" tabindex="-1">
     <div class="modal-dialog modal-lg">
@@ -561,161 +499,104 @@ document.addEventListener('DOMContentLoaded', function() {
                     @csrf
                     @method('PUT')
                     <div class="row g-4">
-                        <!-- Thông tin cơ bản -->
                         <div class="col-12">
-                            <h6 class="text-danger mb-3">
-                                <i class="bi bi-info-circle me-2"></i>Thông tin cơ bản
-                            </h6>
+                            <h6 class="text-danger mb-3"><i class="bi bi-info-circle me-2"></i>Thông tin cơ bản</h6>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">
-                                <i class="bi bi-briefcase text-danger me-1"></i>Tên công việc
-                            </label>
-                            <input type="text" class="form-control" name="job_name" value="{{ $job->job_name }}" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">
-                                <i class="bi bi-building text-danger me-1"></i>Phòng ban
-                            </label>
-                            <select class="form-select" name="department_id">
-                                <option value="">Chọn phòng ban</option>
-                                @foreach($departments as $department)
-                                    <option value="{{ $department->department_id }}" {{ $job->department_id == $department->department_id ? 'selected' : '' }}>
-                                        {{ $department->name }}
+                            <label class="form-label"><i class="bi bi-file-text text-danger me-1"></i>Kế hoạch tuyển dụng</label>
+                            <select class="form-select recruitment-plan-select" name="recruitment_plan_id" data-job-id="{{ $job->id }}" required>
+                                <option value="">Chọn kế hoạch tuyển dụng</option>
+                                @foreach($recruitmentPlans as $plan)
+                                    <option value="{{ $plan->plan_id }}" {{ $job->recruitment_plan_id == $plan->plan_id ? 'selected' : '' }}>
+                                        {{ $plan->name }}
                                     </option>
                                 @endforeach
                             </select>
                         </div>
+<input type="hidden" name="job_name" id="job_name" value="{{ old('job_name') }}">
                         <div class="col-md-6">
-                            <label class="form-label">
-                                <i class="bi bi-grid text-danger me-1"></i>Danh mục công việc
-                            </label>
-                            <select class="form-select" name="job_category_id">
-                                <option value="">Chọn danh mục</option>
-                                @foreach($jobCategories as $category)
-                                    <option value="{{ $category->id }}" {{ $job->job_category_id == $category->id ? 'selected' : '' }}>
-                                        {{ $category->name }}
+                            <label class="form-label"><i class="bi bi-person-badge text-danger me-1"></i>Vị trí</label>
+                            <select class="form-select position-select" name="position"
+                            data-selected-position="{{ $job->position }}"
+                            data-plan-id="{{ $job->recruitment_plan_id }}"
+                            required>
+                                <option value="">Chọn vị trí</option>
+                                @foreach($recruitmentPlans as $plan)
+                                    @foreach($plan->positions as $position)
+                                    <option 
+                                    value="{{ $position->position_id }}"
+                                    {{ $job->position?->position_id == $position->position_id ? 'selected' : '' }}
+                                    data-quantity="{{ $position->quantity }}"
+                                    data-requirements="{{ $position->requirements }}"
+                                >
+                                    {{ $position->name }}
                                     </option>
+                                    @endforeach
                                 @endforeach
                             </select>
                         </div>
+
                         <div class="col-md-6">
-                            <label class="form-label">
-                                <i class="bi bi-person-badge text-danger me-1"></i>Vị trí
-                            </label>
-                            <input type="text" class="form-control" name="job_position" value="{{ $job->job_position }}">
+                            <label class="form-label"><i class="bi bi-cash text-danger me-1"></i>Mức lương</label>
+                            <input type="number" class="form-control" name="job_salary" placeholder="Thỏa thuận" min="0" value="{{ $job->job_salary }}" readonly>
                         </div>
 
-                        <!-- Thông tin về lương và số lượng -->
-                        <div class="col-12 mt-4">
-                            <h6 class="text-danger mb-3">
-                                <i class="bi bi-cash-stack me-2"></i>Thông tin về lương và số lượng
-                            </h6>
-                        </div>
                         <div class="col-md-6">
-                            <label class="form-label">
-                                <i class="bi bi-cash text-danger me-1"></i>Mức lương
-                            </label>
-                            <div class="input-group">
-                                <input type="number" class="form-control" name="job_salary" value="{{ $job->job_salary }}" min="0" step="100000">
-                                <span class="input-group-text bg-light">VNĐ</span>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">
-                                <i class="bi bi-people text-danger me-1"></i>Số lượng tuyển
-                            </label>
-                            <input type="number" class="form-control" name="job_quantity" value="{{ $job->job_quantity }}" min="1" required>
+                            <label class="form-label"><i class="bi bi-people text-danger me-1"></i>Số lượng tuyển</label>
+                            <input type="number" class="form-control job-quantity" name="job_quantity" value="{{ $job->job_quantity }}" min="1" required>
                         </div>
 
-                        <!-- Thời gian -->
-                        <div class="col-12 mt-4">
-                            <h6 class="text-danger mb-3">
-                                <i class="bi bi-clock me-2"></i>Thời gian
-                            </h6>
-                        </div>
                         <div class="col-md-6">
-                            <label class="form-label">
-                                <i class="bi bi-calendar-check text-danger me-1"></i>Hạn nộp
-                            </label>
-                            <div class="input-group">
-                                <span class="input-group-text bg-light">
-                                    <i class="bi bi-calendar text-danger"></i>
-                                </span>
-                                <input type="date" class="form-control" name="expiration_date" 
-                                    value="{{ $job->expiration_date ? date('Y-m-d', strtotime($job->expiration_date)) : '' }}" required>
-                            </div>
+                            <label class="form-label"><i class="bi bi-calendar-check text-danger me-1"></i>Hạn nộp</label>
+                            <input type="date" class="form-control expiration-date" name="expiration_date"
+                                value="{{ \Carbon\Carbon::parse($job->expiration_date)->format('Y-m-d') }}" required>
                         </div>
-
-                        <!-- Kỹ năng -->
-                        <div class="col-12 mt-4">
-                            <h6 class="text-danger mb-3">
-                                <i class="bi bi-tools me-2"></i>Kỹ năng yêu cầu
-                            </h6>
-                        </div>
-                        <div class="col-12">
-                            <div class="row g-2">
-                                @foreach($jobSkills as $skill)
-                                <div class="col-md-4">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="job_skills[]" value="{{ $skill->id }}" 
-                                            id="skill{{ $job->id }}{{ $skill->id }}"
-                                            {{ $job->skills->contains($skill->id) ? 'checked' : '' }}>
-                                        <label class="form-check-label" for="skill{{ $job->id }}{{ $skill->id }}">
-                                            {{ $skill->name }}
-                                        </label>
-                                    </div>
-                                </div>
-                                @endforeach
-                            </div>
-                        </div>
-
-                        <!-- Phúc lợi -->
                         <div class="col-12 mt-4">
                             <h6 class="text-danger mb-3">
                                 <i class="bi bi-gift me-2"></i>Phúc lợi
                             </h6>
                         </div>
+                        
                         <div class="col-12">
-                            <div class="row g-2">
+                            <div class="row g-2" id="edit-benefits-container-{{ $job->id }}">
                                 @foreach($jobBenefits as $benefit)
-                                <div class="col-md-4">
+                                <div class="col-md-4 benefit-item">
                                     <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="job_benefits[]" value="{{ $benefit->id }}" 
-                                            id="benefit{{ $job->id }}{{ $benefit->id }}"
-                                            {{ $job->benefits->contains($benefit->id) ? 'checked' : '' }}>
-                                        <label class="form-check-label" for="benefit{{ $job->id }}{{ $benefit->id }}">
+                                        <input class="form-check-input" type="checkbox"
+                                               name="job_benefits[]"
+                                               value="{{ $benefit->id }}"
+                                               id="edit-benefit{{ $job->id }}-{{ $benefit->id }}"
+                                               {{ $job->benefits->contains('id', $benefit->id) ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="edit-benefit{{ $job->id }}-{{ $benefit->id }}">
                                             {{ $benefit->title }}
                                         </label>
                                     </div>
                                 </div>
                                 @endforeach
                             </div>
+                        
+                            <!-- Nhập phúc lợi khác -->
+                            <div class="input-group mt-2">
+                                <input type="text" id="new-benefit-edit-{{ $job->id }}" class="form-control" placeholder="Nhập phúc lợi khác...">
+                                <button class="btn btn-outline-danger add-benefit-edit-btn" type="button"
+                                        data-job-id="{{ $job->id }}">
+                                    <i class="bi bi-plus-lg"></i>
+                                </button>
                         </div>
 
-                        <!-- Mô tả chi tiết -->
-                        <div class="col-12 mt-4">
-                            <h6 class="text-danger mb-3">
-                                <i class="bi bi-file-text me-2"></i>Mô tả chi tiết
-                            </h6>
+                            <!-- Danh sách phúc lợi thêm mới -->
+                            <div class="mt-2" id="added-benefits-list-edit-{{ $job->id }}">
+                                <!-- các phúc lợi thêm mới sẽ hiển thị ở đây -->
+                        </div>
                         </div>
                         <div class="col-12">
-                            <label class="form-label">
-                                <i class="bi bi-list-check text-danger me-1"></i>Chi tiết công việc
-                            </label>
-                            <textarea class="form-control" name="job_detail" rows="3" required>{{ $job->job_detail }}</textarea>
-                        </div>
-                        <div class="col-12">
-                            <label class="form-label">
-                                <i class="bi bi-card-text text-danger me-1"></i>Mô tả công việc
-                            </label>
+                            <label class="form-label"><i class="bi bi-card-text text-danger me-1"></i>Mô tả công việc</label>
                             <textarea class="form-control" name="job_description" rows="3" required>{{ $job->job_description }}</textarea>
                         </div>
+
                         <div class="col-12">
-                            <label class="form-label">
-                                <i class="bi bi-clipboard-check text-danger me-1"></i>Yêu cầu
-                            </label>
-                            <textarea class="form-control" name="job_requirement" rows="3" required>{{ $job->job_requirement }}</textarea>
+                            <label class="form-label"><i class="bi bi-clipboard-check text-danger me-1"></i>Yêu cầu</label>
+                            <textarea class="form-control job-requirement" name="job_requirement" rows="3" required>{{ $job->job_requirement }}</textarea>
                         </div>
                     </div>
                     <div class="modal-footer bg-light">
@@ -732,5 +613,250 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
 </div>
 @endforeach
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const recruitmentPlanSelect = document.getElementById('recruitment_plan');
+    const positionSelect = document.getElementById('position');
+    const jobQuantityInput = document.getElementById('job_quantity');
+    const jobRequirementInput = document.getElementById('job_requirement');
+    const jobNameInput = document.querySelector('input[name="job_name"]');
+    const expirationDateInput = document.querySelector('input[name="expiration_date"]');
+    const expirationDateError = document.getElementById('expirationDateError');
+
+    const recruitmentPlans = @json($recruitmentPlans);
+
+    recruitmentPlanSelect.addEventListener('change', function() {
+        const selectedPlan = recruitmentPlans.find(plan => plan.plan_id == this.value);
+        if (selectedPlan) {
+            positionSelect.innerHTML = '<option value="">Chọn vị trí</option>';
+            selectedPlan.positions.forEach(position => {
+                const option = document.createElement('option');
+                option.value = position.position_id;
+                option.textContent = position.name;
+                option.dataset.quantity = position.quantity;
+                option.dataset.requirements = position.requirements;
+                positionSelect.appendChild(option);
+            });
+
+            const endDate = new Date(selectedPlan.end_date);
+            const formattedDate = endDate.toISOString().split('T')[0];
+
+            expirationDateInput.max = formattedDate;
+            expirationDateInput.value = formattedDate; // Tự động fill ngày luôn ở đây
+
+            expirationDateError.classList.add('d-none');
+        } else {
+            positionSelect.innerHTML = '<option value="">Chọn vị trí</option>';
+            expirationDateInput.max = '';
+            expirationDateInput.value = '';
+        }
+    });
+
+    positionSelect.addEventListener('change', function() {
+        const selectedOption = this.options[this.selectedIndex];
+        if (selectedOption.value) {
+            const quantity = parseInt(selectedOption.dataset.quantity, 10);
+
+            jobQuantityInput.value = quantity;
+            jobQuantityInput.max = quantity;  // giới hạn nhập tối đa theo kế hoạch
+            jobQuantityInput.min = 1;         // tối thiểu là 1
+
+            jobRequirementInput.value = selectedOption.dataset.requirements;
+            jobNameInput.value = selectedOption.textContent;
+        } else {
+            jobQuantityInput.value = '1';
+            jobQuantityInput.removeAttribute('max');
+            jobRequirementInput.value = '';
+            jobNameInput.value = '';
+        }
+    });
+
+    // Validate trước khi submit
+    document.querySelector('form').addEventListener('submit', function(event) {
+        const selectedPlan = recruitmentPlans.find(plan => plan.plan_id == recruitmentPlanSelect.value);
+        if (selectedPlan) {
+            const selectedDate = new Date(expirationDateInput.value);
+            const endDate = new Date(selectedPlan.end_date);
+
+            if (selectedDate > endDate) {
+                event.preventDefault();
+                expirationDateError.classList.remove('d-none');
+                expirationDateInput.focus();
+
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi dữ liệu!',
+                    text: 'Hạn nộp phải nhỏ hơn hoặc bằng ngày kết thúc kế hoạch tuyển dụng.',
+                    confirmButtonColor: '#dc3545',
+                });
+
+                return false;
+            } else {
+                expirationDateError.classList.add('d-none');
+            }
+        }
+    });
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    const addBenefitBtn = document.getElementById('add-benefit-btn');
+    const newBenefitInput = document.getElementById('new-benefit');
+    const addedBenefitsList = document.getElementById('added-benefits-list');
+
+    let newBenefits = [];
+
+    addBenefitBtn.addEventListener('click', function() {
+        const benefitTitle = newBenefitInput.value.trim();
+
+        if (benefitTitle === '') {
+            Swal.fire({
+                icon: 'warning',
+                text: 'Vui lòng nhập tên phúc lợi!',
+                confirmButtonColor: '#dc3545'
+            });
+            return;
+        }
+
+        if (newBenefits.includes(benefitTitle)) {
+            Swal.fire({
+                icon: 'warning',
+                text: 'Phúc lợi này đã được thêm trước đó!',
+                confirmButtonColor: '#dc3545'
+            });
+            return;
+        }
+
+        newBenefits.push(benefitTitle);
+
+        const benefitElement = document.createElement('div');
+        benefitElement.className = 'badge bg-danger bg-opacity-10 text-danger me-1 mb-1';
+        benefitElement.innerHTML = `
+            ${benefitTitle}
+            <span class="ms-2" style="cursor:pointer;" onclick="removeAddedBenefit('${benefitTitle}', this)">
+                &times;
+            </span>
+            <input type="hidden" name="new_job_benefits[]" value="${benefitTitle}">
+        `;
+
+        addedBenefitsList.appendChild(benefitElement);
+        newBenefitInput.value = '';
+    });
+});
+
+function removeAddedBenefit(benefitTitle, element) {
+    element.parentElement.remove();
+
+    const index = newBenefits.indexOf(benefitTitle);
+    if (index > -1) {
+        newBenefits.splice(index, 1);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    const recruitmentPlans = @json($recruitmentPlans);
+
+    // Gọi khi mở từng modal
+    document.querySelectorAll('.modal').forEach(modal => {
+        modal.addEventListener('shown.bs.modal', function () {
+            const planSelect = modal.querySelector('.recruitment-plan-select');
+            const positionSelect = modal.querySelector('.position-select');
+            const jobQuantityInput = modal.querySelector('.job-quantity');
+            const jobRequirementInput = modal.querySelector('.job-requirement');
+            const expirationDateInput = modal.querySelector('.expiration-date');
+
+            const selectedPlanId = planSelect.value;
+            const selectedPositionId = positionSelect.dataset.selectedPosition;
+
+            // Hàm load vị trí
+            function loadPositions(planId, selectedPositionId = null) {
+                positionSelect.innerHTML = '<option value="">Chọn vị trí</option>';
+                const plan = recruitmentPlans.find(p => p.plan_id == planId);
+                if (plan) {
+                    plan.positions.forEach(pos => {
+                        const isSelected = pos.position_id == selectedPositionId ? 'selected' : '';
+                        const option = document.createElement('option');
+                        option.value = pos.position_id;
+                        option.textContent = pos.name;
+                        option.dataset.quantity = pos.quantity;
+                        option.dataset.requirements = pos.requirements;
+                        if (isSelected) {
+                            option.selected = true;
+                            jobQuantityInput.value = pos.quantity;
+                            jobRequirementInput.value = pos.requirements;
+                        }
+                        positionSelect.appendChild(option);
+                    });
+
+                    expirationDateInput.max = plan.end_date;
+                    if (!expirationDateInput.value) {
+                        expirationDateInput.value = plan.end_date;
+                    }
+                }
+            }
+
+            loadPositions(selectedPlanId, selectedPositionId);
+
+            // Khi thay đổi kế hoạch
+            planSelect.addEventListener('change', function () {
+                loadPositions(this.value);
+                jobQuantityInput.value = 1;
+                jobRequirementInput.value = '';
+            });
+
+            // Khi thay đổi vị trí
+            positionSelect.addEventListener('change', function () {
+                const option = this.options[this.selectedIndex];
+                if (option && option.dataset.quantity) {
+                    jobQuantityInput.value = option.dataset.quantity;
+                    jobRequirementInput.value = option.dataset.requirements;
+                }
+            });
+        });
+    });
+
+    document.querySelectorAll('.add-benefit-edit-btn').forEach(button => {
+        button.addEventListener('click', function () {
+            const jobId = this.dataset.jobId;
+            const input = document.getElementById(`new-benefit-edit-${jobId}`);
+            const list = document.getElementById(`added-benefits-list-edit-${jobId}`);
+            const title = input.value.trim();
+
+            if (title === '') {
+                Swal.fire({
+                    icon: 'warning',
+                    text: 'Vui lòng nhập tên phúc lợi!',
+                    confirmButtonColor: '#dc3545'
+                });
+                return;
+            }
+
+            const exists = list.querySelector(`input[value="${title}"]`);
+            if (exists) {
+                Swal.fire({
+                    icon: 'warning',
+                    text: 'Phúc lợi này đã được thêm trước đó!',
+                    confirmButtonColor: '#dc3545'
+                });
+                return;
+            }
+
+            const div = document.createElement('div');
+            div.className = 'badge bg-danger bg-opacity-10 text-danger me-1 mb-1';
+            div.innerHTML = `
+                ${title}
+                <span class="ms-2" style="cursor:pointer;" onclick="this.parentElement.remove()">&times;</span>
+                <input type="hidden" name="new_job_benefits[]" value="${title}">
+            `;
+            list.appendChild(div);
+            input.value = '';
+        });
+    });
+});
+</script>
+
+
+@endpush
 
 @endsection 
