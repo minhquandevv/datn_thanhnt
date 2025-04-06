@@ -58,7 +58,18 @@ class AdminController extends Controller
 
     public function showCandidate($id)
     {
-        $candidate = Candidate::findOrFail($id);
+        $candidate = Candidate::with([
+            'university',
+            'jobApplications.jobOffer.department',
+            'jobApplications.jobOffer.position',
+            'jobApplications.jobOffer.recruitmentPlan',
+            'education',
+            'experience',
+            'skills',
+            'certificates',
+            'desires'
+        ])->findOrFail($id);
+        
         $universities = University::all();
         return view('admin.chitietungvien', compact('candidate', 'universities'));
     }

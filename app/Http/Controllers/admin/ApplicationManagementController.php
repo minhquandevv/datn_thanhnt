@@ -59,16 +59,47 @@ class ApplicationManagementController extends Controller
     {
         $application = JobApplication::findOrFail($id);
         
+        // Kiểm tra đường dẫn CV
         if (!$application->cv_path) {
-            return redirect()->back()->with('error', 'Không tìm thấy file CV!');
+            return back()->with('error', 'Không tìm thấy CV của ứng viên này.');
         }
         
-        $path = storage_path('app/public/uploads/cv/' . basename($application->cv_path));
+        // Lấy tên file từ đường dẫn
+        $filename = basename($application->cv_path);
+        
+        // Tìm file trong thư mục uploads/cv
+        $path = public_path('uploads/cv/' . $filename);
         
         if (!file_exists($path)) {
-            return redirect()->back()->with('error', 'File CV không tồn tại!');
+            return back()->with('error', 'Không tìm thấy file CV. Vui lòng liên hệ quản trị viên.');
         }
         
         return response()->download($path);
+    }
+
+    /**
+     * Lấy thông tin chi tiết của ứng viên
+     */
+    public function details($id)
+    {
+        $application = JobApplication::with([
+            'candidate.university',
+            'candidate.education',
+            'candidate.experience',
+            'candidate.skills',
+            'candidate.certificates',
+            'jobOffer.position',
+            'jobOffer.department',
+            'jobOffer.recruitmentPlan'
+        ])->findOrFail($id);
+
+        return response()->json([
+            'candidate' => $application->candidate,
+            'job_offer' => $application->jobOffer,
+            'status' => $application->status,
+            'applied_at' => $application->created_at,
+            'cv_path' => $application->cv_path,
+            'cover_letter' => $application->cover_letter
+        ]);
     }
 } 

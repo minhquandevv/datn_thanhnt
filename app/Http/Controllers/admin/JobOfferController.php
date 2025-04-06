@@ -71,6 +71,7 @@ class JobOfferController extends Controller
         $position = RecruitmentPosition::findOrFail($request->position);
         $data['job_name'] = $position->name;
         $data['position_id'] = $position->position_id;
+        $data['recruitment_plan_id'] = $request->recruitment_plan_id;
 
         $jobOffer = JobOffer::create($data);
 
@@ -164,6 +165,7 @@ class JobOfferController extends Controller
         $position = RecruitmentPosition::findOrFail($request->position);
         $data['job_name'] = $position->name;
         $data['position_id'] = $position->position_id;
+        $data['recruitment_plan_id'] = $request->recruitment_plan_id;
 
         $jobOffer->update(Arr::except($data, ['job_benefits', 'new_job_benefits']));
 

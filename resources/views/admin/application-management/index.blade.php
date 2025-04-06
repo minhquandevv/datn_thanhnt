@@ -67,33 +67,35 @@
             <!-- Tab Content -->
             <div class="tab-content p-3" id="applicationTabContent">
                 <div class="tab-pane fade show active" role="tabpanel">
-                    <!-- Action Buttons -->
+                    <!-- Bulk Action Buttons -->
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <div>
-                            <button type="button" class="btn btn-sm btn-outline-primary me-2" id="selectAllBtn">
+                            <button type="button" class="btn btn-outline-primary me-2" id="selectAllBtn">
                                 <i class="bi bi-check-all me-1"></i>Chọn tất cả
                             </button>
-                            <button type="button" class="btn btn-sm btn-outline-secondary" id="deselectAllBtn">
+                            <button type="button" class="btn btn-outline-secondary" id="deselectAllBtn">
                                 <i class="bi bi-x-lg me-1"></i>Bỏ chọn tất cả
                             </button>
                         </div>
                         
-                        @if($status === 'pending')
-                        <button type="button" class="btn btn-sm btn-primary" id="processSelectedBtn" disabled>
-                            <i class="bi bi-check-circle me-1"></i>Tiếp nhận đã chọn
-                        </button>
-                        @elseif($status === 'processing')
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-sm btn-success" id="approveSelectedBtn" disabled>
-                                <i class="bi bi-check-circle me-1"></i>Duyệt đã chọn
-                            </button>
-                            <button type="button" class="btn btn-sm btn-danger" id="rejectSelectedBtn" disabled>
-                                <i class="bi bi-x-circle me-1"></i>Từ chối đã chọn
-                            </button>
+                        <div class="bulk-actions">
+                            @if($status === 'pending')
+                                <button type="button" class="btn btn-success" id="processSelectedBtn" disabled>
+                                    <i class="bi bi-check-circle me-1"></i>Tiếp nhận đã chọn
+                                </button>
+                            @elseif($status === 'processing')
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-success" id="approveSelectedBtn" disabled>
+                                        <i class="bi bi-check-lg me-1"></i>Duyệt đã chọn
+                                    </button>
+                                    <button type="button" class="btn btn-danger" id="rejectSelectedBtn" disabled>
+                                        <i class="bi bi-x-lg me-1"></i>Từ chối đã chọn
+                                    </button>
+                                </div>
+                            @endif
                         </div>
-                        @endif
                     </div>
-
+                    
                     <!-- Applications Table -->
                     <div class="table-responsive">
                         <table class="table table-hover align-middle">
@@ -112,14 +114,14 @@
                                     <th>CV</th>
                                     <th>Ngày nộp</th>
                                     <th>Trạng thái</th>
-                                    <th width="120">Thao tác</th>
+                                    <th width="200">Thao tác</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @forelse($applications as $application)
                                 <tr>
                                     <td>
-                                        <div clss="form-check">
+                                        <div class="form-check">
                                             <input class="form-check-input application-checkbox" type="checkbox" 
                                                    value="{{ $application->id }}" data-status="{{ $application->status }}">
                                         </div>
@@ -134,7 +136,13 @@
                                         @endif
                                     </td>
                                     <td>{{ $application->candidate->phone_number }}</td>
-                                    <td>{{ $application->jobOffer->position->name ?? 'Chưa cập nhật' }}</td>
+                                    <td>
+                                        @if($application->jobOffer && $application->jobOffer->position)
+                                            {{ $application->jobOffer->position->name }}
+                                        @else
+                                            <span class="text-muted">Chưa cập nhật</span>
+                                        @endif
+                                    </td>
                                     <td>
                                         @if($application->cv_path)
                                             <a href="{{ asset('uploads/cv/' . basename($application->cv_path)) }}" 
@@ -210,89 +218,6 @@
     </div>
 </div>
 
-<!-- Candidate Details Modal -->
-<div class="modal fade" id="candidateDetailsModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Chi tiết ứng viên</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <ul class="nav nav-tabs" id="candidateTabs" role="tablist">
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="true">Thông tin cá nhân</button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="education-tab" data-bs-toggle="tab" data-bs-target="#education" type="button" role="tab" aria-controls="education" aria-selected="false">Học vấn</button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="experience-tab" data-bs-toggle="tab" data-bs-target="#experience" type="button" role="tab" aria-controls="experience" aria-selected="false">Kinh nghiệm</button>
-                    </li>
-                </ul>
-                <div class="tab-content p-3" id="candidateTabContent">
-                    <!-- Thông tin cá nhân -->
-                    <div class="tab-pane fade show active" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <p><strong>Họ và tên:</strong> <span id="candidate-name"></span></p>
-                                <p><strong>Ngày sinh:</strong> <span id="candidate-dob"></span></p>
-                                <p><strong>Email:</strong> <span id="candidate-email"></span></p>
-                                <p><strong>Số điện thoại:</strong> <span id="candidate-phone"></span></p>
-                            </div>
-                            <div class="col-md-6">
-                                <p><strong>Trường học:</strong> <span id="candidate-university"></span></p>
-                                <p><strong>CCCD/CMND:</strong> <span id="candidate-identity"></span></p>
-                                <p><strong>Kinh nghiệm:</strong> <span id="candidate-experience"></span></p>
-                                <p><strong>Đang tìm việc:</strong> <span id="candidate-finding-job"></span></p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Học vấn -->
-                    <div class="tab-pane fade" id="education" role="tabpanel" aria-labelledby="education-tab">
-                        <div class="table-responsive">
-                            <table class="table table-sm">
-                                <thead>
-                                    <tr>
-                                        <th>Cấp học</th>
-                                        <th>Loại hình đào tạo</th>
-                                        <th>Chuyên ngành</th>
-                                        <th>Tên trường</th>
-                                        <th>Xếp loại</th>
-                                        <th>Ngày tốt nghiệp</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="education-list">
-                                    <!-- Education data will be loaded here -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    
-                    <!-- Kinh nghiệm -->
-                    <div class="tab-pane fade" id="experience" role="tabpanel" aria-labelledby="experience-tab">
-                        <div class="table-responsive">
-                            <table class="table table-sm">
-                                <thead>
-                                    <tr>
-                                        <th>Công ty</th>
-                                        <th>Vị trí</th>
-                                        <th>Thời gian</th>
-                                        <th>Mô tả</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="experience-list">
-                                    <!-- Experience data will be loaded here -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 
 <!-- Bulk Action Form (Hidden) -->
 <form id="bulkActionForm" action="{{ route('admin.job-applications.update-status') }}" method="POST" class="d-none">
@@ -320,6 +245,7 @@
             applicationCheckboxes.forEach(checkbox => {
                 checkbox.checked = true;
             });
+            selectAllCheckbox.checked = true;
             updateActionButtons();
         });
         
@@ -328,6 +254,7 @@
             applicationCheckboxes.forEach(checkbox => {
                 checkbox.checked = false;
             });
+            selectAllCheckbox.checked = false;
             updateActionButtons();
         });
         
@@ -341,23 +268,44 @@
         
         // Individual Checkboxes
         applicationCheckboxes.forEach(checkbox => {
-            checkbox.addEventListener('change', updateActionButtons);
+            checkbox.addEventListener('change', function() {
+                // Update select all checkbox state
+                const allChecked = Array.from(applicationCheckboxes).every(cb => cb.checked);
+                selectAllCheckbox.checked = allChecked;
+                updateActionButtons();
+            });
         });
         
         // Update Action Buttons
         function updateActionButtons() {
             const checkedBoxes = document.querySelectorAll('.application-checkbox:checked');
+            const checkedCount = checkedBoxes.length;
             
             if (processSelectedBtn) {
-                processSelectedBtn.disabled = checkedBoxes.length === 0;
+                processSelectedBtn.disabled = checkedCount === 0;
+                if (checkedCount > 0) {
+                    processSelectedBtn.classList.remove('disabled');
+                } else {
+                    processSelectedBtn.classList.add('disabled');
+                }
             }
             
             if (approveSelectedBtn) {
-                approveSelectedBtn.disabled = checkedBoxes.length === 0;
+                approveSelectedBtn.disabled = checkedCount === 0;
+                if (checkedCount > 0) {
+                    approveSelectedBtn.classList.remove('disabled');
+                } else {
+                    approveSelectedBtn.classList.add('disabled');
+                }
             }
             
             if (rejectSelectedBtn) {
-                rejectSelectedBtn.disabled = checkedBoxes.length === 0;
+                rejectSelectedBtn.disabled = checkedCount === 0;
+                if (checkedCount > 0) {
+                    rejectSelectedBtn.classList.remove('disabled');
+                } else {
+                    rejectSelectedBtn.classList.add('disabled');
+                }
             }
         }
         
@@ -367,9 +315,11 @@
                 const checkedBoxes = document.querySelectorAll('.application-checkbox:checked');
                 const ids = Array.from(checkedBoxes).map(checkbox => checkbox.value);
                 
-                document.getElementById('applicationIds').value = JSON.stringify(ids);
-                document.getElementById('newStatus').value = 'processing';
-                document.getElementById('bulkActionForm').submit();
+                if (confirm(`Bạn có chắc chắn muốn tiếp nhận ${ids.length} đơn ứng tuyển đã chọn?`)) {
+                    document.getElementById('applicationIds').value = JSON.stringify(ids);
+                    document.getElementById('newStatus').value = 'processing';
+                    document.getElementById('bulkActionForm').submit();
+                }
             });
         }
         
@@ -379,9 +329,11 @@
                 const checkedBoxes = document.querySelectorAll('.application-checkbox:checked');
                 const ids = Array.from(checkedBoxes).map(checkbox => checkbox.value);
                 
-                document.getElementById('applicationIds').value = JSON.stringify(ids);
-                document.getElementById('newStatus').value = 'approved';
-                document.getElementById('bulkActionForm').submit();
+                if (confirm(`Bạn có chắc chắn muốn duyệt ${ids.length} đơn ứng tuyển đã chọn?`)) {
+                    document.getElementById('applicationIds').value = JSON.stringify(ids);
+                    document.getElementById('newStatus').value = 'approved';
+                    document.getElementById('bulkActionForm').submit();
+                }
             });
         }
         
@@ -391,45 +343,100 @@
                 const checkedBoxes = document.querySelectorAll('.application-checkbox:checked');
                 const ids = Array.from(checkedBoxes).map(checkbox => checkbox.value);
                 
-                document.getElementById('applicationIds').value = JSON.stringify(ids);
-                document.getElementById('newStatus').value = 'rejected';
-                document.getElementById('bulkActionForm').submit();
+                if (confirm(`Bạn có chắc chắn muốn từ chối ${ids.length} đơn ứng tuyển đã chọn?`)) {
+                    document.getElementById('applicationIds').value = JSON.stringify(ids);
+                    document.getElementById('newStatus').value = 'rejected';
+                    document.getElementById('bulkActionForm').submit();
+                }
             });
         }
-        
-        // Individual Action Buttons
-        document.querySelectorAll('.process-btn').forEach(button => {
-            button.addEventListener('click', function() {
-                const id = this.getAttribute('data-id');
-                const status = this.getAttribute('data-status');
-                
-                document.getElementById('applicationIds').value = JSON.stringify([id]);
-                document.getElementById('newStatus').value = status;
-                document.getElementById('bulkActionForm').submit();
-            });
-        });
-        
-        document.querySelectorAll('.approve-btn').forEach(button => {
-            button.addEventListener('click', function() {
-                const id = this.getAttribute('data-id');
-                const status = this.getAttribute('data-status');
-                
-                document.getElementById('applicationIds').value = JSON.stringify([id]);
-                document.getElementById('newStatus').value = status;
-                document.getElementById('bulkActionForm').submit();
-            });
-        });
-        
-        document.querySelectorAll('.reject-btn').forEach(button => {
-            button.addEventListener('click', function() {
-                const id = this.getAttribute('data-id');
-                const status = this.getAttribute('data-status');
-                
-                document.getElementById('applicationIds').value = JSON.stringify([id]);
-                document.getElementById('newStatus').value = status;
-                document.getElementById('bulkActionForm').submit();
-            });
-        });
     });
+
+    function showCandidateDetails(applicationId) {
+        fetch(`/admin/job-applications/${applicationId}/details`)
+            .then(response => response.json())
+            .then(data => {
+                // Update personal information
+                document.getElementById('candidateName').textContent = data.candidate.fullname;
+                document.getElementById('candidateDob').textContent = data.candidate.dob ? new Date(data.candidate.dob).toLocaleDateString('vi-VN') : 'N/A';
+                document.getElementById('candidateEmail').textContent = data.candidate.email;
+                document.getElementById('candidatePhone').textContent = data.candidate.phone_number || 'N/A';
+                document.getElementById('candidateUniversity').textContent = data.candidate.university ? data.candidate.university.name : 'Chưa cập nhật';
+                document.getElementById('candidateIdentity').textContent = data.candidate.identity_number;
+                document.getElementById('candidateExperience').textContent = data.candidate.experience_year || '0';
+                document.getElementById('candidateJobStatus').textContent = data.candidate.finding_job ? 'Đang tìm việc' : 'Không tìm việc';
+
+                // Update job application information
+                document.getElementById('jobPosition').textContent = data.job_offer.position ? data.job_offer.position.name : 'Chưa cập nhật';
+                document.getElementById('jobDepartment').textContent = data.job_offer.department ? data.job_offer.department.name : 'Chưa cập nhật';
+                document.getElementById('applicationDate').textContent = new Date(data.applied_at).toLocaleDateString('vi-VN');
+                document.getElementById('applicationStatus').textContent = getStatusText(data.status);
+                
+                // Update CV link
+                const cvLink = document.getElementById('cvLink');
+                if (data.cv_path) {
+                    cvLink.href = `/admin/job-applications/${applicationId}/download-cv`;
+                    cvLink.style.display = 'inline';
+                } else {
+                    cvLink.style.display = 'none';
+                }
+
+                // Update cover letter
+                document.getElementById('coverLetter').textContent = data.cover_letter || 'Chưa có';
+
+                // Update education list
+                const educationList = document.getElementById('educationList');
+                educationList.innerHTML = data.candidate.education.map(edu => `
+                    <div class="mb-3">
+                        <h6>${edu.level}</h6>
+                        <p class="mb-1"><strong>Trường:</strong> ${edu.university ? edu.university.name : 'Chưa cập nhật'}</p>
+                        <p class="mb-1"><strong>Chuyên ngành:</strong> ${edu.department || 'Chưa cập nhật'}</p>
+                        <p class="mb-1"><strong>Loại hình đào tạo:</strong> ${edu.edu_type || 'Chưa cập nhật'}</p>
+                        <p class="mb-1"><strong>Xếp loại:</strong> ${edu.graduate_level || 'Chưa cập nhật'}</p>
+                        <p class="mb-0"><strong>Ngày tốt nghiệp:</strong> ${edu.graduate_date ? new Date(edu.graduate_date).toLocaleDateString('vi-VN') : 'Chưa cập nhật'}</p>
+                    </div>
+                `).join('') || '<p class="text-muted">Chưa có thông tin học vấn</p>';
+
+                // Update experience list
+                const experienceList = document.getElementById('experienceList');
+                experienceList.innerHTML = data.candidate.experience.map(exp => `
+                    <div class="mb-3">
+                        <h6>${exp.company_name}</h6>
+                        <p class="mb-1"><strong>Vị trí:</strong> ${exp.position}</p>
+                        <p class="mb-1"><strong>Thời gian:</strong> ${new Date(exp.date_start).toLocaleDateString('vi-VN')} - ${exp.date_end ? new Date(exp.date_end).toLocaleDateString('vi-VN') : 'Hiện tại'}</p>
+                        <p class="mb-0"><strong>Mô tả công việc:</strong> ${exp.description || 'Chưa cập nhật'}</p>
+                    </div>
+                `).join('') || '<p class="text-muted">Chưa có thông tin kinh nghiệm</p>';
+
+                // Update application information
+                document.getElementById('cvLink2').href = data.cv_path ? `/admin/job-applications/${applicationId}/download-cv` : '#';
+                document.getElementById('cvLink2').style.display = data.cv_path ? 'inline' : 'none';
+                document.getElementById('coverLetter2').textContent = data.cover_letter || 'Chưa có';
+                document.getElementById('applicationDate2').textContent = new Date(data.applied_at).toLocaleDateString('vi-VN');
+                document.getElementById('applicationStatus2').textContent = getStatusText(data.status);
+
+                // Show modal
+                new bootstrap.Modal(document.getElementById('candidateDetailsModal')).show();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Không thể tải thông tin ứng viên');
+            });
+    }
+
+    function getStatusText(status) {
+        switch(status) {
+            case 'pending':
+                return 'Chờ tiếp nhận';
+            case 'processing':
+                return 'Chờ xử lý';
+            case 'approved':
+                return 'Đã duyệt';
+            case 'rejected':
+                return 'Đã từ chối';
+            default:
+                return 'Không xác định';
+        }
+    }
 </script>
 @endsection 
