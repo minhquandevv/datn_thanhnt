@@ -317,12 +317,6 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('admin.job-applications.*') ? 'active' : '' }}" href="{{ route('admin.job-applications.index') }}">
-                            <i class="bi bi-file-earmark-text"></i>
-                            Quản lý đơn ứng tuyển
-                        </a>
-                    </li>
-                    <li class="nav-item">
                         <a class="nav-link {{ request()->routeIs('admin.universities.*') ? 'active' : '' }}" href="{{ route('admin.universities.index') }}">
                             <i class="bi bi-building"></i>
                             Quản lý trường đại học
@@ -359,17 +353,18 @@
                         </a>
                     </li>
 
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('admin.job-applications.*') ? 'active' : '' }}" href="{{ route('admin.job-applications.index') }}">
+                            <i class="bi bi-file-earmark-text"></i>
+                            Quản lý đơn ứng tuyển
+                        </a>
+                    </li>
+
                     @if(Auth::user()->role === 'hr')
                     <li class="nav-item">
                         <a class="nav-link {{ request()->routeIs('hr.recruitment-plans.*') ? 'active' : '' }}" href="{{ route('hr.recruitment-plans.index') }}">
                             <i class="bi bi-file-earmark-text"></i>
                             <span>Quản lý kế hoạch tuyển dụng</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('hr.job-applications.*') ? 'active' : '' }}" href="{{ route('hr.job-applications.index') }}">
-                            <i class="bi bi-file-earmark-text"></i>
-                            <span>Quản lý đơn ứng tuyển</span>
                         </a>
                     </li>
                     @endif

@@ -21,6 +21,7 @@ use App\Http\Controllers\admin\HRDashboardController;
 use App\Http\Controllers\admin\RecruitmentPlanController;
 use App\Http\Controllers\admin\AdminDashboardController;
 use App\Http\Controllers\hr\JobApplicationController as HRJobApplicationController;
+use App\Http\Controllers\ApplicationManagementController;
 
 // Authentication Routes
 Route::middleware('guest')->group(function () {
@@ -150,9 +151,9 @@ Route::middleware(['auth', 'check.role:admin'])->prefix('admin')->name('admin.')
     Route::post('/recruitment-plans/{recruitmentPlan}/reject', [RecruitmentPlanController::class, 'reject'])->name('recruitment-plans.reject');
 
     // Job Applications Routes
-    Route::get('/job-applications', [JobApplicationController::class, 'index'])->name('job-applications.index');
-    Route::post('/job-applications/update-status', [JobApplicationController::class, 'updateStatus'])->name('job-applications.update-status');
-    Route::get('/job-applications/{id}/download-cv', [JobApplicationController::class, 'downloadCV'])->name('job-applications.download-cv');
+    Route::get('/job-applications', [ApplicationManagementController::class, 'index'])->name('job-applications.index');
+    Route::post('/job-applications/update-status', [ApplicationManagementController::class, 'updateStatus'])->name('job-applications.update-status');
+    Route::get('/job-applications/{id}/download-cv', [ApplicationManagementController::class, 'downloadCV'])->name('job-applications.download-cv');
 });
 
 // Mentor login routes

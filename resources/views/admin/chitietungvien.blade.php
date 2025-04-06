@@ -20,17 +20,10 @@
                             <img src="{{ asset('uploads/' . $candidate->url_avatar) }}" alt="Avatar" class="rounded-circle mb-3" style="width: 120px; height: 120px; object-fit: cover;">
                         @else
                             <div class="bg-secondary rounded-circle text-white d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 120px; height: 120px; font-size: 3rem;">
-                                {{ substr($candidate->name, 0, 1) }}
+                                {{ substr($candidate->fullname, 0, 2) }}
                             </div>
                         @endif
-                        <h5 class="mb-1">{{ $candidate->name }}</h5>
-                        <p class="text-muted mb-0">Mã ứng viên: {{ $candidate->id }}</p>
-                    </div>
-
-                    <div class="d-grid">
-                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editCandidateModal">
-                            <i class="bi bi-pencil me-2"></i>Sửa thông tin
-                        </button>
+                        <h5 class="mb-1">{{ $candidate->fullname }}</h5>
                     </div>
                 </div>
             </div>
@@ -54,79 +47,175 @@
                         <label class="form-label text-muted small mb-1">Số điện thoại</label>
                         <div class="d-flex align-items-center">
                             <i class="bi bi-telephone text-primary me-2"></i>
-                            <span>{{ $candidate->phone }}</span>
+                            <span>{{ $candidate->phone_number }}</span>
                         </div>
                     </div>
-                    <div>
-                        <label class="form-label text-muted small mb-1">Trường học</label>
-                        <div class="d-flex align-items-center">
-                            <i class="bi bi-building text-primary me-2"></i>
-                            <span>
-                                @if($candidate->university)
-                                    {{ $candidate->university->name }}
-                                @else
-                                    Chưa cập nhật
-                                @endif
-                            </span>
-                        </div>
-                    </div>
+                
                 </div>
-            </div>
-
-            <div class="col-md-4 mb-3">
-                <h6>Ảnh phòng ban</h6>
-                @if($candidate->image_company)
-                    <img src="{{ asset('uploads/' . $candidate->image_company) }}" alt="Department" class="img-thumbnail" style="max-width: 200px;">
-                @else
-                    <p class="text-muted">Chưa có ảnh phòng ban</p>
-                @endif
             </div>
         </div>
 
         <!-- Thông tin chi tiết -->
         <div class="col-md-8">
-            <!-- Cập nhật trạng thái -->
-            <div class="card mb-4">
+            <div class="card">
                 <div class="card-header bg-light">
-                    <h6 class="card-title mb-0">
-                        <i class="bi bi-gear text-primary me-2"></i>Cập nhật trạng thái
-                    </h6>
+                    <ul class="nav nav-tabs card-header-tabs">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-bs-toggle="tab" href="#profile">
+                                <i class="bi bi-person me-2"></i>Thông tin cá nhân
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#education">
+                                <i class="bi bi-book me-2"></i>Học vấn
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#certificates">
+                                <i class="bi bi-award me-2"></i>Chứng chỉ
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#cv">
+                                <i class="bi bi-file-earmark-text me-2"></i>CV
+                            </a>
+                        </li>
+                    </ul>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('admin.candidates.updateStatus', $candidate->id) }}" method="POST">
-                        @csrf
-                        @method('PUT')
-                        <div class="mb-3">
-                            <label class="form-label">Trạng thái</label>
-                            <select class="form-select" name="status" required>
-                                <option value="pending" {{ $candidate->status == 'pending' ? 'selected' : '' }}>
-                                    <i class="bi bi-clock"></i> Đang chờ
-                                </option>
-                                <option value="approved" {{ $candidate->status == 'approved' ? 'selected' : '' }}>
-                                    <i class="bi bi-check-circle"></i> Đã duyệt
-                                </option>
-                                <option value="rejected" {{ $candidate->status == 'rejected' ? 'selected' : '' }}>
-                                    <i class="bi bi-x-circle"></i> Đã từ chối
-                                </option>
-                            </select>
+                    <div class="tab-content">
+                        <!-- Tab Thông tin cá nhân -->
+                        <div class="tab-pane fade show active" id="profile">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6 class="mb-3">Thông tin cơ bản</h6>
+                                    <p><strong>Họ và tên:</strong> {{ $candidate->fullname }}</p>
+                                    <p><strong>Email:</strong> {{ $candidate->email }}</p>
+                                    <p><strong>Số điện thoại:</strong> {{ $candidate->phone_number  }}</p>
+
+                                    <p><strong>Địa chỉ:</strong> {{ $candidate->address }}</p>
+                                    <p><strong>Giới tính:</strong> 
+                                        @if ($candidate->gender == 'male')
+                                            Nam
+                                        @elseif ($candidate->gender == 'female')
+                                            Nữ
+                                        @else
+                                            Khác
+                                        @endif
+                                    </p>
+                                    <p><strong>Ngày sinh:</strong> {{ $candidate->dob ? date('d/m/Y', strtotime($candidate->dob)) : 'N/A' }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6 class="mb-3">Thông tin khác</h6>
+                                    <p><strong>CCCD/CMND:</strong> {{ $candidate->identity_number }}</p>
+                                </div>
+                            </div>
                         </div>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="bi bi-save me-2"></i>Cập nhật
-                        </button>
-                    </form>
+
+                        <!-- Tab Học vấn -->
+                        <div class="tab-pane fade" id="education">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Cấp học</th>
+                                            <th>Loại hình đào tạo</th>
+                                            <th>Chuyên ngành</th>
+                                            <th>Tên trường</th>
+                                            <th>Xếp loại</th>
+                                            <th>Ngày tốt nghiệp</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($candidate->education as $edu)
+                                        <tr>
+                                            <td>{{ $edu->level }}</td>
+                                            <td>{{ $edu->edu_type }}</td>
+                                            <td>{{ $edu->department }}</td>
+                                            <td>{{ $edu->school_name }}</td>
+                                            <td>{{ $edu->graduate_level }}</td>
+                                            <td>{{ $edu->graduate_date }}</td>
+                                        </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Tab Chứng chỉ -->
+                        <div class="tab-pane fade" id="certificates">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Tên chứng chỉ</th>
+                                            <th>Tổ chức cấp</th>
+                                            <th>Ngày cấp</th>
+                                            <th>Ngày hết hạn</th>
+                                            <th>Mô tả</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @forelse($candidate->certificates as $cert)
+                                        <tr>
+                                            <td>{{ $cert->name }}</td>
+                                            <td>{{ $cert->issuing_organization }}</td>
+                                            <td>{{ $cert->issue_date ? date('d/m/Y', strtotime($cert->issue_date)) : 'N/A' }}</td>
+                                            <td>{{ $cert->expiry_date ? date('d/m/Y', strtotime($cert->expiry_date)) : 'N/A' }}</td>
+                                            <td>{{ $cert->description }}</td>
+                                        </tr>
+                                        @empty
+                                        <tr>
+                                            <td colspan="5" class="text-center py-4">
+                                                <i class="bi bi-info-circle text-muted fs-1 d-block mb-2"></i>
+                                                <p class="text-muted mb-0">Ứng viên chưa có chứng chỉ nào</p>
+                                            </td>
+                                        </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Tab Kinh nghiệm -->
+                        <div class="tab-pane fade" id="experience">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Công ty</th>
+                                            <th>Vị trí</th>
+                                            <th>Thời gian</th>
+                                            <th>Mô tả</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($candidate->experience as $exp)
+                                        <tr>
+                                            <td>{{ $exp->company_name }}</td>
+                                            <td>{{ $exp->position }}</td>
+                                            <td>{{ $exp->date_start }} - {{ $exp->date_end }}</td>
+                                            <td>{{ $exp->description }}</td>
+                                        </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
                 </div>
             </div>
 
-            <!-- Xem CV -->
-            <div class="card">
-                <div class="card-header bg-light">
-                    <h6 class="card-title mb-0">
-                        <i class="bi bi-file-earmark-text text-primary me-2"></i>CV của ứng viên
-                    </h6>
+                        <!-- Tab CV -->
+                        <div class="tab-pane fade" id="cv">
+                            @if($candidate->jobApplications->isNotEmpty() && $candidate->jobApplications->first()->cv_path)
+                                <div class="ratio ratio-1x1" style="height: 80vh;">
+                                    <iframe src="{{ asset('uploads/cv/' . basename($candidate->jobApplications->first()->cv_path)) }}" class="rounded shadow-sm" style="border: 1px solid #dee2e6;"></iframe>
+                                </div>
+                            @else
+                                <div class="alert alert-info">
+                                    <i class="bi bi-info-circle me-2"></i>
+                                    Ứng viên chưa tải lên CV
+                                </div>
+                            @endif
                 </div>
-                <div class="card-body p-0">
-                    <div class="ratio ratio-16x9">
-                        <iframe src="{{ asset($candidate->cv) }}" class="rounded-bottom"></iframe>
                     </div>
                 </div>
             </div>
@@ -172,7 +261,7 @@
                             <span class="input-group-text bg-light">
                                 <i class="bi bi-telephone text-primary"></i>
                             </span>
-                            <input type="text" class="form-control" name="phone" value="{{ $candidate->phone }}" required>
+                            <input type="text" class="form-control" name="phone_number" value="{{ $candidate->phone_number }}" required>
                         </div>
                     </div>
                     <div class="mb-3">

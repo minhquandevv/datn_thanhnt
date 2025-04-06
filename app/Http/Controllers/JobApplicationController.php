@@ -42,7 +42,7 @@ class JobApplicationController extends Controller
                     'job_offer_id' => $request->job_offer_id,
                     'cover_letter' => $request->cover_letter,
                     'cv_path' => 'cv/' . $cvName,
-                    'status' => 0, // Đã nộp
+                    'status' => 'pending', // Đặt trạng thái là 'chờ tiếp nhận'
                 ]);
 
                 return redirect()->route('candidate.applications')->with('success', 'Nộp đơn ứng tuyển thành công!');
