@@ -7,12 +7,13 @@ use App\Models\University;
 use App\Models\Department;
 use App\Models\Intern;
 use App\Models\Mentor;
+use App\Models\JobApplication;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\InternsImport;
-use Illuminate\Support\Str;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
@@ -35,6 +36,78 @@ class InternController extends Controller
     public function store(Request $request)
     {
         try {
+            // Nếu có application_id, xử lý chuyển từ đơn ứng tuyển sang thực tập sinh
+            if ($request->has('application_id')) {
+                $application = JobApplication::with(['candidate', 'jobOffer.position', 'candidate.university'])
+                    ->findOrFail($request->application_id);
+
+                // Kiểm tra trạng thái đơn ứng tuyển
+                if ($application->status !== 'approved') {
+                    throw new \Exception('Chỉ có thể chuyển đơn ứng tuyển đã được duyệt sang thực tập sinh.');
+                }
+
+                // Tạo username từ email
+                $username = explode('@', $application->candidate->email)[0];
+                
+                // Tạo mật khẩu ngẫu nhiên
+                $password = Str::random(10);
+
+                // Tạo thực tập sinh mới từ thông tin ứng viên
+                $intern = new Intern();
+                
+                // Chỉ đẩy những thông tin đã có
+                $attributes = [
+                    'fullname' => $application->candidate->fullname,
+                    'email' => $application->candidate->email,
+                    'username' => $username,
+                    'password' => Hash::make($password),
+                    'citizen_id' => $application->candidate->identity_number ?? 'PENDING_' . time(),
+                    'birthdate' => $application->candidate->dob
+                ];
+
+                // Thêm các trường nếu có dữ liệu
+                if ($application->candidate->phone_number) {
+                    $attributes['phone'] = $application->candidate->phone_number;
+                }
+                if ($application->candidate->gender) {
+                    // Chuyển đổi giới tính từ tiếng Anh sang tiếng Việt
+                    $genderMap = [
+                        'male' => 'Nam',
+                        'female' => 'Nữ',
+                        'other' => 'Khác'
+                    ];
+                    $attributes['gender'] = $genderMap[strtolower($application->candidate->gender)] ?? 'Khác';
+                }
+                if ($application->candidate->address) {
+                    $attributes['address'] = $application->candidate->address;
+                }
+                if ($application->candidate->university) {
+                    $attributes['university'] = $application->candidate->university->name;
+                }
+                if ($application->candidate->major) {
+                    $attributes['major'] = $application->candidate->major;
+                }
+                if ($application->jobOffer && $application->jobOffer->position) {
+                    $attributes['position'] = $application->jobOffer->position->name;
+                }
+                if ($application->jobOffer && $application->jobOffer->department_id) {
+                    $attributes['department_id'] = $application->jobOffer->department_id;
+                }
+
+                $intern->fill($attributes);
+                $intern->save();
+
+                // Xóa đơn ứng tuyển sau khi chuyển thành công
+                $application->delete();
+
+                // Gửi email thông báo tài khoản cho thực tập sinh
+                // TODO: Implement email notification
+
+                return redirect()->route('admin.job-applications.index', ['status' => 'approved'])
+                               ->with('success', "Đã chuyển ứng viên sang thực tập sinh thành công!\nTài khoản: $username\nMật khẩu: $password");
+            }
+
+            // Xử lý thêm thực tập sinh thông thường
             $validated = $request->validate([
                 'fullname' => 'required|string|max:255',
                 'email' => 'required|email|unique:interns,email',

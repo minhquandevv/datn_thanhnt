@@ -43,7 +43,12 @@
                         </button>
                     </div>
                     <h4 class="mb-1">{{ $intern->fullname }}</h4>
-                    <p class="text-muted mb-4">{{ $intern->position }} - {{ $intern->department->name }}</p>
+                    <p class="text-muted mb-4">
+                        {{ $intern->position }}
+                        @if($intern->department)
+                         - {{ $intern->department->name }}
+                        @endif
+                    </p>
                     
                     <div class="d-grid gap-2">
                         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editProfileModal">
@@ -115,7 +120,7 @@
                         <div class="col-md-6">
                             <div class="p-3 rounded-3 bg-light">
                                 <label class="form-label text-muted small mb-1">Trường đại học</label>
-                                <p class="mb-0">{{ $intern->university->name}}</p>
+                                <p class="mb-0">{{ $intern->university->name ?? 'Chưa cập nhật' }}</p>
                             </div>
                         </div>
                         <div class="col-md-6">

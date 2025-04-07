@@ -238,6 +238,16 @@
                                                     <i class="bi bi-x-lg me-1"></i> Từ chối
                                                 </button>
                                             </form>
+                                            @elseif($application->status === 'approved')
+                                                <form action="{{ route('admin.interns.store') }}" method="POST" class="d-inline">
+                                                    @csrf
+                                                    <input type="hidden" name="application_id" value="{{ $application->id }}">
+                                                    <button type="submit"
+                                                        class="btn btn-sm btn-info confirm-action"
+                                                        data-message="Bạn có chắc chắn muốn chuyển ứng viên này sang thực tập sinh?">
+                                                        <i class="bi bi-person-plus me-1"></i> Chuyển thực tập
+                                                    </button>
+                                                </form>
                                             @endif
                                             <a href="{{ route('admin.candidates.show', $application->candidate->id) }}" class="btn btn-sm btn-primary">
                                                 <i class="bi bi-person me-1"></i> Chi tiết
