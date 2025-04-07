@@ -210,6 +210,8 @@ Route::middleware(['auth:intern'])->prefix('intern')->name('intern.')->group(fun
 //Logout route (accessible to all authenticated users)
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+Route::get('/verify-email/{token}', [AuthController::class, 'verifyEmail'])->name('verify.email');
+
 // Job routes
 Route::get('/jobs/{job}', [JobController::class, 'show'])->name('jobs.show');
 Route::middleware(['auth:candidate'])->group(function () {

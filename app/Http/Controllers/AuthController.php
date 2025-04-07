@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Mail;
 
 class AuthController extends Controller
 {
@@ -66,12 +68,38 @@ class AuthController extends Controller
             'address' => $request->address,
             'finding_job' => true,
         ]);
-
-        Auth::guard('candidate')->login($candidate);
-
-        return redirect()->route('candidate.dashboard');
+        
+        // Gán token và active = 0
+        $token = Str::random(64);
+        $candidate->update([
+            'verification_token' => $token,
+            'active' => 0
+        ]);
+        
+        // Gửi email xác thực
+        Mail::send('emails.verify-candidate', ['token' => $token], function ($message) use ($request) {
+            $message->to($request->email);
+            $message->subject('Xác thực tài khoản ứng viên');
+        });
+        
+        return redirect()->route('login')->with('success', 'Đăng ký thành công. Vui lòng kiểm tra email để xác thực tài khoản.');
     }
 
+
+    public function verifyEmail($token)
+    {
+        $candidate = Candidate::where('verification_token', $token)->first();
+
+        if (!$candidate) {
+            return redirect()->route('login')->with('error', 'Liên kết xác thực không hợp lệ hoặc đã hết hạn.');
+        }
+
+        $candidate->active = 1;
+        $candidate->verification_token = null;
+        $candidate->save();
+
+        return redirect()->route('login')->with('success', 'Tài khoản đã được xác thực. Bạn có thể đăng nhập ngay!');
+    }
     /**
      * Handle the login of a user.
      */
@@ -92,8 +120,6 @@ class AuthController extends Controller
         if (Auth::guard('intern')->attempt($credentials)) {
             $request->session()->regenerate();
             $intern = Auth::guard('intern')->user();
-            
-            // Lưu thông tin intern vào session
             session([
                 'intern_id' => $intern->intern_id,
                 'intern_name' => $intern->fullname,
@@ -103,16 +129,23 @@ class AuthController extends Controller
                 'intern_position' => $intern->position,
                 'intern_avatar' => $intern->avatar ?? 'default.jpg'
             ]);
-
             return redirect()->intended('intern/dashboard');
         }
 
-        // Thử đăng nhập với guard candidate
+        // ✅ Thử đăng nhập với guard candidate
         if (Auth::guard('candidate')->attempt($credentials)) {
-            $request->session()->regenerate();
             $candidate = Auth::guard('candidate')->user();
-            
-            // Lưu thông tin candidate vào session
+
+            // ✅ Check nếu chưa được kích hoạt
+            if (!$candidate->active) {
+                Auth::guard('candidate')->logout();
+                return back()->withErrors([
+                    'email' => 'Tài khoản của bạn chưa được xác thực. Vui lòng kiểm tra email hoặc liên hệ quản trị viên.',
+                ]);
+            }
+
+            // Nếu active thì tiếp tục
+            $request->session()->regenerate();
             session([
                 'candidate_id' => $candidate->id,
                 'candidate_name' => $candidate->fullname,
@@ -126,15 +159,14 @@ class AuthController extends Controller
                 'candidate_certificates' => $candidate->certificates,
                 'candidate_desires' => $candidate->desires
             ]);
-
             return redirect()->intended('/');
         }
 
+        // Nếu không khớp bất kỳ guard nào
         throw ValidationException::withMessages([
             'email' => ['Thông tin đăng nhập không chính xác.'],
         ]);
     }
-
     /**
      * Handle the logout of a user.
      */

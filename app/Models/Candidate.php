@@ -35,12 +35,14 @@ class Candidate extends Authenticatable
         'r_company',
         'url_avatar',
         'finding_job',
-        'active'
+        'active',
+        'verification_token'
     ];
 
     protected $hidden = [
         'password',
         'remember_token',
+        'verification_token'
     ];
 
     protected $casts = [
