@@ -9,9 +9,6 @@
                 <i class="bi bi-person-badge me-2"></i>Quản lý Thực tập sinh
             </h1>
         </div>
-        <a href="{{ route('admin.interns.create') }}" class="btn btn-danger btn-sm">
-            <i class="bi bi-person-plus me-1"></i>Thêm mới
-        </a>
     </div>
 
     <!-- Stats Cards -->

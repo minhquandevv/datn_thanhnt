@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\University;
@@ -16,6 +16,9 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\InternsImport;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use App\Models\InternAccount;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use Illuminate\Support\Facades\DB;
 
 class InternController extends Controller
 {
@@ -96,6 +99,15 @@ class InternController extends Controller
 
                 $intern->fill($attributes);
                 $intern->save();
+
+                // Lưu thông tin tài khoản
+                InternAccount::create([
+                    'intern_id' => $intern->intern_id,
+                    'username' => $username,
+                    'email' => $application->candidate->email,
+                    'password_plain' => $password,
+                    'is_active' => true
+                ]);
 
                 // Xóa đơn ứng tuyển sau khi chuyển thành công
                 $application->delete();
@@ -306,21 +318,42 @@ class InternController extends Controller
 
     public function import(Request $request)
     {
-        $request->validate([
-            'excel_file' => 'required|mimes:xlsx,xls'
-        ]);
-
         try {
-            Excel::import(new InternsImport, $request->file('excel_file'));
-            
+            $request->validate([
+                'file' => 'required|mimes:xlsx,xls',
+            ]);
+
+            DB::beginTransaction();
+
+            Excel::import(new InternsImport, $request->file('file'));
+
+            DB::commit();
+
             return response()->json([
                 'success' => true,
                 'message' => 'Import thực tập sinh thành công!'
             ]);
-        } catch (\Exception $e) {
+        } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+            DB::rollBack();
+            
+            $failures = $e->failures();
+            $errors = [];
+            
+            foreach ($failures as $failure) {
+                $errors[] = "Dòng {$failure->row()}: " . implode(', ', $failure->errors());
+            }
+            
             return response()->json([
                 'success' => false,
-                'message' => 'Có lỗi xảy ra khi import: ' . $e->getMessage()
+                'message' => 'Có lỗi xảy ra khi import:',
+                'errors' => $errors
+            ], 422);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra: ' . $e->getMessage()
             ], 500);
         }
     }
@@ -360,5 +393,70 @@ class InternController extends Controller
 
         // Return the file as download
         return response()->download($tempFile, 'intern_template.xlsx')->deleteFileAfterSend(true);
+    }
+
+    public function accounts()
+    {
+        $accounts = InternAccount::with('intern')->get();
+        
+        // Debug information
+        \Log::info('Intern accounts count: ' . $accounts->count());
+        \Log::info('Intern accounts data: ' . $accounts->toJson());
+        
+        // Truyền dữ liệu trực tiếp
+        return view('admin.interns.accounts', [
+            'accounts' => $accounts,
+            'totalAccounts' => $accounts->count()
+        ]);
+    }
+
+    public function exportAccounts()
+    {
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Set headers
+        $headers = ['STT', 'Họ và tên', 'Email', 'Tên đăng nhập', 'Mật khẩu', 'Trạng thái', 'Ngày tạo'];
+        $sheet->fromArray($headers, NULL, 'A1');
+
+        // Style header row
+        $headerStyle = [
+            'font' => ['bold' => true],
+            'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
+            'fill' => [
+                'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                'startColor' => ['rgb' => 'E9ECEF']
+            ]
+        ];
+        $sheet->getStyle('A1:G1')->applyFromArray($headerStyle);
+
+        // Add data
+        $accounts = InternAccount::with('intern')->get();
+        $row = 2;
+        foreach ($accounts as $index => $account) {
+            $sheet->setCellValue('A' . $row, $index + 1);
+            $sheet->setCellValue('B' . $row, $account->intern->fullname);
+            $sheet->setCellValue('C' . $row, $account->email);
+            $sheet->setCellValue('D' . $row, $account->username);
+            $sheet->setCellValue('E' . $row, $account->password_plain);
+            $sheet->setCellValue('F' . $row, $account->is_active ? 'Hoạt động' : 'Vô hiệu');
+            $sheet->setCellValue('G' . $row, $account->created_at->format('d/m/Y H:i'));
+            $row++;
+        }
+
+        // Auto size columns
+        foreach (range('A', 'G') as $column) {
+            $sheet->getColumnDimension($column)->setAutoSize(true);
+        }
+
+        // Create writer
+        $writer = new Xlsx($spreadsheet);
+        $filename = 'danh_sach_tai_khoan_thuc_tap_sinh_' . date('Y-m-d_H-i') . '.xlsx';
+        
+        // Save to temp file and return download response
+        $tempFile = tempnam(sys_get_temp_dir(), 'intern_accounts');
+        $writer->save($tempFile);
+
+        return response()->download($tempFile, $filename)->deleteFileAfterSend(true);
     }
 } 

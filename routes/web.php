@@ -126,6 +126,11 @@ Route::middleware(['auth', 'check.role:admin'])->prefix('admin')->name('admin.')
     // Company routes
     Route::resource('companies', CompanyController::class);
 
+    // Intern account management routes
+    Route::get('interns/accounts', [InternController::class, 'accounts'])->name('interns.accounts');
+    Route::get('interns/accounts/export', [InternController::class, 'exportAccounts'])->name('interns.accounts.export');
+    Route::get('interns/template', [InternController::class, 'downloadTemplate'])->name('interns.template');
+
     // Intern management routes
     Route::resource('interns', InternController::class);
     Route::post('/interns/import', [InternController::class, 'import'])->name('interns.import');

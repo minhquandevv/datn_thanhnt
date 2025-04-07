@@ -451,6 +451,42 @@
             opacity: 0 !important;
             width: 0 !important;
         }
+
+        .sidebar .nav-link i {
+            margin-right: 10px;
+            font-size: 1.1rem;
+        }
+
+        /* Submenu styles */
+        .sidebar .nav-link[data-bs-toggle="collapse"] {
+            position: relative;
+        }
+
+        .sidebar .nav-link[data-bs-toggle="collapse"] .bi-chevron-down {
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar .nav-link[aria-expanded="true"] .bi-chevron-down {
+            transform: rotate(180deg);
+        }
+
+        .sidebar .collapse .nav-link {
+            padding-left: 2.5rem;
+            font-size: 0.9rem;
+        }
+
+        .sidebar .collapse .nav-link i {
+            font-size: 0.9rem;
+        }
+
+        .sidebar.collapsed .collapse {
+            display: none !important;
+        }
+
+        .sidebar .collapse .nav-link.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -511,10 +547,34 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('admin.interns.*') ? 'active' : '' }}" href="{{ route('admin.interns.index') }}">
+                        <a class="nav-link {{ request()->routeIs('admin.interns.*') ? 'active' : '' }}" 
+                           data-bs-toggle="collapse" 
+                           href="#internsSubmenu" 
+                           role="button" 
+                           aria-expanded="{{ request()->routeIs('admin.interns.*') ? 'true' : 'false' }}" 
+                           aria-controls="internsSubmenu">
                             <i class="bi bi-person-badge"></i>
                             <span>Quản lý thực tập sinh</span>
+                            <i class="bi bi-chevron-down ms-auto"></i>
                         </a>
+                        <div class="collapse {{ request()->routeIs('admin.interns.*') ? 'show' : '' }}" id="internsSubmenu">
+                            <ul class="nav flex-column ms-3 mt-2">
+                                <li class="nav-item">
+                                    <a class="nav-link {{ request()->routeIs('admin.interns.index') ? 'active' : '' }}" 
+                                       href="{{ route('admin.interns.index') }}">
+                                        <i class="bi bi-list-ul"></i>
+                                        <span>Danh sách thực tập sinh</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link {{ request()->routeIs('admin.interns.accounts') ? 'active' : '' }}" 
+                                       href="{{ route('admin.interns.accounts') }}">
+                                        <i class="bi bi-key"></i>
+                                        <span>Quản lý tài khoản</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link {{ request()->routeIs('admin.mentors.*') ? 'active' : '' }}" href="{{ route('admin.mentors.index') }}">
