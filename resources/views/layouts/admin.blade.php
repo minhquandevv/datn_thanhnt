@@ -535,10 +535,34 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('admin.candidates') ? 'active' : '' }}" href="{{ route('admin.candidates') }}">
+                        <a class="nav-link {{ request()->routeIs('admin.candidates') ? 'active' : '' }}" 
+                           data-bs-toggle="collapse" 
+                           href="#candidatesSubmenu" 
+                           role="button" 
+                           aria-expanded="{{ request()->routeIs('admin.candidates') || request()->routeIs('admin.interviews.*') ? 'true' : 'false' }}" 
+                           aria-controls="candidatesSubmenu">
                             <i class="bi bi-people"></i>
                             <span>Hồ sơ ứng viên</span>
+                            <i class="bi bi-chevron-down ms-auto"></i>
                         </a>
+                        <div class="collapse {{ request()->routeIs('admin.candidates') || request()->routeIs('admin.interviews.*') ? 'show' : '' }}" id="candidatesSubmenu">
+                            <ul class="nav flex-column ms-3 mt-2">
+                                <li class="nav-item">
+                                    <a class="nav-link {{ request()->routeIs('admin.candidates') ? 'active' : '' }}" 
+                                       href="{{ route('admin.candidates') }}">
+                                        <i class="bi bi-person-lines-fill"></i>
+                                        <span>Danh sách ứng viên</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link {{ request()->routeIs('admin.interviews.calendar') ? 'active' : '' }}" 
+                                       href="{{ route('admin.interviews.calendar') }}">
+                                        <i class="bi bi-calendar-check"></i>
+                                        <span>Lịch phỏng vấn</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}" href="{{ route('admin.users.index') }}">

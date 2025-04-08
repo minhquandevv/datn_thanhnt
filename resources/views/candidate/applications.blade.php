@@ -84,28 +84,38 @@
                                 </td>
                                 <td class="text-center">
                                     <div class="btn-group">
-                                        <a href="{{ asset('uploads/' . $application->cv_path) }}" 
-                                           class="btn btn-sm btn-outline-primary" 
-                                           target="_blank"
-                                           title="Xem CV">
-                                            <i class="bi bi-eye"></i>
-                                        </a>
-                                        
-                                        <button type="button" 
-                                                class="btn btn-sm btn-outline-success" 
-                                                data-bs-toggle="modal" 
-                                                data-bs-target="#updateCvModal{{ $application->id }}"
-                                                title="Đổi CV">
-                                            <i class="bi bi-arrow-repeat"></i>
-                                        </button>
+                                        @if($application->status != 'processing')
+                                            <a href="{{ asset('uploads/' . $application->cv_path) }}" 
+                                               class="btn btn-sm btn-outline-primary" 
+                                               target="_blank"
+                                               title="Xem CV">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            
+                                            <button type="button" 
+                                                    class="btn btn-sm btn-outline-success" 
+                                                    data-bs-toggle="modal" 
+                                                    data-bs-target="#updateCvModal{{ $application->id }}"
+                                                    title="Đổi CV">
+                                                <i class="bi bi-arrow-repeat"></i>
+                                            </button>
 
-                                        <button type="button" 
-                                                class="btn btn-sm btn-outline-danger" 
-                                                data-bs-toggle="modal" 
-                                                data-bs-target="#cancelModal{{ $application->id }}"
-                                                title="Hủy ứng tuyển">
-                                            <i class="bi bi-x-circle"></i>
-                                        </button>
+                                            <button type="button" 
+                                                    class="btn btn-sm btn-outline-danger" 
+                                                    data-bs-toggle="modal" 
+                                                    data-bs-target="#cancelModal{{ $application->id }}"
+                                                    title="Hủy ứng tuyển">
+                                                <i class="bi bi-x-circle"></i>
+                                            </button>
+                                        @else
+                                            <button type="button" 
+                                                    class="btn btn-sm btn-outline-info" 
+                                                    data-bs-toggle="modal" 
+                                                    data-bs-target="#applicationModal{{ $application->id }}"
+                                                    title="Xem chi tiết">
+                                                <i class="bi bi-info-circle"></i>
+                                            </button>
+                                        @endif
                                     </div>
 
                                     <!-- Modal Đổi CV -->

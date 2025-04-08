@@ -58,6 +58,11 @@ class Candidate extends Authenticatable
         return $this->hasMany(JobApplication::class);
     }
 
+    public function interviews()
+    {
+        return $this->hasMany(InterviewSchedule::class);
+    }
+
     public function profile()
     {
         return $this->belongsTo(CandidateProfile::class, 'candidate_profile_id');

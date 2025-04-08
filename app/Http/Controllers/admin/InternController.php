@@ -109,8 +109,8 @@ class InternController extends Controller
                     'is_active' => true
                 ]);
 
-                // Xóa đơn ứng tuyển sau khi chuyển thành công
-                $application->delete();
+                $application->status = 'transferred';
+                $application->save();
 
                 // Gửi email thông báo tài khoản cho thực tập sinh
                 // TODO: Implement email notification

@@ -22,6 +22,7 @@ use App\Http\Controllers\admin\RecruitmentPlanController;
 use App\Http\Controllers\admin\AdminDashboardController;
 use App\Http\Controllers\hr\JobApplicationController as HRJobApplicationController;
 use App\Http\Controllers\ApplicationManagementController;
+use App\Http\Controllers\admin\InterviewScheduleController;
 
 // Authentication Routes
 Route::middleware('guest')->group(function () {
@@ -134,6 +135,12 @@ Route::middleware(['auth', 'check.role:admin'])->prefix('admin')->name('admin.')
     // Intern management routes
     Route::resource('interns', InternController::class);
     Route::post('/interns/import', [InternController::class, 'import'])->name('interns.import');
+
+    // Interview scheduling routes
+    Route::get('interviews/calendar', [InterviewScheduleController::class, 'calendar'])->name('interviews.calendar');
+    Route::get('interviews/events', [InterviewScheduleController::class, 'events'])->name('interviews.events');
+    Route::post('/interviews/{interview}/status', [InterviewScheduleController::class, 'updateStatus'])->name('interviews.status');
+    Route::resource('interviews', InterviewScheduleController::class);
 
     // Mentor management routes
     Route::resource('mentors', MentorController::class);

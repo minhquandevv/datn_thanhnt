@@ -7,6 +7,7 @@ use App\Models\Candidate;
 use App\Models\University;
 use Illuminate\Support\Facades\Storage;
 use App\Models\JobApplication;
+use App\Models\User;
 
 class AdminController extends Controller
 {
@@ -203,5 +204,31 @@ class AdminController extends Controller
         $application->save();
 
         return redirect()->back()->with('success', 'Cập nhật trạng thái đơn ứng tuyển thành công.');
+    }
+
+    public function getCandidates()
+    {
+        $candidates = Candidate::select('id', 'fullname', 'email', 'phone_number')
+            ->where('active', true)
+            ->orderBy('fullname')
+            ->get();
+            
+        return response()->json([
+            'success' => true,
+            'candidates' => $candidates
+        ]);
+    }
+
+    public function getUsers()
+    {
+        $users = User::whereIn('role', ['admin', 'hr'])
+            ->select('id', 'name', 'email', 'role')
+            ->orderBy('name')
+            ->get();
+            
+        return response()->json([
+            'success' => true,
+            'data' => $users
+        ]);
     }
 }
