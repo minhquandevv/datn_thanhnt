@@ -414,6 +414,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var calendar = new FullCalendar.Calendar(calendarEl, {
         locale: 'vi',
         initialView: 'dayGridMonth',
+        timeZone: 'local',
         headerToolbar: {
             left: 'prev,next today',
             center: 'title',
@@ -464,10 +465,28 @@ document.addEventListener('DOMContentLoaded', function() {
         },
         // Thêm các tính năng kéo-thả và resize
         eventDrop: function(info) {
-            updateEventTime(info.event, info);
+            console.log('Event dropped:', info.event.start, info.event.end);
+            // Convert to Vietnam timezone (UTC+7)
+            const startTime = new Date(info.event.start);
+            const endTime = new Date(info.event.end);
+            
+            // Add 7 hours to convert from UTC to Vietnam time
+            startTime.setHours(startTime.getHours() + 7);
+            endTime.setHours(endTime.getHours() + 7);
+            
+            updateEventTime(info.event, info, startTime, endTime);
         },
         eventResize: function(info) {
-            updateEventTime(info.event, info);
+            console.log('Event resized:', info.event.start, info.event.end);
+            // Convert to Vietnam timezone (UTC+7)
+            const startTime = new Date(info.event.start);
+            const endTime = new Date(info.event.end);
+            
+            // Add 7 hours to convert from UTC to Vietnam time
+            startTime.setHours(startTime.getHours() + 7);
+            endTime.setHours(endTime.getHours() + 7);
+            
+            updateEventTime(info.event, info, startTime, endTime);
         },
         // Chỉ cho phép kéo-thả các sự kiện có trạng thái "scheduled"
         eventAllow: function(dropInfo, draggedEvent) {
@@ -477,14 +496,14 @@ document.addEventListener('DOMContentLoaded', function() {
     calendar.render();
 
     // Hàm cập nhật thời gian qua AJAX
-    function updateEventTime(event, info) {
+    function updateEventTime(event, info, startTime, endTime) {
         $.ajax({
             url: `/admin/interviews/${event.id}`,
             method: 'PUT',
             data: {
                 _token: '{{ csrf_token() }}',
-                start_time: event.start.toISOString(),
-                end_time: event.end ? event.end.toISOString() : event.start.toISOString()
+                start_time: startTime.toISOString(),
+                end_time: endTime.toISOString()
             },
             success: function(response) {
                 if (response.success) {
