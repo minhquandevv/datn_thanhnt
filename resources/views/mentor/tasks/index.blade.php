@@ -47,10 +47,10 @@
     <!-- Filter Section -->
     <div class="card shadow mb-4">
         <div class="card-body">
-            <form action="{{ route('mentor.tasks.index') }}" method="GET" class="row g-3">
+            <form action="{{ route('mentor.tasks.index') }}" method="GET" class="row g-3" id="filterForm">
                 <div class="col-md-4">
                     <label class="form-label">Trạng thái</label>
-                    <select name="status" class="form-select">
+                    <select name="status" class="form-select" onchange="this.form.submit()">
                         <option value="">Tất cả trạng thái</option>
                         <option value="Chưa bắt đầu" {{ request('status') == 'Chưa bắt đầu' ? 'selected' : '' }}>Chưa bắt đầu</option>
                         <option value="Đang thực hiện" {{ request('status') == 'Đang thực hiện' ? 'selected' : '' }}>Đang thực hiện</option>
@@ -58,10 +58,18 @@
                         <option value="Trễ hạn" {{ request('status') == 'Trễ hạn' ? 'selected' : '' }}>Trễ hạn</option>
                     </select>
                 </div>
+                <div class="col-md-4">
+                    <label class="form-label">Tên dự án</label>
+                    <select name="project_name" class="form-select" onchange="this.form.submit()">
+                        <option value="">Tất cả dự án</option>
+                        @foreach($projectNames as $projectName)
+                            <option value="{{ $projectName }}" {{ request('project_name') == $projectName ? 'selected' : '' }}>
+                                {{ $projectName }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
                 <div class="col-md-4 d-flex align-items-end">
-                    <button type="submit" class="btn btn-primary me-2">
-                        <i class="bi bi-search"></i> Lọc
-                    </button>
                     <a href="{{ route('mentor.tasks.index') }}" class="btn btn-secondary">
                         <i class="bi bi-x-circle"></i> Xóa bộ lọc
                     </a>
@@ -77,10 +85,11 @@
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Tên dự án</th>
                             <th>Tên công việc</th>
+                            <th>Dự án</th>
                             <th>Thực tập sinh</th>
-                            <th>Ngày giao việc</th>
+                            <th>Ngày giao</th>
+                            <th>Hạn hoàn thành</th>
                             <th>Trạng thái</th>
                             <th>Thao tác</th>
                         </tr>
@@ -89,10 +98,11 @@
                         @forelse($tasks as $task)
                         <tr>
                             <td>{{ $task->task_id }}</td>
-                            <td>{{ $task->project_name }}</td>
                             <td>{{ $task->task_name }}</td>
+                            <td>{{ $task->project_name }}</td>
                             <td>{{ $task->intern->fullname }}</td>
                             <td>{{ \Carbon\Carbon::parse($task->assigned_date)->format('d/m/Y') }}</td>
+                            <td>{{ \Carbon\Carbon::parse($task->deadline)->format('d/m/Y') }}</td>
                             <td>
                                 <span class="badge bg-{{ 
                                     $task->status === 'Hoàn thành' ? 'success' : 
@@ -112,6 +122,56 @@
                                        class="btn btn-warning btn-sm">
                                         <i class="bi bi-pencil"></i>
                                     </a>
+                                    <div class="btn-group">
+                                        <button type="button" 
+                                                class="btn btn-primary btn-sm dropdown-toggle"
+                                                data-bs-toggle="dropdown"
+                                                aria-expanded="false">
+                                            <i class="bi bi-arrow-repeat"></i>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <form action="{{ route('mentor.tasks.update', $task->task_id) }}" method="POST">
+                                                    @csrf
+                                                    @method('PUT')
+                                                    <input type="hidden" name="status" value="Chưa bắt đầu">
+                                                    <button type="submit" class="dropdown-item {{ $task->status == 'Chưa bắt đầu' ? 'active' : '' }}">
+                                                        <i class="bi bi-circle"></i> Chưa bắt đầu
+                                                    </button>
+                                                </form>
+                                            </li>
+                                            <li>
+                                                <form action="{{ route('mentor.tasks.update', $task->task_id) }}" method="POST">
+                                                    @csrf
+                                                    @method('PUT')
+                                                    <input type="hidden" name="status" value="Đang thực hiện">
+                                                    <button type="submit" class="dropdown-item {{ $task->status == 'Đang thực hiện' ? 'active' : '' }}">
+                                                        <i class="bi bi-arrow-right-circle"></i> Đang thực hiện
+                                                    </button>
+                                                </form>
+                                            </li>
+                                            <li>
+                                                <form action="{{ route('mentor.tasks.update', $task->task_id) }}" method="POST">
+                                                    @csrf
+                                                    @method('PUT')
+                                                    <input type="hidden" name="status" value="Hoàn thành">
+                                                    <button type="submit" class="dropdown-item {{ $task->status == 'Hoàn thành' ? 'active' : '' }}">
+                                                        <i class="bi bi-check-circle"></i> Hoàn thành
+                                                    </button>
+                                                </form>
+                                            </li>
+                                            <li>
+                                                <form action="{{ route('mentor.tasks.update', $task->task_id) }}" method="POST">
+                                                    @csrf
+                                                    @method('PUT')
+                                                    <input type="hidden" name="status" value="Trễ hạn">
+                                                    <button type="submit" class="dropdown-item {{ $task->status == 'Trễ hạn' ? 'active' : '' }}">
+                                                        <i class="bi bi-exclamation-circle"></i> Trễ hạn
+                                                    </button>
+                                                </form>
+                                            </li>
+                                        </ul>
+                                    </div>
                                     <button type="button" 
                                             class="btn btn-danger btn-sm"
                                             data-bs-toggle="modal" 

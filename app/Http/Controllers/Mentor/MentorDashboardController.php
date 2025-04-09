@@ -95,9 +95,16 @@ class MentorDashboardController extends Controller
                      ->with(['intern'])
                      ->orderBy('created_at', 'desc');
 
-        // Apply status filter if provided
-        if (request()->has('status') && request('status') !== '') {
-            $query->where('status', request('status'));
+        // Apply filters independently
+        $status = request('status');
+        $projectName = request('project_name');
+
+        if ($status && $status !== '') {
+            $query->where('status', $status);
+        }
+
+        if ($projectName && $projectName !== '') {
+            $query->where('project_name', $projectName);
         }
 
         // Get paginated tasks
@@ -106,7 +113,13 @@ class MentorDashboardController extends Controller
         // Get all tasks for statistics
         $allTasks = Task::where('assigned_by', $mentor->mentor_id)->get();
 
-        return view('mentor.tasks.index', compact('tasks', 'allTasks'));
+        // Get unique project names
+        $projectNames = Task::where('assigned_by', $mentor->mentor_id)
+                          ->select('project_name')
+                          ->distinct()
+                          ->pluck('project_name');
+
+        return view('mentor.tasks.index', compact('tasks', 'allTasks', 'projectNames'));
     }
 
     public function profile()
@@ -177,8 +190,9 @@ class MentorDashboardController extends Controller
                 'task_name' => 'required|string|max:255',
                 'requirements' => 'nullable|string',
                 'assigned_date' => 'required|date',
+                'deadline' => 'required|date|after_or_equal:assigned_date',
                 'status' => 'required|in:Chưa bắt đầu,Đang thực hiện,Hoàn thành,Trễ hạn',
-                'attachment' => 'nullable|file|max:10240',
+                'attachments.*' => 'nullable|file|max:10240',
                 'result' => 'nullable|string',
                 'mentor_comment' => 'nullable|string',
                 'evaluation' => 'nullable|in:Rất tốt,Tốt,Trung bình,Kém'
@@ -187,17 +201,20 @@ class MentorDashboardController extends Controller
             $mentor = Auth::guard('mentor')->user();
             $validated['assigned_by'] = $mentor->mentor_id;
 
-            if ($request->hasFile('attachment')) {
-                $validated['attachment'] = $request->file('attachment')->store('tasks', 'public');
-            }
+            $task = Task::create($validated);
 
-            if ($validated['status'] !== 'Hoàn thành') {
-                $validated['result'] = null;
-                $validated['mentor_comment'] = null;
-                $validated['evaluation'] = null;
-            }
+            // Xử lý tệp đính kèm (nhiều file)
+            if ($request->hasFile('attachments')) {
+                foreach ($request->file('attachments') as $file) {
+                    $originalName = $file->getClientOriginalName();
+                    $path = $file->storeAs('tasks/' . $task->task_id, $originalName, 'public');
 
-            Task::create($validated);
+                    $task->attachments()->create([
+                        'file_path' => $path,
+                        'file_name' => $originalName,
+                    ]);
+                }
+            }
 
             return redirect()->route('mentor.tasks.index')
                 ->with('success', 'Công việc đã được tạo thành công.');
@@ -228,28 +245,42 @@ class MentorDashboardController extends Controller
                         ->where('assigned_by', $mentor->mentor_id)
                         ->firstOrFail();
 
+            // Nếu chỉ cập nhật trạng thái
+            if ($request->has('status')) {
+                $task->update(['status' => $request->status]);
+                return redirect()->route('mentor.tasks.index')
+                    ->with('success', 'Trạng thái công việc đã được cập nhật!');
+            }
+
+            // Nếu cập nhật toàn bộ thông tin
             $validated = $request->validate([
                 'project_name' => 'nullable|string|max:255',
                 'task_name' => 'required|string|max:255',
                 'requirements' => 'nullable|string',
                 'assigned_date' => 'required|date',
+                'deadline' => 'required|date|after_or_equal:assigned_date',
                 'status' => 'required|in:Chưa bắt đầu,Đang thực hiện,Hoàn thành,Trễ hạn',
                 'intern_id' => 'required|exists:interns,intern_id',
-                'attachment' => 'nullable|file|max:10240', // Max 10MB
+                'attachments.*' => 'nullable|file|max:10240',
                 'result' => 'nullable|string',
                 'mentor_comment' => 'nullable|string',
                 'evaluation' => 'nullable|in:Rất tốt,Tốt,Trung bình,Kém'
             ]);
 
-            if ($request->hasFile('attachment')) {
-                // Delete old attachment if exists
-                if ($task->attachment) {
-                    Storage::disk('public')->delete($task->attachment);
-                }
-                $validated['attachment'] = $request->file('attachment')->store('tasks', 'public');
-            }
-
             $task->update($validated);
+
+            // Xử lý tệp đính kèm mới
+            if ($request->hasFile('attachments')) {
+                foreach ($request->file('attachments') as $file) {
+                    $originalName = $file->getClientOriginalName();
+                    $path = $file->storeAs('tasks/' . $task->task_id, $originalName, 'public');
+
+                    $task->attachments()->create([
+                        'file_path' => $path,
+                        'file_name' => $originalName,
+                    ]);
+                }
+            }
 
             return redirect()->route('mentor.tasks.index')
                 ->with('success', 'Cập nhật công việc thành công.');
@@ -288,9 +319,27 @@ class MentorDashboardController extends Controller
         $mentor = auth()->guard('mentor')->user();
         $task = Task::where('task_id', $taskId)
                     ->where('assigned_by', $mentor->mentor_id)
-                    ->with(['intern', 'mentor'])
+                    ->with(['intern', 'mentor', 'attachments'])
                     ->firstOrFail();
         
         return view('mentor.tasks.show', compact('task'));
+    }
+
+    public function downloadAttachment($taskId, $attachmentId)
+    {
+        $mentor = auth()->guard('mentor')->user();
+        $task = Task::where('task_id', $taskId)
+                    ->where('assigned_by', $mentor->mentor_id)
+                    ->firstOrFail();
+        
+        $attachment = $task->attachments()->findOrFail($attachmentId);
+        
+        $filePath = public_path('tasks/' . $taskId . '/' . $attachment->file_name);
+        
+        if (!file_exists($filePath)) {
+            abort(404, 'File not found');
+        }
+        
+        return response()->download($filePath, $attachment->file_name);
     }
 } 

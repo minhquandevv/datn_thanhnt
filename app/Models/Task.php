@@ -3,15 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\Intern;
-use App\Models\Mentor;
-use App\Models\Department;
+use App\Models\Mentors;
+use App\Models\TaskReports;
+
 
 class Task extends Model
 {
-    use HasFactory;
-
     protected $primaryKey = 'task_id';
     protected $guarded = ['task_id'];
 
@@ -28,20 +26,30 @@ class Task extends Model
     const EVAL_POOR = 'poor';
 
     protected $fillable = [
-        'intern_id', 'project_name', 'task_name', 'requirements', 'attachment',
-        'assigned_date', 'assigned_by', 'status', 'result', 'mentor_comment', 'evaluation'
+        'task_id',
+        'intern_id',
+        'project_name',
+        'task_name',
+        'requirements',
+        'assigned_date',
+        'deadline',
+        'status',
+        'result',
+        'mentor_comment',
+        'evaluation',
+        'assigned_by'
     ];
 
-    // Relationship với thực tập sinh
+    // Relationship với TTS
     public function intern()
     {
-        return $this->belongsTo(Intern::class, 'intern_id', 'intern_id');
+        return $this->belongsTo(Intern::class, 'intern_id');
     }
 
-    // Relationship với mentor
-    public function mentor()
+    // Relationship với mentor giao việc
+    public function assignedBy()
     {
-        return $this->belongsTo(Mentor::class, 'assigned_by', 'mentor_id');
+        return $this->belongsTo(Mentors::class, 'assigned_by');
     }
 
     // Relationship với báo cáo
@@ -50,8 +58,10 @@ class Task extends Model
         return $this->hasMany(TaskReports::class, 'task_id');
     }
 
-    public function department()
+        public function attachments()
     {
-        return $this->hasOneThrough(Department::class, Mentor::class, 'mentor_id', 'department_id', 'assigned_by', 'mentor_id');
+        return $this->hasMany(TaskAttachment::class, 'task_id', 'task_id');
     }
-} 
+
+    
+}

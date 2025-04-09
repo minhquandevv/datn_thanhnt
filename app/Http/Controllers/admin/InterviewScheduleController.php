@@ -28,7 +28,7 @@ class InterviewScheduleController extends Controller
     {
         // Lấy ứng viên có đơn ứng tuyển đang xử lý
         $candidates = Candidate::whereHas('jobApplications', function ($query) {
-            $query->where('status', 'processing');
+            $query->where('status', 'approved');
         })->with(['interviews', 'jobApplications'])->get();
             
         $interviewers = User::whereIn('role', ['admin', 'hr'])

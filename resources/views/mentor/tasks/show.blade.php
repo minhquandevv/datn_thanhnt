@@ -68,13 +68,28 @@
                         <p class="mb-0">{{ $task->requirements }}</p>
                     </div>
 
-                    @if($task->attachment)
+                    @if($task->attachments->count() > 0)
                     <div class="mb-3">
                         <h6 class="text-muted">File đính kèm</h6>
-                        <p class="mb-0">{{ basename($task->attachment) }}</p>
-                        <a href="{{ asset('' . $task->attachment) }}" target="_blank" class="btn btn-outline-primary btn-sm">
-                            <i class="bi bi-file-earmark"></i> Tải xuống
-                        </a>
+                        <ul class="list-group">
+                            @foreach($task->attachments as $attachment)
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span>{{ $attachment->file_name }}</span>
+                                    <div>
+                                        <a href="{{ asset('tasks/' . $task->task_id . '/' . $attachment->file_name) }}" 
+                                           target="_blank" 
+                                           class="btn btn-sm btn-outline-primary me-2">
+                                            <i class="bi bi-eye"></i> Xem
+                                        </a>
+                                        <a href="{{ asset('tasks/' . $task->task_id . '/' . $attachment->file_name) }}" 
+                                           download="{{ $attachment->file_name }}"
+                                           class="btn btn-sm btn-outline-success">
+                                            <i class="bi bi-download"></i> Tải xuống
+                                        </a>
+                                    </div>
+                                </li>
+                            @endforeach
+                        </ul>
                     </div>
                     @endif
                 </div>

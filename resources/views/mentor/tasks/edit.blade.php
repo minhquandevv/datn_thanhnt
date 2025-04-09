@@ -90,6 +90,21 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="mb-3">
+                            <label for="deadline" class="form-label">Hạn hoàn thành</label>
+                            <input type="date" 
+                                   class="form-control @error('deadline') is-invalid @enderror" 
+                                   id="deadline" 
+                                   name="deadline" 
+                                   value="{{ old('deadline', $task->deadline) }}" 
+                                   required>
+                            @error('deadline')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="mb-3">
                             <label for="status" class="form-label">Trạng thái</label>
                             <select class="form-select @error('status') is-invalid @enderror" 
                                     id="status" 
@@ -106,25 +121,48 @@
                             @enderror
                         </div>
                     </div>
+                </div>
 
+                <div class="row">
                     <div class="col-md-6">
                         <div class="mb-3">
-                            <label for="attachment" class="form-label">File đính kèm</label>
+                            <label for="attachments" class="form-label">File đính kèm</label>
                             <input type="file" 
-                                   class="form-control @error('attachment') is-invalid @enderror" 
-                                   id="attachment" 
-                                   name="attachment">
-                            @error('attachment')
+                                   class="form-control @error('attachments') is-invalid @enderror" 
+                                   id="attachments" 
+                                   name="attachments[]" 
+                                   multiple
+                                   accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.zip,.rar">
+                            <small class="form-text text-muted">Cho phép các file: PDF, DOC, DOCX, XLS, XLSX, TXT, ZIP, RAR (Tối đa 10MB)</small>
+                            @error('attachments')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
-                            @if($task->attachment)
-                                <div class="mt-2">
-                                    <p class="mb-0">{{ basename($task->attachment) }}</p>
-                                    <a href="{{ asset('' . $task->attachment) }}" target="_blank" class="text-primary">
-                                        <i class="bi bi-file-earmark"></i> Xem file hiện tại
-                                    </a>
+                            
+                            @if($task->attachments->count() > 0)
+                                <div class="mt-3">
+                                    <h6 class="text-muted">File hiện tại:</h6>
+                                    <ul class="list-group">
+                                        @foreach($task->attachments as $attachment)
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                <span>{{ $attachment->file_name }}</span>
+                                                <div>
+                                                    <a href="{{ asset('tasks/' . $task->task_id . '/' . $attachment->file_name) }}" 
+                                                       target="_blank" 
+                                                       class="btn btn-sm btn-outline-primary me-2">
+                                                        <i class="bi bi-eye"></i> Xem
+                                                    </a>
+                                                    <a href="{{ asset('tasks/' . $task->task_id . '/' . $attachment->file_name) }}" 
+                                                       download="{{ $attachment->file_name }}"
+                                                       class="btn btn-sm btn-outline-success">
+                                                        <i class="bi bi-download"></i> Tải xuống
+                                                    </a>
+                                                </div>
+                                            </li>
+                                        @endforeach
+                                    </ul>
                                 </div>
                             @endif
+                            <div id="newFileList" class="mt-2"></div>
                         </div>
                     </div>
                 </div>
@@ -231,4 +269,50 @@
     border-color: #656776;
 }
 </style>
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const statusSelect = document.getElementById('status');
+    const resultFields = document.getElementById('resultFields');
+    const fileInput = document.getElementById('attachments');
+    const newFileList = document.getElementById('newFileList');
+
+    function toggleResultFields() {
+        if (statusSelect.value === 'Hoàn thành') {
+            resultFields.style.display = 'block';
+        } else {
+            resultFields.style.display = 'none';
+            document.getElementById('result').value = '';
+            document.getElementById('mentor_comment').value = '';
+            document.getElementById('evaluation').value = '';
+        }
+    }
+
+    function updateFileList() {
+        newFileList.innerHTML = '';
+        if (fileInput.files.length > 0) {
+            const ul = document.createElement('ul');
+            ul.className = 'list-group';
+            
+            Array.from(fileInput.files).forEach(file => {
+                const li = document.createElement('li');
+                li.className = 'list-group-item d-flex justify-content-between align-items-center';
+                li.innerHTML = `
+                    <span>${file.name}</span>
+                    <span class="badge bg-primary rounded-pill">${(file.size / 1024 / 1024).toFixed(2)} MB</span>
+                `;
+                ul.appendChild(li);
+            });
+            
+            newFileList.appendChild(ul);
+        }
+    }
+
+    statusSelect.addEventListener('change', toggleResultFields);
+    fileInput.addEventListener('change', updateFileList);
+    toggleResultFields();
+});
+</script>
+@endpush
 @endsection 

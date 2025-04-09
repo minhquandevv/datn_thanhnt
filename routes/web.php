@@ -198,6 +198,10 @@ Route::middleware(['auth:mentor'])->prefix('mentor')->name('mentor.')->group(fun
     Route::get('/interns/{intern}/edit', [MentorDashboardController::class, 'editIntern'])->name('interns.edit');
     Route::put('/interns/{intern}', [MentorDashboardController::class, 'updateIntern'])->name('interns.update');
     Route::delete('/interns/{intern}', [MentorDashboardController::class, 'deleteIntern'])->name('interns.destroy');
+
+    // Task attachment routes
+    Route::get('/tasks/{taskId}/attachments/{attachmentId}/download', [MentorDashboardController::class, 'downloadAttachment'])
+        ->name('mentor.tasks.attachment.download');
 });
 
 // Intern routes

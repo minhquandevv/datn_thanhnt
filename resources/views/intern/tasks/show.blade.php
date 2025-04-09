@@ -64,7 +64,7 @@
                     @if($task->attachment)
                     <div class="mb-3">
                         <h6 class="text-muted">File đính kèm</h6>
-                        <a href="{{ asset('' . $task->attachment) }}" target="_blank" class="btn btn-outline-primary btn-sm">
+                        Tên file: <a href="{{ asset('' . $task->attachment) }}" target="_blank" class="btn btn-outline-primary btn-sm">
                             <i class="bi bi-file-earmark"></i> Tải xuống
                         </a>
                     </div>

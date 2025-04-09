@@ -90,20 +90,58 @@
                 </div>
 
                 <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="deadline" class="form-label">Hạn hoàn thành <span class="text-danger">*</span></label>
+                            <input type="date" 
+                                   class="form-control @error('deadline') is-invalid @enderror" 
+                                   id="deadline" 
+                                   name="deadline" 
+                                   value="{{ old('deadline', date('Y-m-d')) }}" 
+                                   required>
+                            @error('deadline')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="status" class="form-label">Trạng thái</label>
+                            <select class="form-select @error('status') is-invalid @enderror" 
+                                    id="status" 
+                                    name="status" 
+                                    required>
+                                <option value="">Chọn trạng thái</option>
+                                <option value="Chưa bắt đầu" {{ old('status') == 'Chưa bắt đầu' ? 'selected' : '' }}>Chưa bắt đầu</option>
+                                <option value="Đang thực hiện" {{ old('status') == 'Đang thực hiện' ? 'selected' : '' }}>Đang thực hiện</option>
+                                <option value="Đã hoàn thành" {{ old('status') == 'Đã hoàn thành' ? 'selected' : '' }}>Đã hoàn thành</option>
+                                <option value="Bị hủy" {{ old('status') == 'Bị hủy' ? 'selected' : '' }}>Bị hủy</option>
+                            </select>
+                            @error('status')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
                     <input type="hidden" name="status" value="Chưa bắt đầu">
 
                     <div class="col-md-6">
                         <div class="mb-3">
-                            <label for="attachment" class="form-label">File đính kèm</label>
+                            <label for="attachments" class="form-label">File đính kèm</label>
                             <input type="file" 
-                                   class="form-control @error('attachment') is-invalid @enderror" 
-                                   id="attachment" 
-                                   name="attachment"
+                                   class="form-control @error('attachments') is-invalid @enderror" 
+                                   id="attachments" 
+                                   name="attachments[]" 
+                                   multiple
                                    accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.zip,.rar">
                             <small class="form-text text-muted">Cho phép các file: PDF, DOC, DOCX, XLS, XLSX, TXT, ZIP, RAR (Tối đa 10MB)</small>
-                            @error('attachment')
+                            @error('attachments')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
+                            <div id="fileList" class="mt-2"></div>
                         </div>
                     </div>
                 </div>
@@ -228,21 +266,43 @@
 document.addEventListener('DOMContentLoaded', function() {
     const statusSelect = document.getElementById('status');
     const resultFields = document.getElementById('resultFields');
+    const fileInput = document.getElementById('attachments');
+    const fileList = document.getElementById('fileList');
 
     function toggleResultFields() {
         if (statusSelect.value === 'Hoàn thành') {
             resultFields.style.display = 'block';
         } else {
             resultFields.style.display = 'none';
-            // Reset các trường khi không phải trạng thái Hoàn thành
             document.getElementById('result').value = '';
             document.getElementById('mentor_comment').value = '';
             document.getElementById('evaluation').value = '';
         }
     }
 
+    function updateFileList() {
+        fileList.innerHTML = '';
+        if (fileInput.files.length > 0) {
+            const ul = document.createElement('ul');
+            ul.className = 'list-group';
+            
+            Array.from(fileInput.files).forEach(file => {
+                const li = document.createElement('li');
+                li.className = 'list-group-item d-flex justify-content-between align-items-center';
+                li.innerHTML = `
+                    <span>${file.name}</span>
+                    <span class="badge bg-primary rounded-pill">${(file.size / 1024 / 1024).toFixed(2)} MB</span>
+                `;
+                ul.appendChild(li);
+            });
+            
+            fileList.appendChild(ul);
+        }
+    }
+
     statusSelect.addEventListener('change', toggleResultFields);
-    toggleResultFields(); // Run on page load
+    fileInput.addEventListener('change', updateFileList);
+    toggleResultFields();
 });
 </script>
 @endpush

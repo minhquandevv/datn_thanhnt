@@ -461,8 +461,8 @@ footer ul li a:hover {
                     <a href="#"><i class="bi bi-facebook fs-4 text-secondary"></i></a>
                 </div>
                 <div class="mt-3">
-                    <img src="{{ asset('assets/boquocphong.png') }}" class="img-fluid mb-1" style="max-height: 40px;">
-                    <img src="{{ asset('assets/boquocphong2.png') }}" class="img-fluid mb-1" style="max-height: 40px;">
+                    <img src="{{ asset('assets/bqp.jpg') }}" class="img-fluid mb-1" style="max-height: 40px;">
+                    <img src="{{ asset('assets/bqp2.jpg') }}" class="img-fluid mb-1" style="max-height: 40px;">
                 </div>
                 <p class="mt-3 small text-muted">Copyright © 2025 Soft by Viettel Software</p>
             </div>
@@ -478,7 +478,7 @@ footer ul li a:hover {
             <div class="col-md-4 mb-4">
                 <h6 class="fw-bold mb-3">Liên hệ</h6>
                 <p><i class="bi bi-geo-alt-fill text-danger me-2"></i>36A Dịch Vọng Hậu, Cầu Giấy, Hà Nội</p>
-                <p><i class="bi bi-telephone-fill text-danger me-2"></i>+84 988889446</p>
+                <p><i class="bi bi-telephone-fill text-danger me-2"></i>+84 971451803</p>
                 <p><i class="bi bi-envelope-fill text-danger me-2"></i>contact@viettelsoftware.com</p>
                 <p><i class="bi bi-journal-text text-danger me-2"></i>Phản ánh</p>
             </div>

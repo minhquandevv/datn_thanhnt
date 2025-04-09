@@ -1,0 +1,161 @@
+Nội dung họp
+
+1. Định nghĩa nghiệp vụ cho các yêu cầu
+- Thêm xác thực email khi đăng ký
+ 
+- Module quản lý CV: trạng thái cho CV
+  + chờ tiếp nhận: vẫn được đổi / hủy cv
+  + chờ xử lý: duyệt / từ chối
+  + đã duyệt / đã từ chối
+  + chờ UV xác nhận: sẽ thêm cv nếu nút pass ở tab3 ở module pvan được ấn 
+  + hoàn thành: select vào list tts (tự điền các ttin liên quan lấy từ hồ sơ ứng viên,
+				 đồng thời ẩn hồ sơ ứng viên trong module hồ sơ ứng viên) 
+  
+- Trạng thái của tài khoản:
+  + 2 tab: nội bộ / tts (inactive / active)
+  + lấy được password lần đầu để đưa cho tts
+  + rule tạo username: tên + chữ cái đầu họ + tên đệm @vtit.com
+
+- Module phỏng vấn: 
+  + bỏ qua xếp lịch, chỉ lên lịch sau khi chốt ngoài
+  + 2 tab: tab1 chờ lên lịch, tab2 là chờ pvan, tab3 chờ kết quả
+  + bảng tab1 gồm các cột: như module cv, thêm cột action (nút lên lịch)
+  + bảng tab2 gồm các cột: giống module cv nhưng thêm ngày, giờ (khoảng thời gian nhé), kiểu (onl, off), link meet
+  + tab3: nút action gồm pass / fail
+  + sxep theo thứ tự ngày giờ gần nhất
+
+- Trạng thái của hồ sơ ứng viên: pass pvan thì ẩn nó đi, trạng thái là " "     X
+
+- Đoạn lên lịch pvan cho CV đang chờ lên lịch: có check trùng
+
+- Dashboard: 2 dashboard
+
+Timeline hoàn thiện code: 6-7-8-9-10/4
+
+2. Lên tiến độ và các cột mốc cần chú ý
+
+- 12/4: hạn cuối check turnitin, cần có full báo cáo => check turnitin vào những ngày nào, mấy lần
+     + 6/4: viết chương 1,2
+     + 7/4 - 9/4: viết chương 3,4 (dtb + giao diện)
+     + 10 - 12/4: check và chỉnh sửa, target check 1 lần ăn luôn
+   
+- 15/4: hạn cuối nộp toàn bộ báo cáo + code
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Tối demo cho cô flow:
+
+**A. Quy trình tuyển dụng**
+
+1. Thêm kế hoạch tuyển dụng
+- Người phụ trách: là HR
+- Chức vụ: 
+- Phòng ban:
+=> vấn đề 1: cái nào nhập, cái nào cbx
+=> vấn đề 2: có cho người phụ trách duyệt không => HR là ng phụ trách => HR sẽ phải cập nhật ttin về chức vụ
+và pban ở mục ttin cá nhân để khi ấn nút thêm mới các ttin này được tự động fill, nếu chưa có thì HR được quyền
+nhập tay
+
+=> yêu cầu thêm tính năng cập nhật thông tin cho tài khoản HR
+=> đưa HR vào list người dùng chứ ko phải admin
+
+2. Duyệt kế hoạch
+=> cho duyệt thành công ở tài khoản HR cũng được vì chưa phân quyền
+=> phần phân quyền: sẽ đưa vào dự định trong tlai là sẽ gửi api lên HT chuyên duyệt của vtit là Voffice
+=> xong mô tả api cho bên đấy để thể hiện là mình có biết làm
+
+3. Thêm tin tuyển dụng => kết nối với KH, tự động fill thông tin
+=> vấn đề 1: cho thêm 1 lúc nhiều tin được không vì mỗi tin là 1 vị trí khác nhau
+=> xử lý: thêm cột trạng thái cho bảng vị trí
+=> vấn đề 2: thêm tính năng fill tự động từ KH, không nhập tay
+
+Bảng chi tiết order: Mã hóa đơn, mã sản phẩm, SL, giảm giá, 
+Bảng chi tiết vị trí: Mã vị trí (cho KH này), Mã KH, mã vị trí (trong mục vị trí),  
+=> chọn mã KH, chọn vị trí (mã của vị trí ở trong mục quản lý vị trí) thì nếu muốn biết vị trí này trong KH 
+đã có tin chưa thì phải xác định cùng lúc 2 trường là mã KH với mã vị trí
+=> thì bây giờ dễ hơn: 1 vị trí trong 1 KH có 1 mã riêng - là 1 đối tương riêng thì mình có thể có trạng thái
+cho nó là đã có tin tuyển dụng chưa
+
+
+4. Ứng viên đăng ký, đăng nhập 
+
+5. Ứng viên vào DS tin tuyển dụng
+
+6. Ứng viên ứng tuyển qua đơn, được tự động fill 
+
+7. Vấn đề lớn: HR xem DS hồ sơ ứng viên và CV
+=> vấn đề: thêm module quản lý CV không ?
+=> xử lý: không thêm, thêm cột vị trí cho đối tượng hồ sơ ứng viên => Ưu tiên 1: bàn với Quân
+
+8. HR duyệt CV và liên hệ với ứng viên qua zalo để đặt lịch pvan
+
+9. Ứng viên xem được trạng thái CV
+=> vấn đề: demo được sự thay đổi của các trạng thái cv: đã xem => đã duyệt (đã có chưa)
+
+10. Ứng viên xóa / đổi được CV khi trạng thái CV vẫn ở "Đang xử lý" - NTD chưa xem CV
+=> vấn đề: thêm rule hủy nộp và đổi CV (trạng thái) cho bạn code
+
+11. Khi đến ngày kết thúc của kế hoạch - tin tuyển dụng tự động được xóa
+
+
+B. Quy trình thêm TTS (quản lý TTS của HR)
+
+1. HR thêm tài khoản cho TTS - assign mentor
+2. TTS nhập thông tin cần thiết
+
+C. Quy trình đào tạo và đánh giá TTS (của mentor)
+
+1. Mentor giao việc cho TTS => trạng thái công việc: new
+- Giao việc trực tiếp / giao nhiều việc 1 lúc cho nhiều tts
+- Giao nhiều việc cho 1 tts 
+
+2. TTS xem được DS công việc
+
+3. TTS cập nhật được công việc (trạng thái, nhập kết quả)
+- Trạng thái: do TTS quy định
+- Kết quả: cho nhập link
+
+4. TTS báo cáo hàng ngày
+- chỉ đơn giản là ghi lại tiến độ cho tts và mentor dễ theo dõi thôi
+
+5. Mentor chấm điểm công việc và cho nhận xét
+
+D. Báo cáo đánh giá chất lượng dựa trên đánh giá của mentor
+
+1. Chất lượng theo trường >> vị trí
+- Lấy từ các bảng:
+  + tts: trường, vị trí
+  + điểm TB = tổng điểm của tất cả công việc được giao (đã có điểm) / số lượng cviec được giao đã có điểm
+  + xu hướng dịch chuyển chất lượng sinh viên của các trường theo thời gian 
+
+2. Chất lượng theo vị trí >> trường
+- Lấy từ các bảng:
+  + tts: trường, vị trí
+  + điểm TB = tổng điểm của tất cả công việc được giao (đã có điểm) / số lượng cviec được giao đã có điểm
+  + 
