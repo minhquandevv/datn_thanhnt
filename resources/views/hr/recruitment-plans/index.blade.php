@@ -136,7 +136,7 @@
                                 <td>
                                     <div class="d-flex flex-wrap gap-1">
                                         @foreach($plan->universities as $university)
-                                            <span class="badge bg-light text-dark">{{ $university->name }}</span>
+                                            <span class="badge bg-light text-dark">{{ $university->short_name }}</span>
                                         @endforeach
                                     </div>
                                 </td>
