@@ -628,19 +628,22 @@ document.addEventListener('DOMContentLoaded', function() {
     const expirationDateError = document.getElementById('expirationDateError');
 
     const recruitmentPlans = @json($recruitmentPlans);
+    const usedPositions = @json($jobOffers->pluck('position_id')->toArray());
 
     recruitmentPlanSelect.addEventListener('change', function() {
         const selectedPlan = recruitmentPlans.find(plan => plan.plan_id == this.value);
         if (selectedPlan) {
             positionSelect.innerHTML = '<option value="">Chọn vị trí</option>';
             selectedPlan.positions.forEach(position => {
-                const option = document.createElement('option');
-                option.value = position.position_id;
-                option.textContent = position.name;
-                option.dataset.quantity = position.quantity;
-                option.dataset.requirements = position.requirements;
-                option.dataset.description = position.description;
-                positionSelect.appendChild(option);
+                if (!usedPositions.includes(position.position_id)) {
+                    const option = document.createElement('option');
+                    option.value = position.position_id;
+                    option.textContent = position.name;
+                    option.dataset.quantity = position.quantity;
+                    option.dataset.requirements = position.requirements;
+                    option.dataset.description = position.description;
+                    positionSelect.appendChild(option);
+                }
             });
 
             const endDate = new Date(selectedPlan.end_date);
@@ -761,6 +764,7 @@ function removeAddedBenefit(benefitTitle, element) {
 
 document.addEventListener('DOMContentLoaded', function () {
     const recruitmentPlans = @json($recruitmentPlans);
+    const usedPositions = @json($jobOffers->pluck('position_id')->toArray());
 
     // Gọi khi mở từng modal
     document.querySelectorAll('.modal').forEach(modal => {
@@ -781,20 +785,22 @@ document.addEventListener('DOMContentLoaded', function () {
                 const plan = recruitmentPlans.find(p => p.plan_id == planId);
                 if (plan) {
                     plan.positions.forEach(pos => {
-                        const isSelected = pos.position_id == selectedPositionId ? 'selected' : '';
-                        const option = document.createElement('option');
-                        option.value = pos.position_id;
-                        option.textContent = pos.name;
-                        option.dataset.quantity = pos.quantity;
-                        option.dataset.requirements = pos.requirements;
-                        option.dataset.description = pos.description;
-                        if (isSelected) {
-                            option.selected = true;
-                            jobQuantityInput.value = pos.quantity;
-                            jobRequirementInput.value = pos.requirements;
-                            jobDescriptionInput.value = pos.description || '';
+                        if (!usedPositions.includes(pos.position_id) || pos.position_id == selectedPositionId) {
+                            const isSelected = pos.position_id == selectedPositionId ? 'selected' : '';
+                            const option = document.createElement('option');
+                            option.value = pos.position_id;
+                            option.textContent = pos.name;
+                            option.dataset.quantity = pos.quantity;
+                            option.dataset.requirements = pos.requirements;
+                            option.dataset.description = pos.description;
+                            if (isSelected) {
+                                option.selected = true;
+                                jobQuantityInput.value = pos.quantity;
+                                jobRequirementInput.value = pos.requirements;
+                                jobDescriptionInput.value = pos.description || '';
+                            }
+                            positionSelect.appendChild(option);
                         }
-                        positionSelect.appendChild(option);
                     });
 
                     expirationDateInput.max = plan.end_date;
