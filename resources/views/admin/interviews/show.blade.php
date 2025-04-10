@@ -83,16 +83,6 @@
                         <div class="email">{{ $interview->candidate->email }}</div>
                     </div>
                 </div>
-                <div class="participant-item mt-3">
-                    <div class="avatar bg-info">
-                        {{ substr($interview->interviewer->name, 0, 1) }}
-                    </div>
-                    <div class="participant-info">
-                        <div class="role">Người Phỏng Vấn</div>
-                        <div class="name">{{ $interview->interviewer->name }}</div>
-                        <div class="email">{{ $interview->interviewer->email }}</div>
-                    </div>
-                </div>
             </div>
         </div>
 
@@ -165,7 +155,7 @@
                     <h6 class="mb-1">Chi Tiết Phỏng Vấn:</h6>
                     <p class="mb-1"><strong>Tiêu đề:</strong> {{ $interview->title }}</p>
                     <p class="mb-1"><strong>Ứng viên:</strong> {{ $interview->candidate->fullname }}</p>
-                    <p class="mb-1"><strong>Người phỏng vấn:</strong> {{ $interview->interviewer->name }}</p>
+                    <p class="mb-1"><strong>Người phỏng vấn:</strong> {{ $interview->interviewer ? $interview->interviewer->name : 'Chưa có người phỏng vấn' }}</p>
                     <p class="mb-0"><strong>Ngày:</strong> {{ \Carbon\Carbon::parse($interview->start_time)->format('Y-m-d H:i') }}</p>
                 </div>
             </div>

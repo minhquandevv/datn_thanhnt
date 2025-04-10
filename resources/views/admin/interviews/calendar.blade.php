@@ -177,14 +177,14 @@
             <form id="interviewForm" action="{{ route('admin.interviews.store') }}" method="POST">
                 @csrf
                 <input type="hidden" name="_method" id="formMethod" value="POST">
-                <input type="hidden" id="application_id" name="application_id">
+                <input type="hidden" id="job_application_id" name="job_application_id">
                 
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="application_id">Đơn Ứng Tuyển</label>
-                                <select class="form-control @error('application_id') is-invalid @enderror" id="application_id" name="application_id" required>
+                                <select class="form-control @error('job_application_id') is-invalid @enderror" id="application_id" name="job_application_id" required>
                                     <option value="">Chọn Đơn Ứng Tuyển</option>
                                     @foreach($jobApplications as $application)
                                         <option value="{{ $application->id }}">
@@ -192,7 +192,7 @@
                                         </option>
                                     @endforeach
                                 </select>
-                                @error('application_id')
+                                @error('job_application_id')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
@@ -548,32 +548,12 @@ document.addEventListener('DOMContentLoaded', function() {
         eventClick: function(info) {
             window.location.href = info.event.url;
         },
-        // Thêm các tính năng kéo-thả và resize
         eventDrop: function(info) {
-            console.log('Event dropped:', info.event.start, info.event.end);
-            // Convert to Vietnam timezone (UTC+7)
-            const startTime = new Date(info.event.start);
-            const endTime = new Date(info.event.end);
-            
-            // Add 7 hours to convert from UTC to Vietnam time
-            startTime.setHours(startTime.getHours() + 7);
-            endTime.setHours(endTime.getHours() + 7);
-            
-            updateEventTime(info.event, info, startTime, endTime);
+            updateEventTime(info.event, info);
         },
         eventResize: function(info) {
-            console.log('Event resized:', info.event.start, info.event.end);
-            // Convert to Vietnam timezone (UTC+7)
-            const startTime = new Date(info.event.start);
-            const endTime = new Date(info.event.end);
-            
-            // Add 7 hours to convert from UTC to Vietnam time
-            startTime.setHours(startTime.getHours() + 7);
-            endTime.setHours(endTime.getHours() + 7);
-            
-            updateEventTime(info.event, info, startTime, endTime);
+            updateEventTime(info.event, info);
         },
-        // Chỉ cho phép kéo-thả các sự kiện có trạng thái "scheduled"
         eventAllow: function(dropInfo, draggedEvent) {
             return draggedEvent.extendedProps.status === 'scheduled';
         }
@@ -581,14 +561,14 @@ document.addEventListener('DOMContentLoaded', function() {
     calendar.render();
 
     // Hàm cập nhật thời gian qua AJAX
-    function updateEventTime(event, info, startTime, endTime) {
+    function updateEventTime(event, info) {
         $.ajax({
             url: `/admin/interviews/${event.id}`,
             method: 'PUT',
             data: {
                 _token: '{{ csrf_token() }}',
-                start_time: startTime.toISOString(),
-                end_time: endTime.toISOString()
+                start_time: event.start.toISOString(),
+                end_time: event.end.toISOString()
             },
             success: function(response) {
                 if (response.success) {
@@ -627,13 +607,17 @@ document.addEventListener('DOMContentLoaded', function() {
             method: method,
             data: form.serialize(),
             success: function(response) {
-                $('#interviewModal').modal('hide');
-                calendar.refetchEvents();
-                toastr.success('Lưu phỏng vấn thành công');
-                
-                // Nếu đang ở tab ứng viên, làm mới trang để cập nhật danh sách
-                if ($('#candidatesView').hasClass('active')) {
-                    location.reload();
+                if (response.success) {
+                    $('#interviewModal').modal('hide');
+                    calendar.refetchEvents();
+                    toastr.success(response.message);
+                    
+                    // Nếu đang ở tab ứng viên, làm mới trang để cập nhật danh sách
+                    if ($('#candidatesView').hasClass('active')) {
+                        location.reload();
+                    }
+                } else {
+                    toastr.error(response.message);
                 }
             },
             error: function(xhr) {

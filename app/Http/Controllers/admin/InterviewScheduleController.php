@@ -122,29 +122,57 @@ class InterviewScheduleController extends Controller
      */
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'candidate_id' => 'required|exists:candidates,id',
-            'interviewer_id' => 'required|exists:users,id',
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'start_time' => 'required|date',
-            'end_time' => 'required|date|after:start_time',
-            'location' => 'nullable|string|max:255',
-            'interview_type' => 'required|in:online,in-person',
-            'notes' => 'nullable|string',
-            'meeting_link' => 'nullable|url|max:255',
-        ]);
+        try {
+            $validator = Validator::make($request->all(), [
+                'job_application_id' => 'required|exists:job_applications,id',
+                'title' => 'required|string|max:255',
+                'description' => 'nullable|string',
+                'start_time' => 'required|date',
+                'end_time' => 'required|date|after:start_time',
+                'location' => 'nullable|string|max:255',
+                'interview_type' => 'required|in:online,in-person',
+                'notes' => 'nullable|string',
+                'meeting_link' => 'nullable|url|max:255',
+            ]);
 
-        if ($validator->fails()) {
-            return redirect()->back()
-                ->withErrors($validator)
-                ->withInput();
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Validation error',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            // Get the job application
+            $jobApplication = JobApplication::findOrFail($request->job_application_id);
+            
+            // Create interview schedule
+            $interview = InterviewSchedule::create([
+                'job_application_id' => $request->job_application_id,
+                'candidate_id' => $jobApplication->candidate_id,
+                'title' => $request->title,
+                'description' => $request->description,
+                'start_time' => $request->start_time,
+                'end_time' => $request->end_time,
+                'location' => $request->location,
+                'interview_type' => $request->interview_type,
+                'status' => 'scheduled',
+                'notes' => $request->notes,
+                'meeting_link' => $request->meeting_link,
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Lịch phỏng vấn đã được tạo thành công',
+                'interview' => $interview
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra: ' . $e->getMessage()
+            ], 500);
         }
-
-        $interview = InterviewSchedule::create($request->all());
-
-        return redirect()->route('admin.interviews.calendar')
-            ->with('success', 'Interview scheduled successfully');
     }
 
     /**
@@ -152,7 +180,7 @@ class InterviewScheduleController extends Controller
      */
     public function show(InterviewSchedule $interview)
     {
-        $interview->load(['candidate', 'interviewer']);
+        $interview->load(['candidate', 'jobApplication']);
         return view('admin.interviews.show', compact('interview'));
     }
 
@@ -195,7 +223,6 @@ class InterviewScheduleController extends Controller
 
         $validator = Validator::make($request->all(), [
             'candidate_id' => 'required|exists:candidates,id',
-            'interviewer_id' => 'required|exists:users,id',
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'start_time' => 'required|date',
@@ -258,7 +285,7 @@ class InterviewScheduleController extends Controller
 
     public function events()
     {
-        $interviews = InterviewSchedule::with(['candidate', 'interviewer'])
+        $interviews = InterviewSchedule::with(['candidate', 'jobApplication'])
             ->get()
             ->map(function ($interview) {
                 $color = match($interview->status) {
@@ -287,10 +314,9 @@ class InterviewScheduleController extends Controller
                     'url' => route('admin.interviews.show', $interview->id),
                     'backgroundColor' => $color,
                     'borderColor' => $color,
-                    'allDay' => false, // Explicitly set allDay to false
+                    'allDay' => false,
                     'extendedProps' => [
                         'candidate' => $interview->candidate->fullname ?? 'N/A',
-                        'interviewer' => $interview->interviewer->name ?? 'N/A',
                         'type' => $interview->interview_type,
                         'location' => $interview->location,
                         'status' => $interview->status
