@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('candidate_id')->constrained('candidates')->onDelete('cascade');
             $table->foreignId('interviewer_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('job_application_id')->constrained('job_applications')->onDelete('cascade');
             $table->string('title');
             $table->text('description')->nullable();
             $table->dateTime('start_time');

@@ -31,4 +31,9 @@ class JobApplication extends Model
     {
         return $this->belongsTo(JobOffer::class);
     }
+
+    public function interviews()
+    {
+        return $this->hasMany(InterviewSchedule::class, 'job_application_id');
+    }
 }

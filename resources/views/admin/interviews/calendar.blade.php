@@ -83,66 +83,79 @@
                         </div>
                     </div>
 
-                    <!-- Tabs -->
-                    <ul class="nav nav-tabs mb-3" id="interviewTabs" role="tablist">
-                        <li class="nav-item">
-                            <a class="nav-link active" id="calendar-tab" data-bs-toggle="tab" href="#calendarTab" role="tab">
+                    <!-- View Switcher -->
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-outline-danger active" id="calendarViewBtn">
                                 <i class="fas fa-calendar-alt me-1"></i> Lịch Phỏng Vấn
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" id="candidates-tab" data-bs-toggle="tab" href="#candidatesTab" role="tab">
-                                <i class="fas fa-users me-1"></i> Danh Sách Ứng Viên
-                            </a>
-                        </li>
-                    </ul>
-
-                    <div class="tab-content">
-                        <div class="tab-pane fade show active" id="calendarTab" role="tabpanel">
-                            <div id="calendar" class="fc-theme-standard"></div>
+                            </button>
+                            <button type="button" class="btn btn-outline-danger" id="candidatesViewBtn">
+                                <i class="fas fa-users me-1"></i> Danh Sách Đơn Ứng Tuyển
+                            </button>
                         </div>
+                        <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#interviewModal">
+                            <i class="fas fa-plus"></i> Lên Lịch Phỏng Vấn
+                        </button>
+                    </div>
 
-                        <div class="tab-pane fade" id="candidatesTab" role="tabpanel">
-                            <div class="row g-0">
-                                @forelse ($candidates as $candidate)
-                                    <div class="col-md-6 mb-3">
-                                        <div class="card shadow-sm">
-                                            <div class="card-body">
-                                                <div class="d-flex justify-content-between align-items-center">
-                                                    <div>
-                                                        <h6 class="mb-1">{{ $candidate->fullname }}</h6>
-                                                        <small class="text-muted">{{ $candidate->email }}</small>
-                                                        <div class="mt-1">
-                                                            <span class="badge bg-info">
-                                                                {{ $candidate->jobApplications->count() }} đơn ứng tuyển
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                    <div>
-                                                        @if($candidate->interviews->isEmpty())
-                                                            <button class="btn btn-danger btn-sm"
-                                                                    onclick="openInterviewModal({{ $candidate->id }})">
-                                                                <i class="fas fa-plus"></i> Lên lịch
-                                                            </button>
-                                                        @else
-                                                            <a href="{{ route('admin.interviews.show', $candidate->interviews->first()->id) }}"
-                                                               class="btn btn-secondary btn-sm">
-                                                                <i class="fas fa-eye"></i> Xem lịch
-                                                            </a>
-                                                        @endif
-                                                    </div>
+                    <!-- Calendar View -->
+                    <div id="calendarView" class="view-section">
+                        <div id="calendar" class="fc-theme-standard"></div>
+                    </div>
+
+                    <!-- Candidates View -->
+                    <div id="candidatesView" class="view-section d-none">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>STT</th>
+                                        <th>Vị Trí Ứng Tuyển</th>
+                                        <th>Ứng Viên</th>
+                                        <th>Email</th>
+                                        <th>Trạng Thái</th>
+                                        <th>Thao Tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse ($jobApplications as $index => $application)
+                                        <tr>
+                                            <td>{{ $index + 1 }}</td>
+                                            <td>{{ $application->job->title }}</td>
+                                            <td>{{ $application->candidate->fullname }}</td>
+                                            <td>{{ $application->candidate->email }}</td>
+                                            <td>
+                                                @if($application->interviews->isEmpty())
+                                                    <span class="badge bg-warning">Chưa có lịch</span>
+                                                @else
+                                                    <span class="badge bg-success">Đã có lịch</span>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @if($application->interviews->isEmpty())
+                                                    <button class="btn btn-danger btn-sm"
+                                                            onclick="openInterviewModal({{ $application->id }})">
+                                                        <i class="fas fa-plus"></i> Lên lịch
+                                                    </button>
+                                                @else
+                                                    <a href="{{ route('admin.interviews.show', $application->interviews->first()->id) }}"
+                                                       class="btn btn-secondary btn-sm">
+                                                        <i class="fas fa-eye"></i> Xem lịch
+                                                    </a>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="6" class="text-center">
+                                                <div class="alert alert-info">
+                                                    <i class="fas fa-info-circle me-1"></i> Không có đơn ứng tuyển nào đang trong quá trình xử lý.
                                                 </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                @empty
-                                    <div class="col-12">
-                                        <div class="alert alert-info">
-                                            <i class="fas fa-info-circle me-1"></i> Không có ứng viên nào đang trong quá trình xử lý.
-                                        </div>
-                                    </div>
-                                @endforelse
-                            </div>
+                                            </td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -164,34 +177,22 @@
             <form id="interviewForm" action="{{ route('admin.interviews.store') }}" method="POST">
                 @csrf
                 <input type="hidden" name="_method" id="formMethod" value="POST">
-                <input type="hidden" id="interview_id" name="id">
+                <input type="hidden" id="application_id" name="application_id">
                 
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="candidate_id">Ứng Viên</label>
-                                <select class="form-control @error('candidate_id') is-invalid @enderror" id="candidate_id" name="candidate_id" required>
-                                    <option value="">Chọn Ứng Viên</option>
-                                    @foreach($candidates as $candidate)
-                                        <option value="{{ $candidate->id }}">{{ $candidate->fullname }} ({{ $candidate->email }})</option>
+                                <label for="application_id">Đơn Ứng Tuyển</label>
+                                <select class="form-control @error('application_id') is-invalid @enderror" id="application_id" name="application_id" required>
+                                    <option value="">Chọn Đơn Ứng Tuyển</option>
+                                    @foreach($jobApplications as $application)
+                                        <option value="{{ $application->id }}">
+                                            {{ $application->candidate->fullname }} - {{ $application->job->title }}
+                                        </option>
                                     @endforeach
                                 </select>
-                                @error('candidate_id')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="interviewer_id">Người Phỏng Vấn</label>
-                                <select class="form-control @error('interviewer_id') is-invalid @enderror" id="interviewer_id" name="interviewer_id" required>
-                                    <option value="">Chọn Người Phỏng Vấn</option>
-                                    @foreach($interviewers as $interviewer)
-                                        <option value="{{ $interviewer->id }}">{{ $interviewer->name }} ({{ $interviewer->email }})</option>
-                                    @endforeach
-                                </select>
-                                @error('interviewer_id')
+                                @error('application_id')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
@@ -401,6 +402,90 @@
         border-color: transparent;
         color: #dc3545;
     }
+
+    /* Table styles */
+    .table-responsive {
+        width: 100%;
+        margin-bottom: 0;
+        overflow-x: auto;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .table {
+        width: 100%;
+        margin-bottom: 0;
+        table-layout: fixed;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+    .table thead th {
+        white-space: nowrap;
+        vertical-align: middle;
+        background: linear-gradient(135deg, #343a40 0%, #212529 100%);
+        color: white;
+        padding: 15px 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
+        border: none;
+        position: sticky;
+        top: 0;
+        z-index: 1;
+    }
+    .table thead th:first-child {
+        border-top-left-radius: 8px;
+    }
+    .table thead th:last-child {
+        border-top-right-radius: 8px;
+    }
+    .table tbody td {
+        vertical-align: middle;
+        padding: 12px;
+        border-bottom: 1px solid #dee2e6;
+        font-size: 0.9rem;
+    }
+    .table tbody tr:hover {
+        background-color: rgba(220, 53, 69, 0.05);
+    }
+    .table tbody tr:last-child td {
+        border-bottom: none;
+    }
+    .table th:nth-child(1) { width: 5%; } /* STT */
+    .table th:nth-child(2) { width: 25%; } /* Vị Trí Ứng Tuyển */
+    .table th:nth-child(3) { width: 20%; } /* Ứng Viên */
+    .table th:nth-child(4) { width: 25%; } /* Email */
+    .table th:nth-child(5) { width: 15%; } /* Trạng Thái */
+    .table th:nth-child(6) { width: 10%; } /* Thao Tác */
+    .badge {
+        font-size: 0.85rem;
+        padding: 0.5em 0.8em;
+        font-weight: 500;
+        border-radius: 4px;
+    }
+
+    /* View switcher styles */
+    .btn-group .btn {
+        border-radius: 0;
+    }
+    .btn-group .btn:first-child {
+        border-top-left-radius: 4px;
+        border-bottom-left-radius: 4px;
+    }
+    .btn-group .btn:last-child {
+        border-top-right-radius: 4px;
+        border-bottom-right-radius: 4px;
+    }
+    .btn-outline-danger.active {
+        background-color: #dc3545;
+        color: white;
+    }
+    .view-section {
+        transition: all 0.3s ease;
+    }
+    #calendar {
+        min-height: 600px;
+    }
 </style>
 @endpush
 
@@ -520,10 +605,10 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Hàm mở modal đặt lịch với candidate_id đã chọn
-    window.openInterviewModal = function(candidateId) {
+    // Hàm mở modal đặt lịch với application_id đã chọn
+    window.openInterviewModal = function(applicationId) {
         $('#interviewModal').modal('show');
-        $('#candidate_id').val(candidateId);
+        $('#application_id').val(applicationId);
         $('#formMethod').val('POST');
         $('#interviewForm').attr('action', '{{ route("admin.interviews.store") }}');
         $('#interviewForm')[0].reset();
@@ -547,7 +632,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 toastr.success('Lưu phỏng vấn thành công');
                 
                 // Nếu đang ở tab ứng viên, làm mới trang để cập nhật danh sách
-                if ($('#candidates-tab').hasClass('active')) {
+                if ($('#candidatesView').hasClass('active')) {
                     location.reload();
                 }
             },
@@ -586,6 +671,22 @@ document.addEventListener('DOMContentLoaded', function() {
     // Handle window resize
     $(window).on('resize', function() {
         calendar.render();
+    });
+
+    // View switcher functionality
+    document.getElementById('calendarViewBtn').addEventListener('click', function() {
+        document.getElementById('calendarView').classList.remove('d-none');
+        document.getElementById('candidatesView').classList.add('d-none');
+        this.classList.add('active');
+        document.getElementById('candidatesViewBtn').classList.remove('active');
+        calendar.render(); // Re-render calendar when switching back
+    });
+
+    document.getElementById('candidatesViewBtn').addEventListener('click', function() {
+        document.getElementById('calendarView').classList.add('d-none');
+        document.getElementById('candidatesView').classList.remove('d-none');
+        this.classList.add('active');
+        document.getElementById('calendarViewBtn').classList.remove('active');
     });
 });
 </script>

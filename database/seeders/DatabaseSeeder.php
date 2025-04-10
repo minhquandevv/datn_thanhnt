@@ -21,28 +21,15 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->call([
-            DepartmentSeeder::class,
-        ]);
-
-        // Seed dữ liệu cho bảng job_categories
-        JobCategory::factory(5)->create();
-
-        // Seed dữ liệu cho bảng job_skills
-        JobSkill::factory(10)->create();
-
-        // Seed dữ liệu cho bảng job_benefits
-        JobBenefit::factory(5)->create();
-
-        // Seed dữ liệu cho bảng job_offers
-        JobOffer::factory(10)->create()->each(function ($jobOffer) {
-            // Gán random skills cho job_offer
-            $skills = \App\Models\JobSkill::inRandomOrder()->limit(rand(2, 5))->pluck('id');
-            $jobOffer->skills()->attach($skills);
-
-            // Gán random benefits cho job_offer
-            $benefits = \App\Models\JobBenefit::inRandomOrder()->limit(rand(1, 3))->pluck('id');
-            $jobOffer->benefits()->attach($benefits);
-        });
+        \App\Models\User::factory(10)->create();
+        // \App\Models\Worker::factory(10)->create();
+        // \App\Models\Application::factory(10)->create();
+        // \App\Models\Intern::factory(10)->create();
+        // \App\Models\Company::factory(10)->create();
+        // \App\Models\Department::factory(10)->create();
+        // \App\Models\JobCategory::factory(10)->create();
+        // \App\Models\JobSkill::factory(10)->create();
+        // \App\Models\JobBenefit::factory(10)->create();
+        // \App\Models\JobOffer::factory(10)->create();
     }
 }

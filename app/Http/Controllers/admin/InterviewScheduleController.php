@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\InterviewSchedule;
 use App\Models\Candidate;
 use App\Models\User;
+use App\Models\JobApplication;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
@@ -26,14 +27,9 @@ class InterviewScheduleController extends Controller
      */
     public function calendar()
     {
-        // Lấy ứng viên có đơn ứng tuyển đang xử lý
-        $candidates = Candidate::whereHas('jobApplications', function ($query) {
-            $query->where('status', 'approved');
-        })->with(['interviews', 'jobApplications'])->get();
-            
-        $interviewers = User::whereIn('role', ['admin', 'hr'])
-            ->select('id', 'name', 'email', 'role')
-            ->orderBy('name')
+        // Lấy danh sách đơn ứng tuyển đã được duyệt
+        $jobApplications = JobApplication::where('status', 'approved')
+            ->with(['jobOffer', 'candidate', 'interviews'])
             ->get();
             
         // Get interview statistics
@@ -41,7 +37,7 @@ class InterviewScheduleController extends Controller
         $completedCount = InterviewSchedule::where('status', 'completed')->count();
         $cancelledCount = InterviewSchedule::where('status', 'cancelled')->count();
             
-        return view('admin.interviews.calendar', compact('candidates', 'interviewers', 'scheduledCount', 'completedCount', 'cancelledCount'));
+        return view('admin.interviews.calendar', compact('jobApplications', 'scheduledCount', 'completedCount', 'cancelledCount'));
     }
 
     /**
