@@ -155,7 +155,7 @@
                                                     'pending_review' => [
                                                         'icon' => 'hourglass-split',
                                                         'color' => 'warning',
-                                                        'text' => 'Chờ xem xét'
+                                                        'text' => 'Chờ tiếp nhận'
                                                     ],
                                                     'interview_scheduled' => [
                                                         'icon' => 'calendar-check',

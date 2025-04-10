@@ -28,7 +28,7 @@ class InterviewScheduleController extends Controller
     public function calendar()
     {
         // Lấy danh sách đơn ứng tuyển đã được duyệt
-        $jobApplications = JobApplication::where('status', 'approved')
+        $jobApplications = JobApplication::where('status', 'processing')
             ->with(['jobOffer', 'candidate', 'interviews'])
             ->get();
             

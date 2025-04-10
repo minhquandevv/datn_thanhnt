@@ -121,7 +121,7 @@
                                     @forelse ($jobApplications as $index => $application)
                                         <tr>
                                             <td>{{ $index + 1 }}</td>
-                                            <td>{{ $application->job->title }}</td>
+                                            <td>{{ $application->jobOffer->job_name }}</td>
                                             <td>{{ $application->candidate->fullname }}</td>
                                             <td>{{ $application->candidate->email }}</td>
                                             <td>
@@ -188,7 +188,7 @@
                                     <option value="">Chọn Đơn Ứng Tuyển</option>
                                     @foreach($jobApplications as $application)
                                         <option value="{{ $application->id }}">
-                                            {{ $application->candidate->fullname }} - {{ $application->job->title }}
+                                            {{ $application->candidate->fullname }} - {{ $application->jobOffer->job_name }}
                                         </option>
                                     @endforeach
                                 </select>
