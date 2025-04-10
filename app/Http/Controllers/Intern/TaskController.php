@@ -13,6 +13,9 @@ class TaskController extends Controller
     public function index()
     {
         $tasks = Task::where('intern_id', auth()->id())
+                    ->with(['intern' => function($query) {
+                        $query->with('university');
+                    }])
                     ->orderBy('created_at', 'desc')
                     ->get();
 
@@ -21,6 +24,7 @@ class TaskController extends Controller
 
     public function show(Task $task)
     {
+        $task->load(['assignedBy', 'reports']);
         // Kiểm tra xem task có thuộc về intern đang đăng nhập không
         if ($task->intern_id !== auth()->id()) {
             abort(403, 'Unauthorized action.');

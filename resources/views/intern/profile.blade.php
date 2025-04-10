@@ -119,25 +119,33 @@
                     <div class="row g-4">
                         <div class="col-md-6">
                             <div class="p-3 rounded-3 bg-light">
-                                <label class="form-label text-muted small mb-1">Trường đại học</label>
-                                <p class="mb-0">{{ $intern->university->name ?? 'Chưa cập nhật' }}</p>
+                                <label class="form-label">Trường đại học</label>
+                                <select disabled class="form-select" name="university_id" >
+                                    @foreach($universities as $university)
+                                        <option value="{{ $university->university_id }}" {{ $intern->university_id == $university->university_id ? 'selected' : '' }}>
+                                            {{ $university->name }}
+                                        </option>
+                                        
+                                    @endforeach
+                                </select>
+                                
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="p-3 rounded-3 bg-light">
-                                <label class="form-label text-muted small mb-1">Chuyên ngành</label>
+                                <label class="form-label">Chuyên ngành</label>
                                 <p class="mb-0">{{ $intern->major ?? 'Chưa cập nhật' }}</p>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="p-3 rounded-3 bg-light">
-                                <label class="form-label text-muted small mb-1">Bằng cấp</label>
+                                <label class="form-label">Bằng cấp</label>
                                 <p class="mb-0">{{ $intern->degree ?? 'Chưa cập nhật' }}</p>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="p-3 rounded-3 bg-light">
-                                <label class="form-label text-muted small mb-1">CCCD/CMND</label>
+                                <label class="form-label">CCCD/CMND</label>
                                 <p class="mb-0">{{ $intern->citizen_id ?? 'Chưa cập nhật' }}</p>
                             </div>
                         </div>
@@ -276,8 +284,15 @@
                         <!-- Educational Information -->
                         <div class="col-md-6">
                             <div class="p-3 rounded-3 bg-light">
-                                <label class="form-label">Trường đại học</label>
-                                <input type="text" class="form-control" name="university" value="{{ $intern->university->name ? $intern->university->name : 'Chưa có thông tin' }}">
+                                <label class="form-label">Trường đại học <span class="text-danger">*</span></label>
+                                <select class="form-select" name="university_id" required>
+                                    <option value="">Chọn trường đại học</option>
+                                    @foreach($universities as $university)
+                                        <option value="{{ $university->university_id }}" {{ $intern->university_id == $university->university_id ? 'selected' : '' }}>
+                                            {{ $university->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
                             </div>
                         </div>
                         <div class="col-md-6">

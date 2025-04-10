@@ -13,8 +13,9 @@ class ProfileController extends Controller
 {
     public function show()
     {
-        $intern = Intern::where('intern_id', session('intern_id'))->first();
-        return view('intern.profile', compact('intern'));
+        $intern = Intern::with(['university', 'department'])->where('intern_id', session('intern_id'))->first();
+        $universities = \App\Models\University::all();
+        return view('intern.profile', compact('intern', 'universities'));
     }
 
     public function update(Request $request)
@@ -29,7 +30,7 @@ class ProfileController extends Controller
             'birthdate' => 'required|date',
             'gender' => 'required|in:Nam,Nữ,Khác',
             'address' => 'required|string|max:255',
-            'university' => 'required|string|max:255',
+            'university_id' => 'required|exists:universities,university_id',
             'major' => 'required|string|max:255',
             'degree' => 'required|string|max:255',
             'citizen_id' => 'required|string|max:20|unique:interns,citizen_id,' . $intern->intern_id . ',intern_id',
@@ -109,7 +110,7 @@ class ProfileController extends Controller
             $intern->birthdate = $request->birthdate;
             $intern->gender = $request->gender;
             $intern->address = $request->address;
-            $intern->university = $request->university;
+            $intern->university_id = $request->university_id;
             $intern->major = $request->major;
             $intern->degree = $request->degree;
             $intern->citizen_id = $request->citizen_id;

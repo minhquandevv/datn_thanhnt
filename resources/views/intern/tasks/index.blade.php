@@ -52,7 +52,7 @@
                                 </span>
                             </td>
                             <td>{{ date('d/m/Y', strtotime($task->assigned_date)) }}</td>
-                            <td>{{ $task->mentor->mentor_name }}</td>
+                            <td>{{ $task->intern->university->name ?? 'Chưa có thông tin' }}</td>
                             <td>
                                 <a href="{{ route('intern.tasks.show', $task->task_id) }}" class="btn btn-sm btn-info">
                                     <i class="bi bi-eye"></i>

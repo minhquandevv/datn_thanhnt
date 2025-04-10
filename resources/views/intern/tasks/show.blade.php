@@ -111,8 +111,8 @@
                 </div>
                 <div class="card-body">
                     <div class="text-center mb-3">
-                        @if($task->mentor->avatar)
-                            <img src="{{ asset('uploads/avatars/' . $task->mentor->avatar) }}" 
+                        @if($task->assignedBy->avatar)
+                            <img src="{{ asset('uploads/avatars/' . $task->assignedBy->avatar) }}" 
                                  alt="Mentor Avatar" 
                                  class="rounded-circle mb-3"
                                  style="width: 100px; height: 100px; object-fit: cover;">
@@ -122,8 +122,8 @@
                                 <i class="bi bi-person-fill text-white" style="font-size: 3rem;"></i>
                             </div>
                         @endif
-                        <h5 class="mb-1">{{ $task->mentor->mentor_name }}</h5>
-                        <p class="text-muted mb-0">{{ $task->mentor->position }}</p>
+                        <h5 class="mb-1">{{ $task->assignedBy->mentor_name }}</h5>
+                        <p class="text-muted mb-0">{{ $task->assignedBy->position }}</p>
                     </div>
                 </div>
             </div>

@@ -124,19 +124,10 @@ return new class extends Migration
             $table->foreign('candidate_id')->references('id')->on('candidates')->onDelete('cascade');
         });
 
-        // Currency
-        Schema::create('currency', function (Blueprint $table) {
-            $table->id();
-            $table->string('currency_code')->unique();
-            $table->decimal('exchange', 10, 2)->nullable();
-            $table->string('currency_name')->nullable();
-            $table->timestamps();
-        });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('currency');
         Schema::dropIfExists('experience');
         Schema::dropIfExists('education');
         Schema::dropIfExists('certificates');
