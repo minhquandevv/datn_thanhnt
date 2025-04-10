@@ -217,11 +217,14 @@ class InternController extends Controller
                 'password' => 'nullable|string|min:8',
             ]);
 
-            $intern->fill($validated);
-
-            if ($request->filled('password')) {
-                $intern->password = Hash::make($validated['password']);
+            // Loại bỏ password khỏi validated data nếu không được cung cấp
+            if (!$request->filled('password')) {
+                unset($validated['password']);
+            } else {
+                $validated['password'] = Hash::make($validated['password']);
             }
+
+            $intern->fill($validated);
 
             if ($request->hasFile('degree_image')) {
                 // Delete old image
