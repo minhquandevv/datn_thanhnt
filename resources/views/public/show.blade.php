@@ -347,28 +347,6 @@
                 {{ \Carbon\Carbon::parse($jobOffer->expiration_date)->format('d/m/Y') }}
             </p>
 
-            <div class="tab-content p-3 border rounded bg-white shadow">
-                <div class="tab-pane fade show active" id="detail" role="tabpanel">
-                    <p class="text-muted">{{ $jobOffer->job_detail }}</p>
-                </div>
-                <div class="tab-pane fade" id="department" role="tabpanel">
-                    <div class="job-info-card">
-                        @if ($jobOffer->department)
-                            <h5 class="text-danger fw-bold"><i class="bi bi-building"></i>
-                                {{ $jobOffer->department->name }}</h5>
-                            <p class="mb-1"><i class="bi bi-people"></i> Số nhân viên:
-                                {{ $jobOffer->department->employee_count ?? 'Chưa cập nhật' }}</p>
-                            <p class="mb-1"><i class="bi bi-info-circle"></i>
-                                {{ $jobOffer->department->description ?? 'Chưa có mô tả' }}</p>
-                        @else
-                            <div class="text-center text-muted">
-                                <i class="bi bi-building me-2"></i>Chưa phân công phòng ban
-                            </div>
-                        @endif
-                    </div>
-                </div>
-            </div>
-
             <h4 class="mt-4 text-danger fw-bold">MÔ TẢ CÔNG VIỆC</h4>
             <ul class="list-group list-group-flush">
                 @foreach (explode("\n", $jobOffer->job_description) as $description)

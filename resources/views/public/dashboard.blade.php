@@ -50,9 +50,6 @@
                                     <div class="d-flex justify-content-between align-items-start mb-3">
                                         <div class="me-4">
                                             <h5 class="card-title mb-1 text-dark">{{ $job->job_name }}</h5>
-                                            <p class="text-muted mb-0">
-                                                <i class="bi bi-building text-primary me-1"></i>{{ $job->department ? $job->department->name : 'Chưa phân công' }}
-                                            </p>
                                         </div>
                                         @if($job->job_quantity > 0 && \Carbon\Carbon::parse($job->expiration_date)->isFuture())
                                             <span class="badge bg-danger flex-shrink-0">Mới</span>
