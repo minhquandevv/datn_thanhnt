@@ -227,16 +227,7 @@
                             <i class="bi bi-table me-2"></i>
                             Chi tiết đánh giá
                         </h5>
-                        <div class="d-flex gap-2">
-                            <button class="btn btn-outline-danger btn-sm">
-                                <i class="bi bi-file-earmark-excel me-1"></i>
-                                Xuất Excel
-                            </button>
-                            <button class="btn btn-outline-danger btn-sm">
-                                <i class="bi bi-file-earmark-pdf me-1"></i>
-                                Xuất PDF
-                            </button>
-                        </div>
+                    
                     </div>
                 </div>
                 <div class="card-body p-0">
