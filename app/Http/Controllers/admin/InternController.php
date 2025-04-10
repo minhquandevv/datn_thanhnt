@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\University;
 use App\Models\Department;
 use App\Models\Intern;
-use App\Models\Mentor;
 use App\Models\JobApplication;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -19,6 +18,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use App\Models\InternAccount;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use Illuminate\Support\Facades\DB;
+use App\Models\Mentors;
 
 class InternController extends Controller
 {
@@ -191,7 +191,7 @@ class InternController extends Controller
     {
         $universities = University::all();
         $departments = Department::all();
-        $mentors = Mentor::all();
+        $mentors = Mentors::all();
         return view('admin.interns.edit', compact('intern', 'universities', 'departments', 'mentors'));
     }
 
