@@ -72,13 +72,13 @@
                             </div>
                         </div>
 
-                        <!-- Intern List -->
+                        <!-- Tasks Section -->
                         <div class="col-md-8">
                             <div class="card border-0 shadow-sm h-100">
                                 <div class="card-header bg-danger bg-opacity-10 border-0 py-3">
                                     <h5 class="card-title mb-0 d-flex align-items-center">
-                                        <i class="bi bi-people text-danger me-2"></i>
-                                        Danh sách Thực tập sinh
+                                        <i class="bi bi-list-task text-danger me-2"></i>
+                                        Công việc đã giao
                                     </h5>
                                 </div>
                                 <div class="card-body">
@@ -86,30 +86,27 @@
                                         <table class="table table-hover">
                                             <thead>
                                                 <tr>
-                                                    <th>Tên</th>
-                                                    <th>Email</th>
-                                                    <th>Phòng ban</th>
-                                                    <th>Chức vụ</th>
-                                                    <th>Thao tác</th>
+                                                    <th>Tên công việc</th>
+                                                    <th>Thực tập sinh</th>
+                                                    <th>Trạng thái</th>
+                                                    <th>Đánh giá</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                @forelse($mentor->interns as $intern)
+                                                @forelse($mentor->assignedTasks as $task)
                                                     <tr>
-                                                        <td>{{ $intern->fullname }}</td>
-                                                        <td>{{ $intern->email }}</td>
-                                                        <td>{{ $intern->department->name }}</td>
-                                                        <td>{{ $intern->position }}</td>
+                                                        <td>{{ $task->task_name }}</td>
+                                                        <td>{{ $task->intern->fullname }}</td>
                                                         <td>
-                                                            <a href="{{ route('admin.interns.show', $intern->intern_id) }}" 
-                                                               class="btn btn-sm btn-outline-danger">
-                                                                <i class="bi bi-eye"></i>
-                                                            </a>
+                                                            <span class="badge bg-{{ $task->status == 'Hoàn thành' ? 'success' : 'warning' }}">
+                                                                {{ $task->status }}
+                                                            </span>
                                                         </td>
+                                                        <td>{{ $task->evaluation ?? 'Chưa đánh giá' }}</td>
                                                     </tr>
                                                 @empty
                                                     <tr>
-                                                        <td colspan="5" class="text-center">Chưa có thực tập sinh nào</td>
+                                                        <td colspan="4" class="text-center">Chưa có công việc nào được giao</td>
                                                     </tr>
                                                 @endforelse
                                             </tbody>

@@ -192,21 +192,13 @@
                         @endif
                         <div>
                             <h6 class="mb-1">{{ $mentor->mentor_name }}</h6>
-                            <p class="text-muted small mb-0">{{ $mentor->position }} - {{ $mentor->department }}</p>
+                            <p class="text-muted small mb-0">{{ $mentor->position }} - {{ $mentor->department->name }}</p>
                         </div>
                     </div>
                     <div class="mb-3">
-                        <div class="d-flex align-items-center mb-2">
-                            <i class="bi bi-envelope me-2 text-primary"></i>
-                            <span>{{ $mentor->email }}</span>
-                        </div>
-                        <div class="d-flex align-items-center mb-2">
-                            <i class="bi bi-telephone me-2 text-primary"></i>
-                            <span>{{ $mentor->phone }}</span>
-                        </div>
                         <div class="d-flex align-items-center">
                             <i class="bi bi-building me-2 text-primary"></i>
-                            <span>{{ $mentor->department }}</span>
+                            <span>{{ $mentor->department->name }}</span>
                         </div>
                     </div>
                     <div class="d-grid">
@@ -226,34 +218,6 @@
             </div>
 
             <!-- Recent Certificates Section -->
-            <div class="card border-0 shadow-sm mt-4">
-                <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">Chứng chỉ gần đây</h5>
-                    <a href="#" class="btn btn-sm btn-primary">
-                        <i class="bi bi-list-ul me-2"></i>Xem tất cả
-                    </a>
-                </div>
-                <div class="card-body">
-                    @forelse($certificates as $cert)
-                    <div class="mb-3 pb-3 border-bottom">
-                        <div class="d-flex align-items-center mb-2">
-                            <i class="bi bi-award text-primary me-2"></i>
-                            <h6 class="mb-0">{{ $cert->name }}</h6>
-                        </div>
-                        <p class="text-muted small mb-0">
-                            <i class="bi bi-calendar me-1"></i>Cấp ngày: {{ date('d/m/Y', strtotime($cert->issue_date)) }}
-                        </p>
-                    </div>
-                    @empty
-                    <div class="text-center py-4">
-                        <div class="text-muted">
-                            <i class="bi bi-award fs-4 d-block mb-2"></i>
-                            Chưa có chứng chỉ nào
-                        </div>
-                    </div>
-                    @endforelse
-                </div>
-            </div>
         </div>
     </div>
 </div>

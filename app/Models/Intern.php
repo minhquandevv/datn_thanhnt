@@ -23,7 +23,8 @@ class Intern extends Authenticatable
     protected $fillable = [
         'fullname', 'birthdate', 'gender', 'email', 'phone', 'university_id',
         'major', 'address', 'citizen_id', 'citizen_id_image', 'degree',
-        'degree_image', 'username', 'password', 'department_id', 'position', 'mentor_id'
+        'degree_image', 'username', 'password', 'department_id', 'position', 'mentor_id',
+        'start_date', 'end_date', 'status'
     ];
 
     protected $hidden = [

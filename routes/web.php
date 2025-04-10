@@ -23,6 +23,7 @@ use App\Http\Controllers\admin\AdminDashboardController;
 use App\Http\Controllers\hr\JobApplicationController as HRJobApplicationController;
 use App\Http\Controllers\ApplicationManagementController;
 use App\Http\Controllers\admin\InterviewScheduleController;
+use App\Http\Controllers\admin\EvaluationController;
 
 // Authentication Routes
 Route::middleware('guest')->group(function () {
@@ -167,6 +168,9 @@ Route::middleware(['auth', 'check.role:admin'])->prefix('admin')->name('admin.')
     Route::post('/job-applications/update-status', [ApplicationManagementController::class, 'updateStatus'])->name('job-applications.update-status');
     Route::get('/job-applications/{id}/download-cv', [ApplicationManagementController::class, 'downloadCV'])->name('job-applications.download-cv');
     Route::get('/job-applications/{id}/details', [ApplicationManagementController::class, 'details'])->name('job-applications.details');
+
+    // Evaluation routes
+    Route::get('/evaluations', [EvaluationController::class, 'index'])->name('evaluations.index');
 });
 
 // Mentor login routes

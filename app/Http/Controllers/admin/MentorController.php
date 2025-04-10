@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Mentor;
+use App\Models\Mentors;
 use App\Models\Department;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -12,7 +12,7 @@ class MentorController extends Controller
 {
     public function index()
     {
-        $mentors = Mentor::with('department')->get();
+        $mentors = Mentors::with('department')->get();
         return view('admin.mentors.index', compact('mentors'));
     }
 
@@ -32,7 +32,7 @@ class MentorController extends Controller
             'password' => 'required|string|min:8|confirmed',
         ]);
 
-        Mentor::create([
+        Mentors::create([
             'mentor_name' => $request->mentor_name,
             'department_id' => $request->department_id,
             'position' => $request->position,
@@ -44,14 +44,13 @@ class MentorController extends Controller
             ->with('success', 'Mentor được thêm thành công!');
     }
 
-    public function edit(Mentor $mentor)
+    public function edit(Mentors $mentor)
     {
         $departments = Department::all();
-        $mentor->load(['interns', 'tasks']);
-        return view('admin.mentors.edit', compact('mentor', 'departments'));
+        $mentor->load(['interns', 'assignedTasks']);
     }
 
-    public function update(Request $request, Mentor $mentor)
+    public function update(Request $request, Mentors $mentor)
     {
         $request->validate([
             'mentor_name' => 'required|string|max:255',
@@ -76,16 +75,16 @@ class MentorController extends Controller
             ->with('success', 'Thông tin mentor được cập nhật thành công!');
     }
 
-    public function destroy(Mentor $mentor)
+    public function destroy(Mentors $mentor)
     {
         $mentor->delete();
         return redirect()->route('admin.mentors.index')
             ->with('success', 'Mentor đã được xóa thành công!');
     }
 
-    public function show(Mentor $mentor)
+    public function show(Mentors $mentor)
     {
-        $mentor->load(['department', 'interns', 'tasks' => function($query) {
+        $mentor->load(['department', 'interns', 'assignedTasks' => function($query) {
             $query->with('intern');
         }]);
 

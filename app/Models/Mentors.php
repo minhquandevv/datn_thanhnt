@@ -7,6 +7,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\Intern;
 use App\Models\Task;
+use App\Models\Department;
 
 class Mentors extends Authenticatable
 {
@@ -16,13 +17,19 @@ class Mentors extends Authenticatable
     protected $guarded = ['mentor_id'];
 
     protected $fillable = [
-        'mentor_name', 'department', 'position', 'username', 'password'
+        'mentor_name', 'department_id', 'position', 'username', 'password'
     ];
 
     protected $hidden = [
         'password',
         'remember_token',
     ];
+
+    // Relationship với department
+    public function department()
+    {
+        return $this->belongsTo(Department::class, 'department_id', 'department_id');
+    }
 
     // Relationship với TTS
     public function interns()

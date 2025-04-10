@@ -500,13 +500,6 @@
                                             </div>
                                         </div>
                                         <div class="mb-3">
-                                            <label class="form-label text-muted small mb-1">Ngân sách</label>
-                                            <div class="p-2 bg-light rounded">
-                                                <i class="bi bi-cash-stack text-primary me-2"></i>
-                                                Chưa có thông tin
-                                            </div>
-                                        </div>
-                                        <div class="mb-3">
                                             <label class="form-label text-muted small mb-1">Mô tả</label>
                                             <div class="p-3 bg-light rounded" style="max-height: 150px; overflow-y: auto;">
                                                 <i class="bi bi-card-text text-primary me-2"></i>

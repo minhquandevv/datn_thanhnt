@@ -31,6 +31,6 @@ class Department extends Model
 
     public function mentors()
     {
-        return $this->hasMany(Mentor::class, 'department_id', 'department_id');
+        return $this->hasMany(Mentors::class, 'department_id', 'department_id');
     }
 }

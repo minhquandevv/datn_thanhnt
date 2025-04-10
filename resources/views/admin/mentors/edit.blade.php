@@ -175,8 +175,52 @@
                                     <div class="d-flex justify-content-between mb-2">
                                         <span>Công việc đã giao</span>
                                         <span class="badge bg-danger bg-opacity-10 text-danger">
-                                            {{ $mentor->tasks ? $mentor->tasks->count() : 0 }}
+                                            {{ $mentor->assignedTasks ? $mentor->assignedTasks->count() : 0 }}
                                         </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tasks Section -->
+                        <div class="col-md-6">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-header bg-danger bg-opacity-10 border-0 py-3">
+                                    <h5 class="card-title mb-0 d-flex align-items-center">
+                                        <i class="bi bi-list-task text-danger me-2"></i>
+                                        Công việc đã giao
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>Tên công việc</th>
+                                                    <th>Thực tập sinh</th>
+                                                    <th>Trạng thái</th>
+                                                    <th>Đánh giá</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @forelse($mentor->assignedTasks as $task)
+                                                    <tr>
+                                                        <td>{{ $task->task_name }}</td>
+                                                        <td>{{ $task->intern->fullname }}</td>
+                                                        <td>
+                                                            <span class="badge bg-{{ $task->status == 'Hoàn thành' ? 'success' : 'warning' }}">
+                                                                {{ $task->status }}
+                                                            </span>
+                                                        </td>
+                                                        <td>{{ $task->evaluation ?? 'Chưa đánh giá' }}</td>
+                                                    </tr>
+                                                @empty
+                                                    <tr>
+                                                        <td colspan="4" class="text-center">Chưa có công việc nào được giao</td>
+                                                    </tr>
+                                                @endforelse
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
                             </div>

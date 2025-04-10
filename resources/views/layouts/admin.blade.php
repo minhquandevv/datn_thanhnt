@@ -607,6 +607,12 @@
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('admin.evaluations.*') ? 'active' : '' }}" href="{{ route('admin.evaluations.index') }}">
+                            <i class="bi bi-graph-up"></i>
+                            <span>Đánh giá chất lượng thực tập sinh</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link {{ request()->routeIs('admin.departments.*') ? 'active' : '' }}" href="{{ route('admin.departments.index') }}">
                             <i class="bi bi-building"></i>
                                 <span>Quản lý phòng ban</span>

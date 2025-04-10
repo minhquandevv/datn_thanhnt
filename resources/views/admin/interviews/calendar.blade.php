@@ -66,16 +66,17 @@
                                 </div>
                             </div>
                         </div>
+                        <!-- Add the new "Chờ lên lịch" card -->
                         <div class="col-6 col-md-3 mb-2">
-                            <div class="card bg-gradient-info text-white h-100">
+                            <div class="card bg-gradient-warning text-white h-100">
                                 <div class="card-body p-2">
                                     <div class="d-flex justify-content-between align-items-center">
                                         <div>
-                                            <h6 class="mb-0">Tổng Cộng</h6>
-                                            <h2 class="mb-0">{{ ($scheduledCount ?? 0) + ($completedCount ?? 0) + ($cancelledCount ?? 0) }}</h2>
+                                            <h6 class="mb-0">Chờ lên lịch</h6>
+                                            <h2 class="mb-0">{{ $jobApplications->where('status', 'approved')->count() }}</h2>
                                         </div>
                                         <div class="icon">
-                                            <i class="fas fa-calendar fa-2x"></i>
+                                            <i class="fas fa-clock fa-2x"></i>
                                         </div>
                                     </div>
                                 </div>
