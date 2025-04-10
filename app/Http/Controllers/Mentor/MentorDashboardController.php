@@ -34,6 +34,7 @@ class MentorDashboardController extends Controller
             abort(403, 'Bạn không có quyền xem thông tin của thực tập sinh này.');
         }
 
+        $intern->load('university');
         return view('mentor.interns.show', compact('intern'));
     }
 
@@ -319,7 +320,7 @@ class MentorDashboardController extends Controller
         $mentor = auth()->guard('mentor')->user();
         $task = Task::where('task_id', $taskId)
                     ->where('assigned_by', $mentor->mentor_id)
-                    ->with(['intern', 'mentor', 'attachments'])
+                    ->with(['intern', 'assignedBy', 'attachments'])
                     ->firstOrFail();
         
         return view('mentor.tasks.show', compact('task'));
