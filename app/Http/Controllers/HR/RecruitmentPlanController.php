@@ -39,7 +39,8 @@ class RecruitmentPlanController extends Controller
             'positions' => 'required|array',
             'positions.*.name' => 'required|string',
             'positions.*.quantity' => 'required|integer|min:1',
-            'positions.*.requirements' => 'required|string'
+            'positions.*.requirements' => 'required|string',
+            'positions.*.description' => 'nullable|string'
         ]);
 
         $plan = RecruitmentPlan::create([
@@ -60,7 +61,8 @@ class RecruitmentPlanController extends Controller
             $plan->positions()->create([
                 'name' => $position['name'],
                 'quantity' => $position['quantity'],
-                'requirements' => $position['requirements']
+                'requirements' => $position['requirements'],
+                'description' => $position['description']
             ]);
         }
 
@@ -102,7 +104,8 @@ class RecruitmentPlanController extends Controller
             'positions' => 'required|array',
             'positions.*.name' => 'required|string',
             'positions.*.quantity' => 'required|integer|min:1',
-            'positions.*.requirements' => 'required|string'
+            'positions.*.requirements' => 'required|string',
+            'positions.*.description' => 'nullable|string'
         ]);
 
         $recruitmentPlan->update([
@@ -122,7 +125,8 @@ class RecruitmentPlanController extends Controller
             $recruitmentPlan->positions()->create([
                 'name' => $position['name'],
                 'quantity' => $position['quantity'],
-                'requirements' => $position['requirements']
+                'requirements' => $position['requirements'],
+                'description' => $position['description']
             ]);
         }
 

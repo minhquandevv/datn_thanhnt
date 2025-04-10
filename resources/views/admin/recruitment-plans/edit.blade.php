@@ -198,9 +198,22 @@
                                             </label>
                                             <textarea class="form-control @error('positions.'.$loop->index.'.requirements') is-invalid @enderror" 
                                                       name="positions[{{ $loop->index }}][requirements]" 
-                                                      rows="1"
-                                                      required>{{ old('positions.'.$loop->index.'.requirements', $position->requirements) }}</textarea>
+                                                      rows="1" required>{{ old('positions.'.$loop->index.'.requirements', $position->requirements) }}</textarea>
                                             @error('positions.'.$loop->index.'.requirements')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">
+                                                <i class="bi bi-file-text me-2"></i>
+                                                Mô tả công việc
+                                            </label>
+                                            <textarea class="form-control @error('positions.'.$loop->index.'.description') is-invalid @enderror" 
+                                                      name="positions[{{ $loop->index }}][description]" 
+                                                      rows="1">{{ old('positions.'.$loop->index.'.description', $position->description) }}</textarea>
+                                            @error('positions.'.$loop->index.'.description')
                                                 <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
                                         </div>
@@ -296,6 +309,17 @@ document.addEventListener('DOMContentLoaded', function() {
                                   name="positions[${positionCount}][requirements]" 
                                   rows="1"
                                   required></textarea>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">
+                            <i class="bi bi-file-text me-2"></i>
+                            Mô tả công việc
+                        </label>
+                        <textarea class="form-control" 
+                                  name="positions[${positionCount}][description]" 
+                                  rows="1"></textarea>
                     </div>
                 </div>
                 <div class="col-md-1">

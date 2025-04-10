@@ -45,11 +45,6 @@ class UserController extends Controller
             }
         }
 
-        if ($user->id === Auth::id() && $request->role !== 'admin') {
-            return redirect()->route('admin.users.index')
-                ->with('error', 'Không thể thay đổi role của tài khoản đang đăng nhập.');
-        }
-
         $data = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $id,
@@ -58,7 +53,9 @@ class UserController extends Controller
 
         if ($request->filled('password')) {
             $request->validate([
-                'password' => ['required', Password::defaults()],
+                'password' => ['required', 'min:8', 'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/'],
+            ], [
+                'password.regex' => 'Mật khẩu phải chứa ít nhất 1 chữ hoa, 1 chữ thường và 1 số.'
             ]);
             $data['password'] = Hash::make($request->password);
         }

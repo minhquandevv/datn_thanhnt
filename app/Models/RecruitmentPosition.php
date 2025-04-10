@@ -15,7 +15,8 @@ class RecruitmentPosition extends Model
         'plan_id',
         'name',
         'quantity',
-        'requirements'
+        'requirements',
+        'description'
     ];
 
     public function plan()

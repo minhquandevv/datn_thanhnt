@@ -50,6 +50,7 @@
                                         <th>Vị trí</th>
                                         <th>Số lượng</th>
                                         <th>Yêu cầu</th>
+                                        <th>Mô tả công việc</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -58,6 +59,7 @@
                                             <td>{{ $position->name }}</td>
                                             <td>{{ $position->quantity }}</td>
                                             <td>{{ $position->requirements }}</td>
+                                            <td>{{ $position->description }}</td>
                                         </tr>
                                     @endforeach
                                 </tbody>

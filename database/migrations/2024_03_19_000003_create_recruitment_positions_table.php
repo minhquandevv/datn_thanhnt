@@ -14,6 +14,7 @@ return new class extends Migration
             $table->string('name');
             $table->integer('quantity');
             $table->text('requirements');
+            $table->text('description')->nullable();
             $table->timestamps();
         });
     }

@@ -87,6 +87,7 @@
                                         <th class="border-0">Vị trí</th>
                                         <th class="text-center border-0">Số lượng</th>
                                         <th class="border-0">Yêu cầu</th>
+                                        <th class="border-0">Mô tả công việc</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -102,6 +103,7 @@
                                                 </span>
                                             </td>
                                             <td class="text-gray-700">{{ $position->requirements }}</td>
+                                            <td class="text-gray-700">{{ $position->description }}</td>
                                         </tr>
                                     @endforeach
                                 </tbody>

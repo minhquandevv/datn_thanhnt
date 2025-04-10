@@ -55,11 +55,11 @@ class RecruitmentPlanController extends Controller
             'description' => 'nullable|string',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after:start_date',
-            'requirements' => 'nullable|string',
             'positions' => 'required|array|min:1',
             'positions.*.name' => 'required|string|max:255',
             'positions.*.quantity' => 'required|integer|min:1',
-            'positions.*.requirements' => 'required|string'
+            'positions.*.requirements' => 'required|string',
+            'positions.*.description' => 'nullable|string'
         ]);
 
         try {
@@ -83,7 +83,8 @@ class RecruitmentPlanController extends Controller
                     'plan_id' => $recruitmentPlan->plan_id,
                     'name' => $positionData['name'],
                     'quantity' => $positionData['quantity'],
-                    'requirements' => $positionData['requirements']
+                    'requirements' => $positionData['requirements'],
+                    'description' => $positionData['description'] ?? null
                 ]);
             }
 
@@ -137,7 +138,8 @@ class RecruitmentPlanController extends Controller
             'positions' => 'required|array|min:1',
             'positions.*.name' => 'required|string|max:255',
             'positions.*.quantity' => 'required|integer|min:1',
-            'positions.*.requirements' => 'required|string'
+            'positions.*.requirements' => 'required|string',
+            'positions.*.description' => 'nullable|string'
         ]);
 
         DB::beginTransaction();
@@ -161,7 +163,8 @@ class RecruitmentPlanController extends Controller
                 $recruitmentPlan->positions()->create([
                     'name' => $position['name'],
                     'quantity' => $position['quantity'],
-                    'requirements' => $position['requirements']
+                    'requirements' => $position['requirements'],
+                    'description' => $position['description'] ?? null
                 ]);
             }
 

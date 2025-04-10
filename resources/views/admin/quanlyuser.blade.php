@@ -183,13 +183,13 @@
                                 @foreach($users as $user)
                                 <tr>
                                     <td class="text-center">
-                                        @if(Auth::id() !== $user->id)
-                                            <div class="btn-group">
-                                                <button type="button" class="btn btn-sm btn-outline-danger me-2" 
-                                                        data-bs-toggle="modal" 
-                                                        data-bs-target="#editUserModal{{ $user->id }}">
-                                                    <i class="bi bi-pencil"></i>
-                                                </button>
+                                        <div class="btn-group">
+                                            <button type="button" class="btn btn-sm btn-outline-danger me-2" 
+                                                    data-bs-toggle="modal" 
+                                                    data-bs-target="#editUserModal{{ $user->id }}">
+                                                <i class="bi bi-pencil"></i>
+                                            </button>
+                                            @if(Auth::id() !== $user->id)
                                                 <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" class="d-inline">
                                                     @csrf
                                                     @method('DELETE')
@@ -198,12 +198,8 @@
                                                         <i class="bi bi-trash"></i>
                                                     </button>
                                                 </form>
-                                            </div>
-                                        @else
-                                            <span class="badge bg-danger-subtle text-danger">
-                                                <i class="bi bi-person-check me-1"></i>Tài khoản hiện tại
-                                            </span>
-                                        @endif
+                                            @endif
+                                        </div>
                                     </td>
                                     <td class="text-center">
                                         <div class="avatar-circle bg-danger bg-opacity-10 text-danger mx-auto">
@@ -348,23 +344,12 @@
                             <input type="email" class="form-control" name="email" required value="{{ $user->email }}">
                         </div>
                     </div>
-                    <div class="mb-4">
-                        <label class="form-label">Mật khẩu mới</label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-key text-danger"></i></span>
-                            <input type="password" class="form-control @error('password') is-invalid @enderror" 
-                                   name="password" 
-                                   placeholder="Nhập mật khẩu mới (để trống nếu không muốn thay đổi)">
-                            @error('password')
-                                <div class="invalid-feedback">
-                                    {{ $message }}
-                                </div>
-                            @enderror
-                        </div>
-                        <small class="text-muted mt-1">
-                            <i class="bi bi-info-circle me-1"></i>
-                            Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường và số
-                        </small>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Mật khẩu mới</label>
+                        <input type="password" class="form-control @error('password') is-invalid @enderror" id="password" name="password">
+                        @error('password')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
                     </div>
                     <div class="mb-4">
                         <label class="form-label">Vai trò</label>

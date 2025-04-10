@@ -528,6 +528,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                     {{ $job->position?->position_id == $position->position_id ? 'selected' : '' }}
                                     data-quantity="{{ $position->quantity }}"
                                     data-requirements="{{ $position->requirements }}"
+                                    data-description="{{ $position->description }}"
                                 >
                                     {{ $position->name }}
                                     </option>
@@ -621,6 +622,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const positionSelect = document.getElementById('position');
     const jobQuantityInput = document.getElementById('job_quantity');
     const jobRequirementInput = document.getElementById('job_requirement');
+    const jobDescriptionInput = document.querySelector('textarea[name="job_description"]');
     const jobNameInput = document.querySelector('input[name="job_name"]');
     const expirationDateInput = document.querySelector('input[name="expiration_date"]');
     const expirationDateError = document.getElementById('expirationDateError');
@@ -637,6 +639,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 option.textContent = position.name;
                 option.dataset.quantity = position.quantity;
                 option.dataset.requirements = position.requirements;
+                option.dataset.description = position.description;
                 positionSelect.appendChild(option);
             });
 
@@ -644,7 +647,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const formattedDate = endDate.toISOString().split('T')[0];
 
             expirationDateInput.max = formattedDate;
-            expirationDateInput.value = formattedDate; // Tự động fill ngày luôn ở đây
+            expirationDateInput.value = formattedDate;
 
             expirationDateError.classList.add('d-none');
         } else {
@@ -660,15 +663,17 @@ document.addEventListener('DOMContentLoaded', function() {
             const quantity = parseInt(selectedOption.dataset.quantity, 10);
 
             jobQuantityInput.value = quantity;
-            jobQuantityInput.max = quantity;  // giới hạn nhập tối đa theo kế hoạch
-            jobQuantityInput.min = 1;         // tối thiểu là 1
+            jobQuantityInput.max = quantity;
+            jobQuantityInput.min = 1;
 
             jobRequirementInput.value = selectedOption.dataset.requirements;
+            jobDescriptionInput.value = selectedOption.dataset.description || '';
             jobNameInput.value = selectedOption.textContent;
         } else {
             jobQuantityInput.value = '1';
             jobQuantityInput.removeAttribute('max');
             jobRequirementInput.value = '';
+            jobDescriptionInput.value = '';
             jobNameInput.value = '';
         }
     });
@@ -764,6 +769,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const positionSelect = modal.querySelector('.position-select');
             const jobQuantityInput = modal.querySelector('.job-quantity');
             const jobRequirementInput = modal.querySelector('.job-requirement');
+            const jobDescriptionInput = modal.querySelector('textarea[name="job_description"]');
             const expirationDateInput = modal.querySelector('.expiration-date');
 
             const selectedPlanId = planSelect.value;
@@ -781,10 +787,12 @@ document.addEventListener('DOMContentLoaded', function () {
                         option.textContent = pos.name;
                         option.dataset.quantity = pos.quantity;
                         option.dataset.requirements = pos.requirements;
+                        option.dataset.description = pos.description;
                         if (isSelected) {
                             option.selected = true;
                             jobQuantityInput.value = pos.quantity;
                             jobRequirementInput.value = pos.requirements;
+                            jobDescriptionInput.value = pos.description || '';
                         }
                         positionSelect.appendChild(option);
                     });
@@ -803,6 +811,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 loadPositions(this.value);
                 jobQuantityInput.value = 1;
                 jobRequirementInput.value = '';
+                jobDescriptionInput.value = '';
             });
 
             // Khi thay đổi vị trí
@@ -811,6 +820,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (option && option.dataset.quantity) {
                     jobQuantityInput.value = option.dataset.quantity;
                     jobRequirementInput.value = option.dataset.requirements;
+                    jobDescriptionInput.value = option.dataset.description || '';
                 }
             });
         });
