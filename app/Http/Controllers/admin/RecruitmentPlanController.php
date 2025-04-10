@@ -220,10 +220,9 @@ class RecruitmentPlanController extends Controller
             'rejected_at' => now()
         ]);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Kế hoạch tuyển dụng đã bị từ chối.'
-        ]);
+        return redirect()->route('admin.recruitment-plans.index')
+            ->with('success', 'Kế hoạch tuyển dụng đã bị từ chối.');
+            
     }
 
     public function submit(RecruitmentPlan $recruitmentPlan)
