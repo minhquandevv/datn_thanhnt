@@ -125,7 +125,7 @@
                                     <button type="button" 
                                             class="btn btn-primary btn-sm"
                                             data-bs-toggle="modal" 
-                                            data-bs-target="#mentorCommentModal{{ $task->task_id }}">
+                                            data-bs-target="#commentModal{{ $task->task_id }}">
                                         <i class="bi bi-chat-dots"></i>
                                     </button>
                                     <button type="button" 
@@ -136,31 +136,31 @@
                                     </button>
                                 </div>
 
-                                <!-- Mentor Comment Modal -->
-                                <div class="modal fade" id="mentorCommentModal{{ $task->task_id }}" tabindex="-1" aria-labelledby="mentorCommentModalLabel" aria-hidden="true">
-                                    <div class="modal-dialog modal-dialog-centered">
+                                <!-- Comment Modal -->
+                                <div class="modal fade" id="commentModal{{ $task->task_id }}" tabindex="-1">
+                                    <div class="modal-dialog">
                                         <div class="modal-content">
-                                            <div class="modal-header bg-primary text-white">
-                                                <h5 class="modal-title" id="mentorCommentModalLabel">Nhận xét và đánh giá</h5>
-                                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Nhận xét của mentor</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                             </div>
-                                            <form action="{{ route('mentor.tasks.update', $task->task_id) }}" method="POST">
-                                                @csrf
-                                                @method('PUT')
-                                                <div class="modal-body">
+                                            <div class="modal-body">
+                                                <form action="{{ route('mentor.tasks.update', $task->task_id) }}" method="POST">
+                                                    @csrf
+                                                    @method('PUT')
+                                                    <input type="hidden" name="status" value="{{ $task->status }}">
                                                     <div class="mb-3">
-                                                        <label for="mentor_comment" class="form-label fw-bold">Nhận xét của mentor</label>
+                                                        <label for="mentor_comment" class="form-label">Nhận xét</label>
                                                         <textarea class="form-control" 
                                                                   id="mentor_comment" 
                                                                   name="mentor_comment" 
-                                                                  rows="4"
-                                                                  placeholder="Nhập nhận xét của bạn...">{{ $task->mentor_comment }}</textarea>
+                                                                  rows="3">{{ $task->mentor_comment }}</textarea>
                                                     </div>
                                                     @if($task->status === 'Hoàn thành')
                                                     <div class="mb-3">
-                                                        <label for="evaluation" class="form-label fw-bold">Đánh giá kết quả</label>
+                                                        <label for="evaluation" class="form-label">Đánh giá</label>
                                                         <select class="form-select" id="evaluation" name="evaluation">
-                                                            <option value="">-- Chọn mức độ đánh giá --</option>
+                                                            <option value="">Chọn đánh giá</option>
                                                             <option value="Rất tốt" {{ $task->evaluation == 'Rất tốt' ? 'selected' : '' }}>Rất tốt</option>
                                                             <option value="Tốt" {{ $task->evaluation == 'Tốt' ? 'selected' : '' }}>Tốt</option>
                                                             <option value="Trung bình" {{ $task->evaluation == 'Trung bình' ? 'selected' : '' }}>Trung bình</option>
@@ -168,12 +168,12 @@
                                                         </select>
                                                     </div>
                                                     @endif
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                                                    <button type="submit" class="btn btn-primary">Lưu nhận xét</button>
-                                                </div>
-                                            </form>
+                                                    <div class="text-end">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                                                        <button type="submit" class="btn btn-primary">Lưu nhận xét</button>
+                                                    </div>
+                                                </form>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

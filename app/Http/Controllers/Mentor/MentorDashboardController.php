@@ -246,11 +246,14 @@ class MentorDashboardController extends Controller
                         ->where('assigned_by', $mentor->mentor_id)
                         ->firstOrFail();
 
-            // Nếu chỉ cập nhật trạng thái
-            if ($request->has('status')) {
-                $task->update(['status' => $request->status]);
+            // Nếu chỉ cập nhật nhận xét và đánh giá
+            if ($request->has('mentor_comment') || $request->has('evaluation')) {
+                $task->update([
+                    'mentor_comment' => $request->mentor_comment,
+                    'evaluation' => $request->evaluation
+                ]);
                 return redirect()->route('mentor.tasks.index')
-                    ->with('success', 'Trạng thái công việc đã được cập nhật!');
+                    ->with('success', 'Nhận xét và đánh giá đã được cập nhật!');
             }
 
             // Nếu cập nhật toàn bộ thông tin
