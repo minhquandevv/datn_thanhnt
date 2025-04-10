@@ -87,18 +87,29 @@
 
                             <div class="row mt-3">
                                 <div class="col-md-6">
-                                    <div class="form-group">
+                                    <div class="form-group position-relative">
                                         <label for="password" class="font-weight-bold">Mật khẩu</label>
                                         <input type="password" name="password" class="form-control @error('password') is-invalid @enderror" required>
+                                        <div class="pt-4">
+                                            <button type="button" class="btn btn-link position-absolute top-50 end-0 translate-middle-y" id="togglePassword">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                        </div>
+                                        
                                         @error('password')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <div class="form-group">
+                                    <div class="form-group position-relative">
                                         <label for="password_confirmation" class="font-weight-bold">Xác nhận mật khẩu</label>
                                         <input type="password" name="password_confirmation" class="form-control" required>
+                                        <div class="pt-4">
+                                            <button type="button" class="btn btn-link position-absolute top-50 end-0 translate-middle-y" id="togglePasswordConfirmation">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -128,6 +139,24 @@
                     });
                 }, 100);
             }
+
+            // Password toggle functionality
+            const togglePassword = document.getElementById('togglePassword');
+            const togglePasswordConfirmation = document.getElementById('togglePasswordConfirmation');
+            const password = document.querySelector('input[name="password"]');
+            const passwordConfirmation = document.querySelector('input[name="password_confirmation"]');
+
+            function togglePasswordVisibility(input, button) {
+                const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+                input.setAttribute('type', type);
+                
+                const icon = button.querySelector('i');
+                icon.classList.toggle('bi-eye');
+                icon.classList.toggle('bi-eye-slash');
+            }
+
+            togglePassword.addEventListener('click', () => togglePasswordVisibility(password, togglePassword));
+            togglePasswordConfirmation.addEventListener('click', () => togglePasswordVisibility(passwordConfirmation, togglePasswordConfirmation));
         };
     </script>
 
@@ -199,6 +228,38 @@
 
         .invalid-feedback {
             font-size: 0.875rem;
+        }
+
+        .form-group.position-relative {
+            position: relative;
+        }
+
+        .form-group.position-relative input {
+            padding-right: 40px;
+        }
+
+        .form-group.position-relative button {
+            color: #6c757d;
+            padding: 0 10px;
+            z-index: 2;
+            top: 50%;
+            transform: translateY(-50%);
+            right: 0;
+            border: none;
+            background: none;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .form-group.position-relative button:hover {
+            color: #0d6efd;
+            background: none;
+        }
+
+        .form-group.position-relative button i {
+            font-size: 1.2rem;
         }
     </style>
 @endsection
