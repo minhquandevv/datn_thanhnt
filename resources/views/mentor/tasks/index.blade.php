@@ -122,62 +122,60 @@
                                        class="btn btn-warning btn-sm">
                                         <i class="bi bi-pencil"></i>
                                     </a>
-                                    <div class="btn-group">
-                                        <button type="button" 
-                                                class="btn btn-primary btn-sm dropdown-toggle"
-                                                data-bs-toggle="dropdown"
-                                                aria-expanded="false">
-                                            <i class="bi bi-arrow-repeat"></i>
-                                        </button>
-                                        <ul class="dropdown-menu">
-                                            <li>
-                                                <form action="{{ route('mentor.tasks.update', $task->task_id) }}" method="POST">
-                                                    @csrf
-                                                    @method('PUT')
-                                                    <input type="hidden" name="status" value="Chưa bắt đầu">
-                                                    <button type="submit" class="dropdown-item {{ $task->status == 'Chưa bắt đầu' ? 'active' : '' }}">
-                                                        <i class="bi bi-circle"></i> Chưa bắt đầu
-                                                    </button>
-                                                </form>
-                                            </li>
-                                            <li>
-                                                <form action="{{ route('mentor.tasks.update', $task->task_id) }}" method="POST">
-                                                    @csrf
-                                                    @method('PUT')
-                                                    <input type="hidden" name="status" value="Đang thực hiện">
-                                                    <button type="submit" class="dropdown-item {{ $task->status == 'Đang thực hiện' ? 'active' : '' }}">
-                                                        <i class="bi bi-arrow-right-circle"></i> Đang thực hiện
-                                                    </button>
-                                                </form>
-                                            </li>
-                                            <li>
-                                                <form action="{{ route('mentor.tasks.update', $task->task_id) }}" method="POST">
-                                                    @csrf
-                                                    @method('PUT')
-                                                    <input type="hidden" name="status" value="Hoàn thành">
-                                                    <button type="submit" class="dropdown-item {{ $task->status == 'Hoàn thành' ? 'active' : '' }}">
-                                                        <i class="bi bi-check-circle"></i> Hoàn thành
-                                                    </button>
-                                                </form>
-                                            </li>
-                                            <li>
-                                                <form action="{{ route('mentor.tasks.update', $task->task_id) }}" method="POST">
-                                                    @csrf
-                                                    @method('PUT')
-                                                    <input type="hidden" name="status" value="Trễ hạn">
-                                                    <button type="submit" class="dropdown-item {{ $task->status == 'Trễ hạn' ? 'active' : '' }}">
-                                                        <i class="bi bi-exclamation-circle"></i> Trễ hạn
-                                                    </button>
-                                                </form>
-                                            </li>
-                                        </ul>
-                                    </div>
+                                    <button type="button" 
+                                            class="btn btn-primary btn-sm"
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#mentorCommentModal{{ $task->task_id }}">
+                                        <i class="bi bi-chat-dots"></i>
+                                    </button>
                                     <button type="button" 
                                             class="btn btn-danger btn-sm"
                                             data-bs-toggle="modal" 
                                             data-bs-target="#deleteModal{{ $task->task_id }}">
                                         <i class="bi bi-trash"></i>
                                     </button>
+                                </div>
+
+                                <!-- Mentor Comment Modal -->
+                                <div class="modal fade" id="mentorCommentModal{{ $task->task_id }}" tabindex="-1" aria-labelledby="mentorCommentModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content">
+                                            <div class="modal-header bg-primary text-white">
+                                                <h5 class="modal-title" id="mentorCommentModalLabel">Nhận xét và đánh giá</h5>
+                                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <form action="{{ route('mentor.tasks.update', $task->task_id) }}" method="POST">
+                                                @csrf
+                                                @method('PUT')
+                                                <div class="modal-body">
+                                                    <div class="mb-3">
+                                                        <label for="mentor_comment" class="form-label fw-bold">Nhận xét của mentor</label>
+                                                        <textarea class="form-control" 
+                                                                  id="mentor_comment" 
+                                                                  name="mentor_comment" 
+                                                                  rows="4"
+                                                                  placeholder="Nhập nhận xét của bạn...">{{ $task->mentor_comment }}</textarea>
+                                                    </div>
+                                                    @if($task->status === 'Hoàn thành')
+                                                    <div class="mb-3">
+                                                        <label for="evaluation" class="form-label fw-bold">Đánh giá kết quả</label>
+                                                        <select class="form-select" id="evaluation" name="evaluation">
+                                                            <option value="">-- Chọn mức độ đánh giá --</option>
+                                                            <option value="Rất tốt" {{ $task->evaluation == 'Rất tốt' ? 'selected' : '' }}>Rất tốt</option>
+                                                            <option value="Tốt" {{ $task->evaluation == 'Tốt' ? 'selected' : '' }}>Tốt</option>
+                                                            <option value="Trung bình" {{ $task->evaluation == 'Trung bình' ? 'selected' : '' }}>Trung bình</option>
+                                                            <option value="Kém" {{ $task->evaluation == 'Kém' ? 'selected' : '' }}>Kém</option>
+                                                        </select>
+                                                    </div>
+                                                    @endif
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                                                    <button type="submit" class="btn btn-primary">Lưu nhận xét</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <!-- Delete Modal -->

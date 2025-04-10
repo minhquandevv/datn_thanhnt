@@ -39,22 +39,6 @@
                                     @enderror
                                 </div>
                             </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="interviewer_id">Người Phỏng Vấn</label>
-                                    <select class="form-control @error('interviewer_id') is-invalid @enderror" id="interviewer_id" name="interviewer_id" required>
-                                        <option value="">Chọn Người Phỏng Vấn</option>
-                                        @foreach($interviewers as $interviewer)
-                                            <option value="{{ $interviewer->id }}" {{ $interview->interviewer_id == $interviewer->id ? 'selected' : '' }}>
-                                                {{ $interviewer->name }} ({{ $interviewer->email }})
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    @error('interviewer_id')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            </div>
                         </div>
                         <div class="row mt-3">
                             <div class="col-md-6">
@@ -172,8 +156,8 @@
                 <div class="alert alert-warning">
                     <h6 class="mb-1">Chi Tiết Phỏng Vấn:</h6>
                     <p class="mb-1"><strong>Tiêu đề:</strong> {{ $interview->title }}</p>
-                    <p class="mb-1"><strong>Ứng viên:</strong> {{ $interview->candidate->fullname }}</p>
-                    <p class="mb-1"><strong>Người phỏng vấn:</strong> {{ $interview->interviewer->name }}</p>
+                    <p class="mb-1"><strong>Ứng viên:</strong> {{ $interview->candidate ? $interview->candidate->fullname : 'N/A' }}</p>
+                    <p class="mb-1"><strong>Người phỏng vấn:</strong> {{ $interview->interviewer ? $interview->interviewer->name : 'N/A' }}</p>
                     <p class="mb-0"><strong>Ngày:</strong> {{ \Carbon\Carbon::parse($interview->start_time)->format('Y-m-d H:i') }}</p>
                 </div>
             </div>

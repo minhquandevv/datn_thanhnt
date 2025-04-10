@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('interview_schedules', function (Blueprint $table) {
             $table->id();
             $table->foreignId('candidate_id')->constrained('candidates')->onDelete('cascade');
-            $table->foreignId('interviewer_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('job_application_id')->constrained('job_applications')->onDelete('cascade');
             $table->string('title');
             $table->text('description')->nullable();
