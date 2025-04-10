@@ -135,9 +135,18 @@
                                 </td>
                                 <td>
                                     <div class="d-flex flex-wrap gap-1">
-                                        @foreach($plan->universities as $university)
+                                        @php
+                                            $displayedUniversities = $plan->universities->take(3);
+                                            $remainingCount = $plan->universities->count() - 3;
+                                        @endphp
+                                        
+                                        @foreach($displayedUniversities as $university)
                                             <span class="badge bg-light text-dark">{{ $university->short_name }}</span>
                                         @endforeach
+                                        
+                                        @if($remainingCount > 0)
+                                            <span class="badge bg-light text-dark">+{{ $remainingCount }}...</span>
+                                        @endif
                                     </div>
                                 </td>
                                 <td class="text-center">
