@@ -92,16 +92,12 @@
                     </div>
 
                     <div class="mt-4">
-                        <form action="{{ route('admin.recruitment-plans.approve', $recruitmentPlan) }}" 
-                              method="POST" 
-                              class="mb-2">
-                            @csrf
-                            <button type="submit" 
-                                    class="btn btn-success w-100"
-                                    onclick="return confirm('Bạn có chắc chắn muốn duyệt kế hoạch này?');">
-                                <i class="bi bi-check-lg me-2"></i>Duyệt kế hoạch
-                            </button>
-                        </form>
+                        <button type="button" 
+                                class="btn btn-success w-100 mb-2"
+                                data-bs-toggle="modal" 
+                                data-bs-target="#approveModal">
+                            <i class="bi bi-check-lg me-2"></i>Duyệt kế hoạch
+                        </button>
 
                         <button type="button" 
                                 class="btn btn-danger w-100"
@@ -112,6 +108,34 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- Approve Modal -->
+<div class="modal fade" id="approveModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="{{ route('admin.recruitment-plans.approve', $recruitmentPlan) }}" method="POST">
+                @csrf
+                <div class="modal-header">
+                    <h5 class="modal-title">Duyệt kế hoạch</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Bạn có chắc chắn muốn duyệt kế hoạch này?</p>
+                    <p class="mb-0 text-muted small">
+                        <i class="bi bi-info-circle me-1"></i>
+                        Sau khi duyệt, kế hoạch sẽ được chuyển sang trạng thái "Đã duyệt" và HR có thể bắt đầu thực hiện.
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-check-lg me-2"></i>Duyệt
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -138,7 +162,9 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                    <button type="submit" class="btn btn-danger">Từ chối</button>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-x-lg me-2"></i>Từ chối
+                    </button>
                 </div>
             </form>
         </div>

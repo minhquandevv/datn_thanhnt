@@ -192,31 +192,80 @@
 
                     <div class="mt-4">
                         @if($recruitmentPlan->status === 'draft')
-                            <form action="{{ route('hr.recruitment-plans.submit', $recruitmentPlan) }}" 
-                                  method="POST" 
-                                  class="mb-2">
-                                @csrf
-                                <button type="submit" 
-                                        class="btn btn-success w-100 py-2"
-                                        onclick="return confirm('Bạn có chắc chắn muốn nộp kế hoạch này để duyệt?');">
-                                    <i class="bi bi-send me-2"></i>Nộp duyệt
-                                </button>
-                            </form>
+                            <button type="button" 
+                                    class="btn btn-success w-100 py-2 mb-2"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#submitModal">
+                                <i class="bi bi-send me-2"></i>Nộp duyệt
+                            </button>
 
-                            <form action="{{ route('hr.recruitment-plans.destroy', $recruitmentPlan) }}" 
-                                  method="POST">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" 
-                                        class="btn btn-danger w-100 py-2"
-                                        onclick="return confirm('Bạn có chắc chắn muốn xóa kế hoạch này?');">
-                                    <i class="bi bi-trash me-2"></i>Xóa kế hoạch
-                                </button>
-                            </form>
+                            <button type="button" 
+                                    class="btn btn-danger w-100 py-2"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#deleteModal">
+                                <i class="bi bi-trash me-2"></i>Xóa kế hoạch
+                            </button>
                         @endif
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- Submit Modal -->
+<div class="modal fade" id="submitModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="{{ route('hr.recruitment-plans.submit', $recruitmentPlan) }}" method="POST">
+                @csrf
+                <div class="modal-header">
+                    <h5 class="modal-title">Gửi duyệt kế hoạch</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Bạn có chắc chắn muốn gửi kế hoạch này để duyệt?</p>
+                    <p class="mb-0 text-muted small">
+                        <i class="bi bi-info-circle me-1"></i>
+                        Sau khi gửi, kế hoạch sẽ được chuyển sang trạng thái "Chờ duyệt" và admin/director sẽ xem xét.
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-send me-2"></i>Gửi duyệt
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="{{ route('hr.recruitment-plans.destroy', $recruitmentPlan) }}" method="POST">
+                @csrf
+                @method('DELETE')
+                <div class="modal-header">
+                    <h5 class="modal-title">Xóa kế hoạch</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Bạn có chắc chắn muốn xóa kế hoạch này?</p>
+                    <p class="mb-0 text-muted small">
+                        <i class="bi bi-exclamation-triangle me-1"></i>
+                        Hành động này không thể hoàn tác. Tất cả dữ liệu liên quan đến kế hoạch sẽ bị xóa vĩnh viễn.
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash me-2"></i>Xóa kế hoạch
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>

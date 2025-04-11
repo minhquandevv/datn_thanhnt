@@ -96,34 +96,26 @@
                                             </a>
                                 
                                             {{-- Nút gửi duyệt --}}
-                                            <form action="{{ route('hr.recruitment-plans.submit', $plan) }}" 
-                                                  method="POST">
-                                                @csrf
-                                                <button type="submit" 
-                                                        class="btn btn-outline-danger btn-sm"
-                                                        data-bs-toggle="tooltip"
-                                                        title="Nộp duyệt"
-                                                        onclick="return confirm('Bạn có chắc chắn muốn gửi kế hoạch này để duyệt?')">
-                                                    <i class="bi bi-send"></i>
-                                                    <span class="d-none d-md-inline ms-1">Duyệt</span>
-                                                </button>
-                                            </form>
+                                            <button type="button" 
+                                                    class="btn btn-outline-danger btn-sm"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#submitModal{{ $plan->plan_id }}"
+                                                    data-bs-toggle="tooltip"
+                                                    title="Nộp duyệt">
+                                                <i class="bi bi-send"></i>
+                                                <span class="d-none d-md-inline ms-1">Duyệt</span>
+                                            </button>
                                 
                                             {{-- Nút xóa --}}
-                                            <form action="{{ route('hr.recruitment-plans.destroy', $plan) }}" 
-                                                  method="POST" 
-                                                  id="delete-form-{{ $plan->id }}">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="button" 
-                                                class="btn btn-outline-danger btn-sm delete-plan" 
-                                                        data-id="{{ $plan->id }}"
-                                                        data-bs-toggle="tooltip"
-                                                        title="Xóa">
-                                                    <i class="bi bi-trash"></i>
-                                                    <span class="d-none d-md-inline ms-1">Xóa</span>
-                                                </button>
-                                            </form>
+                                            <button type="button" 
+                                                    class="btn btn-outline-danger btn-sm"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#deleteModal{{ $plan->plan_id }}"
+                                                    data-bs-toggle="tooltip"
+                                                    title="Xóa">
+                                                <i class="bi bi-trash"></i>
+                                                <span class="d-none d-md-inline ms-1">Xóa</span>
+                                            </button>
                                         @endif
                                     </div>
                                 </td>
@@ -193,6 +185,71 @@
     </div>
 </div>
 
+<!-- Submit Modals -->
+@foreach($recruitmentPlans as $plan)
+    @if($plan->status === 'draft')
+        <div class="modal fade" id="submitModal{{ $plan->plan_id }}" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form action="{{ route('hr.recruitment-plans.submit', $plan) }}" method="POST">
+                        @csrf
+                        <div class="modal-header">
+                            <h5 class="modal-title">Gửi duyệt kế hoạch</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>Bạn có chắc chắn muốn gửi kế hoạch này để duyệt?</p>
+                            <p class="mb-0 text-muted small">
+                                <i class="bi bi-info-circle me-1"></i>
+                                Sau khi gửi, kế hoạch sẽ được chuyển sang trạng thái "Chờ duyệt" và admin/director sẽ xem xét.
+                            </p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                            <button type="submit" class="btn btn-danger">
+                                <i class="bi bi-send me-2"></i>Gửi duyệt
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    @endif
+@endforeach
+
+<!-- Delete Modals -->
+@foreach($recruitmentPlans as $plan)
+    @if($plan->status === 'draft')
+        <div class="modal fade" id="deleteModal{{ $plan->plan_id }}" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form action="{{ route('hr.recruitment-plans.destroy', $plan) }}" method="POST">
+                        @csrf
+                        @method('DELETE')
+                        <div class="modal-header">
+                            <h5 class="modal-title">Xóa kế hoạch</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>Bạn có chắc chắn muốn xóa kế hoạch này?</p>
+                            <p class="mb-0 text-muted small">
+                                <i class="bi bi-exclamation-triangle me-1"></i>
+                                Hành động này không thể hoàn tác. Tất cả dữ liệu liên quan đến kế hoạch sẽ bị xóa vĩnh viễn.
+                            </p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                            <button type="submit" class="btn btn-danger">
+                                <i class="bi bi-trash me-2"></i>Xóa kế hoạch
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    @endif
+@endforeach
+
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -205,28 +262,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Refresh button
     document.getElementById('refreshBtn').addEventListener('click', function() {
         window.location.reload();
-    });
-});
-
-$(document).ready(function() {
-    // Xử lý sự kiện xóa kế hoạch
-    $('.delete-plan').on('click', function() {
-        const planId = $(this).data('id');
-        
-        Swal.fire({
-            title: 'Xác nhận xóa?',
-            text: "Bạn có chắc chắn muốn xóa kế hoạch này?",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: 'Xóa',
-            cancelButtonText: 'Hủy'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $(`#delete-form-${planId}`).submit();
-            }
-        });
     });
 });
 </script>

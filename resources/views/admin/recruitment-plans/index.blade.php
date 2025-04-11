@@ -106,19 +106,29 @@
                                         
                                         @if($plan->status === 'pending')
                                             <button type="button" 
-                                                    class="btn btn-outline-success btn-sm approve-plan" 
-                                                    data-id="{{ $plan->plan_id }}"
+                                                    class="btn btn-outline-success btn-sm" 
+                                                    data-bs-toggle="modal" 
+                                                    data-bs-target="#approveModal{{ $plan->plan_id }}"
                                                     title="Duyệt">
                                                 <i class="bi bi-check-lg"></i>
                                             </button>
                                             
                                             <button type="button" 
-                                                    class="btn btn-outline-danger btn-sm reject-plan" 
-                                                    data-id="{{ $plan->plan_id }}"
+                                                    class="btn btn-outline-danger btn-sm" 
+                                                    data-bs-toggle="modal" 
+                                                    data-bs-target="#rejectModal{{ $plan->plan_id }}"
                                                     title="Từ chối">
                                                 <i class="bi bi-x-lg"></i>
                                             </button>
                                         @endif
+
+                                        <button type="button" 
+                                                class="btn btn-outline-danger btn-sm" 
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#deleteModal{{ $plan->plan_id }}"
+                                                title="Xóa">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
                                     </div>
                                 </td>
                                 <td class="px-2">
@@ -158,7 +168,6 @@
                                             @break
                                     @endswitch
                                 </td>
-                                
                             </tr>
                         @empty
                             <tr>
@@ -180,104 +189,123 @@
     </div>
 </div>
 
+<!-- Approve Modals -->
+@foreach($recruitmentPlans as $plan)
+    @if($plan->status === 'pending')
+        <div class="modal fade" id="approveModal{{ $plan->plan_id }}" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form action="{{ route('admin.recruitment-plans.approve', $plan) }}" method="POST">
+                        @csrf
+                        <div class="modal-header">
+                            <h5 class="modal-title">Duyệt kế hoạch</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>Bạn có chắc chắn muốn duyệt kế hoạch này?</p>
+                            <p class="mb-0 text-muted small">
+                                <i class="bi bi-info-circle me-1"></i>
+                                Sau khi duyệt, kế hoạch sẽ được chuyển sang trạng thái "Đã duyệt" và HR có thể bắt đầu thực hiện.
+                            </p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                            <button type="submit" class="btn btn-success">
+                                <i class="bi bi-check-lg me-2"></i>Duyệt
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reject Modal -->
+        <div class="modal fade" id="rejectModal{{ $plan->plan_id }}" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form action="{{ route('admin.recruitment-plans.reject', $plan) }}" method="POST">
+                        @csrf
+                        <div class="modal-header">
+                            <h5 class="modal-title">Từ chối kế hoạch</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="rejection_reason{{ $plan->plan_id }}" class="form-label">Lý do từ chối</label>
+                                <textarea class="form-control" 
+                                          id="rejection_reason{{ $plan->plan_id }}" 
+                                          name="rejection_reason" 
+                                          rows="3" 
+                                          required></textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                            <button type="submit" class="btn btn-danger">
+                                <i class="bi bi-x-lg me-2"></i>Từ chối
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    @endif
+@endforeach
+
+<!-- Delete Modals -->
+@foreach($recruitmentPlans as $plan)
+    <div class="modal fade" id="deleteModal{{ $plan->plan_id }}" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form action="{{ route('admin.recruitment-plans.destroy', $plan) }}" method="POST">
+                    @csrf
+                    @method('DELETE')
+                    <div class="modal-header">
+                        <h5 class="modal-title">Xóa kế hoạch</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Bạn có chắc chắn muốn xóa kế hoạch này?</p>
+                        <p class="mb-0 text-danger small">
+                            <i class="bi bi-exclamation-triangle me-1"></i>
+                            Hành động này không thể hoàn tác.
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <button type="submit" class="btn btn-danger">
+                            <i class="bi bi-trash me-2"></i>Xóa
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+@endforeach
+
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 $(document).ready(function() {
-    // Xử lý sự kiện duyệt kế hoạch
-    $('.approve-plan').on('click', function() {
-        const planId = $(this).data('id');
-        
+    // Xử lý thông báo thành công
+    @if(session('success'))
         Swal.fire({
-            title: 'Xác nhận duyệt?',
-            text: "Bạn có chắc chắn muốn duyệt kế hoạch này?",
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonColor: '#28a745',
-            cancelButtonColor: '#6c757d',
-            confirmButtonText: 'Duyệt',
-            cancelButtonText: 'Hủy'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $.ajax({
-                    url: `/admin/recruitment-plans/${planId}/approve`,
-                    type: 'POST',
-                    data: {
-                        _token: '{{ csrf_token() }}'
-                    },
-                    success: function(response) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Thành công!',
-                            text: 'Kế hoạch đã được duyệt.',
-                            timer: 1500,
-                            showConfirmButton: false
-                        }).then(() => {
-                            window.location.reload();
-                        });
-                    },
-                    error: function(xhr) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Lỗi!',
-                            text: xhr.responseJSON?.message || 'Có lỗi xảy ra khi duyệt kế hoạch.'
-                        });
-                    }
-                });
-            }
+            icon: 'success',
+            title: 'Thành công!',
+            text: '{{ session('success') }}',
+            timer: 1500,
+            showConfirmButton: false
         });
-    });
+    @endif
 
-    // Xử lý sự kiện từ chối kế hoạch
-    $('.reject-plan').on('click', function() {
-        const planId = $(this).data('id');
-        
+    // Xử lý thông báo lỗi
+    @if(session('error'))
         Swal.fire({
-            title: 'Từ chối kế hoạch',
-            input: 'textarea',
-            inputLabel: 'Lý do từ chối',
-            inputPlaceholder: 'Nhập lý do từ chối...',
-            showCancelButton: true,
-            confirmButtonColor: '#dc3545',
-            cancelButtonColor: '#6c757d',
-            confirmButtonText: 'Từ chối',
-            cancelButtonText: 'Hủy',
-            inputValidator: (value) => {
-                if (!value) {
-                    return 'Vui lòng nhập lý do từ chối!';
-                }
-            }
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $.ajax({
-                    url: `/admin/recruitment-plans/${planId}/reject`,
-                    type: 'POST',
-                    data: {
-                        _token: '{{ csrf_token() }}',
-                        rejection_reason: result.value
-                    },
-                    success: function(response) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Thành công!',
-                            text: 'Kế hoạch đã bị từ chối.',
-                            timer: 1500,
-                            showConfirmButton: false
-                        }).then(() => {
-                            window.location.reload();
-                        });
-                    },
-                    error: function(xhr) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Lỗi!',
-                            text: xhr.responseJSON?.message || 'Có lỗi xảy ra khi từ chối kế hoạch.'
-                        });
-                    }
-                });
-            }
+            icon: 'error',
+            title: 'Lỗi!',
+            text: '{{ session('error') }}'
         });
-    });
+    @endif
 });
 </script>
 @endpush

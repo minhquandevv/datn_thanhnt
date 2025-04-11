@@ -27,14 +27,17 @@ class CheckRole
             $allowedRoutes = [
                 'admin.dashboard',
                 'admin.recruitment-plans.index',
+                'admin.recruitment-plans.show',
                 'admin.recruitment-plans.approve',
                 'admin.recruitment-plans.reject',
                 'admin.evaluations.index',
+                'admin.evaluations.show',
                 'logout'
             ];
 
-            if (!in_array($request->route()->getName(), $allowedRoutes)) {
-                return redirect()->route('admin.dashboard');
+            $currentRoute = $request->route()->getName();
+            if (!in_array($currentRoute, $allowedRoutes)) {
+                return redirect()->route('admin.dashboard')->with('error', 'Bạn không có quyền truy cập trang này.');
             }
 
             return $next($request);

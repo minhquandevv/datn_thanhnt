@@ -155,13 +155,13 @@ Route::middleware(['auth', 'check.role:admin,hr,director'])->prefix('admin')->na
     Route::delete('/departments/{department}', [DepartmentController::class, 'destroy'])->name('departments.destroy');
 
     // Recruitment plan routes
-    Route::resource('recruitment-plans', RecruitmentPlanController::class);
-    Route::post('/recruitment-plans/{recruitmentPlan}/submit', [RecruitmentPlanController::class, 'submit'])->name('recruitment-plans.submit');
-
-    // Recruitment plan review routes
     Route::get('/recruitment-plans', [RecruitmentPlanController::class, 'index'])->name('recruitment-plans.index');
+    Route::get('/recruitment-plans/{recruitmentPlan}', [RecruitmentPlanController::class, 'show'])->name('recruitment-plans.show');
     Route::post('/recruitment-plans/{recruitmentPlan}/approve', [RecruitmentPlanController::class, 'approve'])->name('recruitment-plans.approve');
     Route::post('/recruitment-plans/{recruitmentPlan}/reject', [RecruitmentPlanController::class, 'reject'])->name('recruitment-plans.reject');
+    Route::post('/recruitment-plans/{recruitmentPlan}/submit', [RecruitmentPlanController::class, 'submit'])->name('recruitment-plans.submit');
+    Route::delete('/recruitment-plans/{recruitmentPlan}', [RecruitmentPlanController::class, 'destroy'])->name('recruitment-plans.destroy');
+    Route::resource('recruitment-plans', RecruitmentPlanController::class)->except(['index', 'show', 'approve', 'reject', 'submit']);
 
     // Job Applications Routes
     Route::get('/job-applications', [ApplicationManagementController::class, 'index'])->name('job-applications.index');

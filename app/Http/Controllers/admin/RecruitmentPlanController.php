@@ -109,10 +109,6 @@ class RecruitmentPlanController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
-        if ($user->role === 'admin' && $recruitmentPlan->status !== 'pending') {
-            abort(403, 'Unauthorized action.');
-        }
-
         if ($user->role === 'hr') {
             return view('hr.recruitment-plans.show', compact('recruitmentPlan'));
         }
@@ -179,7 +175,7 @@ class RecruitmentPlanController extends Controller
 
     public function approve(RecruitmentPlan $recruitmentPlan)
     {
-        if (Auth::user()->role !== 'admin') {
+        if (!in_array(Auth::user()->role, ['admin', 'director'])) {
             abort(403, 'Unauthorized action.');
         }
         
@@ -188,20 +184,16 @@ class RecruitmentPlanController extends Controller
         }
 
         $recruitmentPlan->update([
-            'status' => 'approved',
-            'approved_by' => Auth::id(),
-            'approved_at' => now()
+            'status' => 'approved'
         ]);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Kế hoạch tuyển dụng đã được duyệt thành công.'
-        ]);
+        return redirect()->route('admin.recruitment-plans.index')
+            ->with('success', 'Kế hoạch tuyển dụng đã được duyệt thành công.');
     }
 
     public function reject(Request $request, RecruitmentPlan $recruitmentPlan)
     {
-        if (Auth::user()->role !== 'admin') {
+        if (!in_array(Auth::user()->role, ['admin', 'director'])) {
             abort(403, 'Unauthorized action.');
         }
         
@@ -215,14 +207,11 @@ class RecruitmentPlanController extends Controller
 
         $recruitmentPlan->update([
             'status' => 'rejected',
-            'rejection_reason' => $validated['rejection_reason'],
-            'rejected_by' => Auth::id(),
-            'rejected_at' => now()
+            'rejection_reason' => $validated['rejection_reason']
         ]);
 
         return redirect()->route('admin.recruitment-plans.index')
             ->with('success', 'Kế hoạch tuyển dụng đã bị từ chối.');
-            
     }
 
     public function submit(RecruitmentPlan $recruitmentPlan)
@@ -240,8 +229,7 @@ class RecruitmentPlanController extends Controller
         }
 
         $recruitmentPlan->update([
-            'status' => 'pending',
-            'submitted_at' => now()
+            'status' => 'pending'
         ]);
 
         return redirect()->route('hr.recruitment-plans.index')

@@ -19,7 +19,8 @@ class RecruitmentPlan extends Model
         'start_date',
         'end_date',
         'description',
-        'status'
+        'status',
+        'rejection_reason'
     ];
 
     protected $casts = [

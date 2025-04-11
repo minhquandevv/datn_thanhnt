@@ -18,6 +18,7 @@ return new class extends Migration
             $table->dateTime('end_date');
             $table->text('description');
             $table->enum('status', ['draft', 'pending', 'approved', 'rejected'])->default('draft');
+            $table->text('rejection_reason')->nullable();
             $table->timestamps();
         });
 

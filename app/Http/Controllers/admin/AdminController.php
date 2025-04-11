@@ -20,21 +20,7 @@ class AdminController extends Controller
 
     public function dashboard()
     {
-        $user = auth()->user();
-        
-        if ($user->role === 'director') {
-            $pendingPlans = RecruitmentPlan::where('status', 'pending')
-                ->with(['department', 'createdBy'])
-                ->get();
-                
-            return view('admin.dashboard', compact('pendingPlans'));
-        }
-        
-        // Xử lý cho các role khác (admin, hr)
-        $totalUsers = User::count();
-        $totalPlans = RecruitmentPlan::count();
-        
-        return view('admin.dashboard', compact('totalUsers', 'totalPlans'));
+        return view('admin.dexuattuyendungg'); 
     }
 
     public function candidate(Request $request)
