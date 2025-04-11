@@ -4,28 +4,45 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
 class CheckRole
 {
-    public function handle(Request $request, Closure $next, string $roles): Response
+    public function handle(Request $request, Closure $next, ...$roles): Response
     {
-        if (!auth()->check()) {
-            return redirect()->route('login')->with('error', 'Vui lòng đăng nhập để tiếp tục.');
+        if (!$request->user() || !$request->user()->role) {
+            return redirect()->route('login');
         }
 
-        $user = auth()->user();
-        $allowedRoles = explode(',', $roles);
-        
-        // Cho phép HR truy cập vào các trang admin
-        if (in_array('admin', $allowedRoles) && $user->role === 'hr') {
+        $user = $request->user();
+        $allowedRoles = is_array($roles) ? $roles : explode('|', $roles[0]);
+
+        // Cho phép HR truy cập các trang admin
+        if ($user->role === 'hr') {
             return $next($request);
         }
-        
+
+        // Cho phép Director truy cập dashboard và các trang được phép
+        if ($user->role === 'director') {
+            $allowedRoutes = [
+                'admin.dashboard',
+                'admin.recruitment-plans.index',
+                'admin.recruitment-plans.approve',
+                'admin.recruitment-plans.reject',
+                'admin.evaluations.index',
+                'logout'
+            ];
+
+            if (!in_array($request->route()->getName(), $allowedRoutes)) {
+                return redirect()->route('admin.dashboard');
+            }
+
+            return $next($request);
+        }
+
         // Kiểm tra role cho các trường hợp khác
         if (!in_array($user->role, $allowedRoles)) {
-            return redirect()->back()->with('error', 'Bạn không có quyền truy cập trang này.');
+            return redirect()->route('admin.dashboard');
         }
 
         return $next($request);

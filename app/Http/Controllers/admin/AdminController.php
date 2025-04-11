@@ -8,6 +8,7 @@ use App\Models\University;
 use Illuminate\Support\Facades\Storage;
 use App\Models\JobApplication;
 use App\Models\User;
+use App\Models\RecruitmentPlan;
 
 class AdminController extends Controller
 {
@@ -19,7 +20,21 @@ class AdminController extends Controller
 
     public function dashboard()
     {
-        return view('admin.dexuattuyendung'); 
+        $user = auth()->user();
+        
+        if ($user->role === 'director') {
+            $pendingPlans = RecruitmentPlan::where('status', 'pending')
+                ->with(['department', 'createdBy'])
+                ->get();
+                
+            return view('admin.dashboard', compact('pendingPlans'));
+        }
+        
+        // Xử lý cho các role khác (admin, hr)
+        $totalUsers = User::count();
+        $totalPlans = RecruitmentPlan::count();
+        
+        return view('admin.dashboard', compact('totalUsers', 'totalPlans'));
     }
 
     public function candidate(Request $request)

@@ -92,8 +92,8 @@ Route::middleware(['auth:candidate'])->group(function () {
 });
 
 //Admin routes
-Route::middleware(['auth', 'check.role:admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+Route::middleware(['auth', 'check.role:admin,hr,director'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
     Route::get('/candidates', [AdminController::class, 'candidate'])->name('candidates');
     Route::get('/candidates/{id}', [AdminController::class, 'showCandidate'])->name('candidates.show');
     Route::post('/candidates', [AdminController::class, 'storeCandidate'])->name('candidates.store');

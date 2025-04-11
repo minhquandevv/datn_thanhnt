@@ -298,6 +298,7 @@
                                 <option value="candidate">Ứng viên</option>
                                 <option value="hr">HR</option>
                                 <option value="admin">Quản trị viên</option>
+                                <option value="director">Giám đốc</option>
                             </select>
                         </div>
                     </div>
@@ -359,6 +360,7 @@
                                 <option value="candidate" {{ $user->role == 'candidate' ? 'selected' : '' }}>Ứng viên</option>
                                 <option value="hr" {{ $user->role == 'hr' ? 'selected' : '' }}>HR</option>
                                 <option value="admin" {{ $user->role == 'admin' ? 'selected' : '' }}>Quản trị viên</option>
+                                <option value="director" {{ $user->role == 'director' ? 'selected' : '' }}>Giám đốc</option>
                             </select>
                         </div>
                     </div>

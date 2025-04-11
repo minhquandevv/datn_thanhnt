@@ -514,7 +514,7 @@
                     <div class="user-name">{{ Auth::user()->name }}</div>
                     <div class="user-role">
                         <i class="bi bi-shield-check"></i>
-                        {{ Auth::user()->role === 'admin' ? 'Quản trị viên' : 'Nhân viên HR' }}
+                        {{ Auth::user()->role === 'admin' ? 'Quản trị viên' : (Auth::user()->role === 'hr' ? 'Nhân viên HR' : 'Giám đốc') }}
                     </div>
                 </div>
             </div>
@@ -522,145 +522,142 @@
             <div class="nav-section">
                 <div class="nav-section-title">Quản lý</div>
                 <ul class="nav flex-column">
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('admin.job-offers.*') ? 'active' : '' }}" href="{{ route('admin.job-offers') }}">
-                            <i class="bi bi-briefcase"></i>
-                           <span>Quản lý tin tuyển dụng</span> 
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('admin.universities.*') ? 'active' : '' }}" href="{{ route('admin.universities.index') }}">
-                            <i class="bi bi-building"></i>
-                            <span>Quản lý trường đại học</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('admin.candidates') ? 'active' : '' }}" 
-                           data-bs-toggle="collapse" 
-                           href="#candidatesSubmenu" 
-                           role="button" 
-                           aria-expanded="{{ request()->routeIs('admin.candidates') || request()->routeIs('admin.interviews.*') ? 'true' : 'false' }}" 
-                           aria-controls="candidatesSubmenu">
-                            <i class="bi bi-people"></i>
-                            <span>Hồ sơ ứng viên</span>
-                            <i class="bi bi-chevron-down ms-auto"></i>
-                        </a>
-                        <div class="collapse {{ request()->routeIs('admin.candidates') || request()->routeIs('admin.interviews.*') ? 'show' : '' }}" id="candidatesSubmenu">
-                            <ul class="nav flex-column ms-3 mt-2">
-                                <li class="nav-item">
-                                    <a class="nav-link {{ request()->routeIs('admin.candidates') ? 'active' : '' }}" 
-                                       href="{{ route('admin.candidates') }}">
-                                        <i class="bi bi-person-lines-fill"></i>
-                                        <span>Danh sách ứng viên</span>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link {{ request()->routeIs('admin.interviews.calendar') ? 'active' : '' }}" 
-                                       href="{{ route('admin.interviews.calendar') }}">
-                                        <i class="bi bi-calendar-check"></i>
-                                        <span>Lịch phỏng vấn</span>
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}" href="{{ route('admin.users.index') }}">
-                            <i class="bi bi-person-gear"></i>
-                            <span>Quản lý người dùng</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('admin.interns.*') ? 'active' : '' }}" 
-                           data-bs-toggle="collapse" 
-                           href="#internsSubmenu" 
-                           role="button" 
-                           aria-expanded="{{ request()->routeIs('admin.interns.*') ? 'true' : 'false' }}" 
-                           aria-controls="internsSubmenu">
-                            <i class="bi bi-person-badge"></i>
-                            <span>Quản lý thực tập sinh</span>
-                            <i class="bi bi-chevron-down ms-auto"></i>
-                        </a>
-                        <div class="collapse {{ request()->routeIs('admin.interns.*') ? 'show' : '' }}" id="internsSubmenu">
-                            <ul class="nav flex-column ms-3 mt-2">
-                                <li class="nav-item">
-                                    <a class="nav-link {{ request()->routeIs('admin.interns.index') ? 'active' : '' }}" 
-                                       href="{{ route('admin.interns.index') }}">
-                                        <i class="bi bi-list-ul"></i>
-                                        <span>Danh sách thực tập sinh</span>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link {{ request()->routeIs('admin.interns.accounts') ? 'active' : '' }}" 
-                                       href="{{ route('admin.interns.accounts') }}">
-                                        <i class="bi bi-key"></i>
-                                        <span>Quản lý tài khoản</span>
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('admin.mentors.*') ? 'active' : '' }}" href="{{ route('admin.mentors.index') }}">
-                            <i class="bi bi-person-workspace"></i>
-                            <span>Quản lý mentor</span>     
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('admin.evaluations.*') ? 'active' : '' }}" href="{{ route('admin.evaluations.index') }}">
-                            <i class="bi bi-graph-up"></i>
-                            <span>Đánh giá chất lượng thực tập sinh</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('admin.departments.*') ? 'active' : '' }}" href="{{ route('admin.departments.index') }}">
-                            <i class="bi bi-building"></i>
-                                <span>Quản lý phòng ban</span>
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('admin.job-applications.*') ? 'active' : '' }}" href="{{ route('admin.job-applications.index') }}">
-                            <i class="bi bi-file-earmark-text"></i>
-                            <span>Quản lý đơn ứng tuyển</span>
-                        </a>
-                    </li>
+                    @if(Auth::user()->role === 'admin')
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}" href="{{ route('admin.users.index') }}">
+                                <i class="bi bi-person-gear"></i>
+                                <span>Quản lý người dùng</span>
+                            </a>
+                        </li>
+                    @endif
 
                     @if(Auth::user()->role === 'hr')
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('hr.recruitment-plans.*') ? 'active' : '' }}" href="{{ route('hr.recruitment-plans.index') }}">
-                            <i class="bi bi-file-earmark-text"></i>
-                            <span>Quản lý kế hoạch tuyển dụng</span>
-                        </a>
-                    </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('admin.evaluations.*') ? 'active' : '' }}" href="{{ route('admin.evaluations.index') }}">
+                                <i class="bi bi-graph-up"></i>
+                                <span>Đánh giá chất lượng thực tập sinh</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('admin.recruitment-plans.*') ? 'active' : '' }}" href="{{ route('admin.recruitment-plans.index') }}">
+                                <i class="bi bi-file-earmark-text"></i>
+                                <span>Kế hoạch tuyển dụng</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('admin.job-offers.*') ? 'active' : '' }}" href="{{ route('admin.job-offers') }}">
+                                <i class="bi bi-briefcase"></i>
+                                <span>Tin tuyển dụng</span> 
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('admin.job-applications.*') ? 'active' : '' }}" href="{{ route('admin.job-applications.index') }}">
+                                <i class="bi bi-file-earmark-text"></i>
+                                <span>Quản lý đơn ứng tuyển</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('admin.candidates') ? 'active' : '' }}" 
+                               data-bs-toggle="collapse" 
+                               href="#candidatesSubmenu" 
+                               role="button" 
+                               aria-expanded="{{ request()->routeIs('admin.candidates') || request()->routeIs('admin.interviews.*') ? 'true' : 'false' }}" 
+                               aria-controls="candidatesSubmenu">
+                                <i class="bi bi-people"></i>
+                                <span>Hồ sơ ứng viên</span>
+                                <i class="bi bi-chevron-down ms-auto"></i>
+                            </a>
+                            <div class="collapse {{ request()->routeIs('admin.candidates') || request()->routeIs('admin.interviews.*') ? 'show' : '' }}" id="candidatesSubmenu">
+                                <ul class="nav flex-column ms-3 mt-2">
+                                    <li class="nav-item">
+                                        <a class="nav-link {{ request()->routeIs('admin.candidates') ? 'active' : '' }}" 
+                                           href="{{ route('admin.candidates') }}">
+                                            <i class="bi bi-person-lines-fill"></i>
+                                            <span>Danh sách ứng viên</span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link {{ request()->routeIs('admin.interviews.calendar') ? 'active' : '' }}" 
+                                           href="{{ route('admin.interviews.calendar') }}">
+                                            <i class="bi bi-calendar-check"></i>
+                                            <span>Lịch phỏng vấn</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('admin.interns.*') ? 'active' : '' }}" 
+                               data-bs-toggle="collapse" 
+                               href="#internsSubmenu" 
+                               role="button" 
+                               aria-expanded="{{ request()->routeIs('admin.interns.*') ? 'true' : 'false' }}" 
+                               aria-controls="internsSubmenu">
+                                <i class="bi bi-person-badge"></i>
+                                <span>Quản lý thực tập sinh</span>
+                                <i class="bi bi-chevron-down ms-auto"></i>
+                            </a>
+                            <div class="collapse {{ request()->routeIs('admin.interns.*') ? 'show' : '' }}" id="internsSubmenu">
+                                <ul class="nav flex-column ms-3 mt-2">
+                                    <li class="nav-item">
+                                        <a class="nav-link {{ request()->routeIs('admin.interns.index') ? 'active' : '' }}" 
+                                           href="{{ route('admin.interns.index') }}">
+                                            <i class="bi bi-list-ul"></i>
+                                            <span>Danh sách thực tập sinh</span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link {{ request()->routeIs('admin.interns.accounts') ? 'active' : '' }}" 
+                                           href="{{ route('admin.interns.accounts') }}">
+                                            <i class="bi bi-key"></i>
+                                            <span>Quản lý tài khoản</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('admin.mentors.*') ? 'active' : '' }}" href="{{ route('admin.mentors.index') }}">
+                                <i class="bi bi-person-workspace"></i>
+                                <span>Quản lý mentor</span>     
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('admin.departments.*') ? 'active' : '' }}" href="{{ route('admin.departments.index') }}">
+                                <i class="bi bi-building"></i>
+                                <span>Quản lý phòng ban</span>
+                            </a>
+                        </li>
                     @endif
 
-                    @if(Auth::user()->role === 'admin')
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('admin.recruitment-plans.*') ? 'active' : '' }}" href="{{ route('admin.recruitment-plans.index') }}">
-                            <i class="bi bi-clipboard-check"></i>
-                            <span>Duyệt kế hoạch tuyển dụng</span>
-                        </a>
-                    </li>
+                    @if(Auth::user()->role === 'director')
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('admin.recruitment-plans.*') ? 'active' : '' }}" href="{{ route('admin.recruitment-plans.index') }}">
+                                <i class="bi bi-file-earmark-text"></i>
+                                <span>Duyệt kế hoạch tuyển dụng</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('admin.evaluations.*') ? 'active' : '' }}" href="{{ route('admin.evaluations.index') }}">
+                                <i class="bi bi-graph-up"></i>
+                                <span>Xem đánh giá thực tập sinh</span>
+                            </a>
+                        </li>
                     @endif
                 </ul>
             </div>
 
-            <div class="nav-section">
-                <ul class="nav flex-column">
-                    <li class="nav-item">
-                        <form action="{{ route('logout') }}" method="POST">
-                            @csrf
-                            <button type="submit" class="logout-btn">
-                                <i class="bi bi-box-arrow-right"></i>
-                                <span>Đăng xuất</span>
-                            </button>
-                        </form>
-                    </li>
-                </ul>
+            <div class="mt-auto">
+                <form action="{{ route('logout') }}" method="POST">
+                    @csrf
+                    <button type="submit" class="logout-btn">
+                        <i class="bi bi-box-arrow-right"></i>
+                        <span>Đăng xuất</span>
+                    </button>
+                </form>
             </div>
         </nav>
-        
+
         <!-- Main Content -->
         <div class="main-content" id="mainContent">
             @if(session('success'))
@@ -680,16 +677,14 @@
             @endif
 
             @yield('content')
-            @yield('scripts')
         </div>
     </div>
 
-    <!-- Scripts -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <!-- JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    @stack('scripts')
     
     <script>
         // Sidebar Toggle
@@ -736,37 +731,10 @@
                 });
             }
 
-            function showConfirm(title, text, callback) {
-                Swal.fire({
-                    title: title,
-                    text: text,
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Đồng ý',
-                    cancelButtonText: 'Hủy'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        callback();
-                    }
-                });
-            }
-
-            // Handle form submission errors
-            const errors = @json($errors->all());
-            if (errors.length > 0) {
-                showError(errors.join('<br>'));
-            }
-
-            // Handle success message
-            const successMessage = @json(session('success'));
-            if (successMessage) {
-                showSuccess(successMessage);
-            }
+            // Make functions available globally
+            window.showSuccess = showSuccess;
+            window.showError = showError;
         });
     </script>
-    
-    @stack('scripts')
 </body>
 </html>
