@@ -623,6 +623,12 @@
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('admin.universities.*') ? 'active' : '' }}" href="{{ route('admin.universities.index') }}">
+                                <i class="bi bi-mortarboard"></i>
+                                <span>Quản lý trường học</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('admin.departments.*') ? 'active' : '' }}" href="{{ route('admin.departments.index') }}">
                                 <i class="bi bi-building"></i>
                                 <span>Quản lý phòng ban</span>
