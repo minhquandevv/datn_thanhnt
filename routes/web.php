@@ -24,7 +24,6 @@ use App\Http\Controllers\hr\JobApplicationController as HRJobApplicationControll
 use App\Http\Controllers\ApplicationManagementController;
 use App\Http\Controllers\admin\InterviewScheduleController;
 use App\Http\Controllers\admin\EvaluationController;
-use App\Http\Controllers\Admin\CandidateController as AdminCandidateController;
 
 // Authentication Routes
 Route::middleware('guest')->group(function () {
@@ -97,9 +96,13 @@ Route::middleware(['auth', 'check.role:admin,hr,director'])->prefix('admin')->na
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
     
     // Candidate routes - using the new controller
-    Route::get('/candidates', [AdminCandidateController::class, 'index'])->name('candidates');
-    Route::put('/candidates/{id}', [AdminCandidateController::class, 'update'])->name('candidates.update');
-    Route::put('/applications/{id}', [AdminCandidateController::class, 'updateApplication'])->name('applications.update');
+    Route::get('/candidates', [AdminController::class, 'candidate'])->name('candidates');
+    Route::get('/candidates/{id}', [AdminController::class, 'showCandidate'])->name('candidates.show');
+    Route::post('/candidates', [AdminController::class, 'storeCandidate'])->name('candidates.store');
+    Route::put('/candidates/{id}', [AdminController::class, 'updateCandidate'])->name('candidates.update');
+    Route::delete('/candidates/{id}', [AdminController::class, 'deleteCandidate'])->name('candidates.delete');
+    Route::put('/candidates/{id}/status', [AdminController::class, 'updateStatus'])->name('candidates.status');
+    Route::put('/applications/{id}', [AdminController::class, 'updateApplication'])->name('applications.update');
     
     Route::get('/', [AdminController::class, 'index'])->name('home');
     Route::get('/job-offers', [JobOfferController::class, 'index'])->name('job-offers');

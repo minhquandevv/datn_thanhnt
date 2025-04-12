@@ -47,7 +47,11 @@ class MentorController extends Controller
     public function edit(Mentors $mentor)
     {
         $departments = Department::all();
-        $mentor->load(['interns', 'assignedTasks']);
+        $mentor->load(['interns', 'assignedTasks' => function($query) {
+            $query->with('intern');
+        }]);
+        
+        return view('admin.mentors.edit', compact('mentor', 'departments'));
     }
 
     public function update(Request $request, Mentors $mentor)
@@ -90,4 +94,4 @@ class MentorController extends Controller
 
         return view('admin.mentors.show', compact('mentor'));
     }
-} 
+}

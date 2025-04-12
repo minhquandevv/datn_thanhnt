@@ -18,7 +18,7 @@ class CheckRole
         $allowedRoles = is_array($roles) ? $roles : explode('|', $roles[0]);
 
         // Cho phép HR truy cập các trang admin
-        if ($user->role === 'hr') {
+        if (in_array('admin', $allowedRoles) && $user->role === 'hr') {
             return $next($request);
         }
 

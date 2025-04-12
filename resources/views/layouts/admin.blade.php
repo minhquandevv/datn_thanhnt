@@ -489,6 +489,132 @@
             background-color: var(--primary-color);
             color: white;
         }
+
+        /* Modern Action Buttons - Circular Style */
+        .btn-action {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: #fff;
+            color: #dc3545;
+            border: 1px solid rgba(220, 53, 69, 0.3);
+            transition: all 0.2s ease;
+            cursor: pointer;
+            padding: 0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .btn-action:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+        }
+
+        .btn-action:active {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(220, 53, 69, 0.2);
+        }
+
+        .btn-edit {
+            color: #dc3545;
+        }
+
+        .btn-view {
+            color: #0d6efd;
+        }
+
+        .btn-delete {
+            color: #dc3545;
+        }
+
+        .btn-success-action {
+            color: #28a745;
+            border-color: rgba(40, 167, 69, 0.3);
+        }
+
+        .btn-success-action:hover {
+            background-color: #28a745;
+            color: #fff;
+            border-color: #28a745;
+        }
+
+        .btn-warning-action {
+            color: #ffc107;
+        }
+
+        .btn-info-action {
+            color: #17a2b8;
+        }
+
+        .btn-edit:hover {
+            background-color: #dc3545;
+            color: #fff;
+            border-color: #dc3545;
+        }
+
+        .btn-view:hover {
+            background-color: #0d6efd;
+            color: #fff;
+            border-color: #0d6efd;
+        }
+
+        .btn-delete:hover {
+            background-color: #dc3545;
+            color: #fff;
+            border-color: #dc3545;
+        }
+
+        .btn-success-action:hover {
+            background-color: #28a745;
+            color: #fff;
+            border-color: #28a745;
+        }
+
+        .btn-warning-action:hover {
+            background-color: #ffc107;
+            color: #fff;
+            border-color: #ffc107;
+        }
+
+        .btn-info-action:hover {
+            background-color: #17a2b8;
+            color: #fff;
+            border-color: #17a2b8;
+        }
+
+        .btn-action i {
+            font-size: 1rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary-action {
+            color: #0d6efd;
+            border-color: rgba(13, 110, 253, 0.3);
+        }
+
+        .btn-primary-action:hover {
+            background-color: #0d6efd;
+            color: #fff;
+            border-color: #0d6efd;
+        }
+
+        .btn-secondary-action {
+            color: #6c757d;
+            border-color: rgba(108, 117, 125, 0.3);
+        }
+
+        .btn-secondary-action:hover {
+            background-color: #6c757d;
+            color: #fff;
+            border-color: #6c757d;
+        }
     </style>
 </head>
 <body>
@@ -685,6 +811,7 @@
             @endif
 
             @yield('content')
+            @yield('scripts')
         </div>
     </div>
 

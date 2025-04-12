@@ -70,4 +70,28 @@ class ApplicationManagementController extends Controller
         
         return response()->download($path);
     }
-} 
+
+    /**
+     * Display the details of a specific job application.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function details($id)
+    {
+        $application = JobApplication::with([
+            'candidate', 
+            'candidate.university',
+            'candidate.education',
+            'candidate.skills',
+            'candidate.experience',
+            'jobOffer',
+            'jobOffer.position',
+            'jobOffer.department'
+        ])->findOrFail($id);
+
+        return view('admin.application-management.details', [
+            'application' => $application
+        ]);
+    }
+}
