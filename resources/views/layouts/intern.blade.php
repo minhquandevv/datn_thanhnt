@@ -12,6 +12,8 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Custom CSS -->
+    <link rel="icon" href="{{ asset('assets/Logo_viettel.png') }}" type="image/x-icon">
+
     <style>
         :root {
             --primary-color: #D40000;
