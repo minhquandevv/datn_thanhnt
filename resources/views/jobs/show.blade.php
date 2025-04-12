@@ -82,7 +82,6 @@
                                         <p><strong>Email:</strong> {{ $candidate->email }}</p>
                                         <p><strong>Số điện thoại:</strong> {{ $candidate->phone_number }}</p>
                                         <p><strong>Địa chỉ:</strong> {{ $candidate->address }}</p>
-                                        <p><strong>Kinh nghiệm:</strong> {{ $candidate->experience_year }} năm</p>
                                     </div>
                                 </div>
 

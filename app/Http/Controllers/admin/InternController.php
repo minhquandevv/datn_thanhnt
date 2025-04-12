@@ -22,10 +22,43 @@ use App\Models\Mentors;
 
 class InternController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $interns = Intern::with(['university', 'department', 'mentor'])->get();
-        return view('admin.interns.index', compact('interns'));
+        // Khởi tạo truy vấn với eager loading relationships
+        $query = Intern::with(['university', 'department', 'mentor']);
+        
+        // Tìm kiếm theo tên, email
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('fullname', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%");
+            });
+        }
+        
+        // Lọc theo trường học
+        if ($request->filled('university')) {
+            $query->where('university_id', $request->university);
+        }
+        
+        // Lọc theo phòng ban
+        if ($request->filled('department')) {
+            $query->where('department_id', $request->department);
+        }
+        
+        // Lọc theo trạng thái
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+        
+        // Phân trang kết quả
+        $interns = $query->paginate(10);
+        
+        // Lấy danh sách trường học và phòng ban cho dropdown lọc
+        $universities = University::all();
+        $departments = Department::all();
+        
+        return view('admin.interns.index', compact('interns', 'universities', 'departments'));
     }
 
     public function create()
@@ -462,4 +495,4 @@ class InternController extends Controller
 
         return response()->download($tempFile, $filename)->deleteFileAfterSend(true);
     }
-} 
+}

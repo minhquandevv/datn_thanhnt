@@ -72,6 +72,37 @@
     display: flex;
     align-items: center;
     justify-content: center;
+
+/* Thêm CSS cho khu vực lọc nâng cao */
+.search-section {
+    transition: all 0.3s ease;
+}
+.filter-toggle {
+    cursor: pointer;
+    color: #dc3545;
+    font-weight: 500;
+}
+.filter-toggle:hover {
+    text-decoration: underline;
+}
+.filter-badge {
+    font-size: 0.7rem;
+    padding: 0.25em 0.5em;
+    margin-left: 5px;
+    vertical-align: middle;
+}
+.clear-filter {
+    color: #dc3545;
+    text-decoration: none;
+    font-size: 0.85rem;
+}
+.clear-filter:hover {
+    text-decoration: underline;
+}
+.select2-container--bootstrap-5 .select2-selection {
+    border-left: none;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
 }
 </style>
 @endpush
@@ -82,13 +113,22 @@
     <div class="row">
         <div class="col-12">
             <div class="card shadow-sm">
-                <div class="card-header bg-white py-3">
+                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
                     <h1 class="h4 text-danger fw-bold mb-0">
                         <i class="bi bi-person-badge me-2"></i>                        
                         Quản lý ứng viên
                     </h1>
-        </div>
-            <div class="card-body">
+                    
+                    <div>
+                        <span class="filter-toggle" id="toggleAdvancedSearch">
+                            <i class="bi bi-funnel me-1"></i> Lọc nâng cao
+                            @if(request()->anyFilled(['university_id', 'gender', 'experience_min', 'experience_max', 'finding_job', 'active']))
+                                <span class="badge bg-danger filter-badge">{{ count(array_filter(request()->only(['university_id', 'gender', 'experience_min', 'experience_max', 'finding_job', 'active']))) }}</span>
+                            @endif
+                        </span>
+                    </div>
+                </div>
+                <div class="card-body">
                     <!-- Stats Cards -->
                     <div class="row g-4 mb-4">
                         <div class="col-md-3">
@@ -178,15 +218,6 @@
                                     </div>
                                     <div class="col-md-3">
                                         <div class="form-group">
-                                            <label class="form-label">Số điện thoại</label>
-                                            <div class="input-group">
-                                                <span class="input-group-text"><i class="bi bi-telephone text-danger"></i></span>
-                                                <input type="text" class="form-control" name="phone_number" placeholder="Tìm SĐT" value="{{ request('phone_number') }}">
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <div class="form-group">
                                             <label class="form-label">Trường học</label>
                                             <div class="input-group">
                                                 <span class="input-group-text"><i class="bi bi-building text-danger"></i></span>
@@ -199,91 +230,230 @@
                                                     @endforeach
                                                 </select>
                                             </div>
-                </div>
-                </div>
-                        <div class="col-md-3">
-                            <div class="form-group">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
                                             <label class="form-label">&nbsp;</label>
                                             <button type="submit" class="btn btn-danger w-100">
-                                    <i class="bi bi-search me-2"></i>Tìm kiếm
-                                </button>
-                </div>
-                </div>
-            </div>
-        </form>
-            </div>
-        </div>
+                                                <i class="bi bi-search me-2"></i>Tìm kiếm
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Advanced Search Options - Collapsible -->
+                                <div class="row g-3 mt-2 advanced-search-section" id="advancedSearchSection" style="{{ request()->anyFilled(['gender', 'experience_min', 'experience_max', 'finding_job', 'active', 'skill', 'phone_number']) ? '' : 'display: none;' }}">
+                                    <div class="col-12">
+                                        <hr class="text-muted">
+                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                            <h6 class="fw-bold text-danger mb-0">Tìm kiếm nâng cao</h6>
+                                            <a href="{{ route('admin.candidates') }}" class="clear-filter">
+                                                <i class="bi bi-x-circle"></i> Xóa bộ lọc
+                                            </a>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="form-label">Số điện thoại</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="bi bi-telephone text-danger"></i></span>
+                                                <input type="text" class="form-control" name="phone_number" placeholder="Tìm SĐT" value="{{ request('phone_number') }}">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="form-label">Giới tính</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="bi bi-gender-ambiguous text-danger"></i></span>
+                                                <select class="form-select" name="gender">
+                                                    <option value="">Tất cả</option>
+                                                    <option value="male" {{ request('gender') == 'male' ? 'selected' : '' }}>Nam</option>
+                                                    <option value="female" {{ request('gender') == 'female' ? 'selected' : '' }}>Nữ</option>
+                                                    <option value="other" {{ request('gender') == 'other' ? 'selected' : '' }}>Khác</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Kinh nghiệm làm việc (năm)</label>
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <div class="input-group">
+                                                        <span class="input-group-text"><i class="bi bi-dash-circle text-danger"></i></span>
+                                                        <input type="number" min="0" class="form-control" name="experience_min" placeholder="Từ" value="{{ request('experience_min') }}">
+                                                    </div>
+                                                </div>
+                                                <div class="col-6">
+                                                    <div class="input-group">
+                                                        <span class="input-group-text"><i class="bi bi-plus-circle text-danger"></i></span>
+                                                        <input type="number" min="0" class="form-control" name="experience_max" placeholder="Đến" value="{{ request('experience_max') }}">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="form-label">Trạng thái tìm việc</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="bi bi-briefcase text-danger"></i></span>
+                                                <select class="form-select" name="finding_job">
+                                                    <option value="">Tất cả</option>
+                                                    <option value="1" {{ request('finding_job') == '1' ? 'selected' : '' }}>Đang tìm việc</option>
+                                                    <option value="0" {{ request('finding_job') == '0' ? 'selected' : '' }}>Không tìm việc</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="form-label">Trạng thái hiển thị</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="bi bi-eye text-danger"></i></span>
+                                                <select class="form-select" name="active">
+                                                    <option value="">Tất cả</option>
+                                                    <option value="1" {{ request('active') == '1' ? 'selected' : '' }}>Đang hoạt động</option>
+                                                    <option value="0" {{ request('active') == '0' ? 'selected' : '' }}>Đã ẩn</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Kỹ năng</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="bi bi-gear text-danger"></i></span>
+                                                <input type="text" class="form-control" name="skill" placeholder="Tìm kỹ năng" value="{{ request('skill') }}">
+                                            </div>
+                                            <small class="text-muted">Nhập tên kỹ năng (VD: Java, Python, Marketing,...)</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Kết quả tìm kiếm -->
+                    @if(request()->anyFilled(['fullname', 'email', 'phone_number', 'university_id', 'gender', 'experience_min', 'experience_max', 'finding_job', 'active', 'skill']))
+                        <div class="alert alert-info mb-4">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <i class="bi bi-info-circle me-2"></i>
+                                    <span>Tìm thấy <strong>{{ $candidates->count() }}</strong> kết quả phù hợp</span>
+                                    
+                                    @if(request('fullname'))
+                                        <span class="badge bg-danger ms-2">Tên: {{ request('fullname') }}</span>
+                                    @endif
+                                    
+                                    @if(request('email'))
+                                        <span class="badge bg-danger ms-2">Email: {{ request('email') }}</span>
+                                    @endif
+                                    
+                                    @if(request('phone_number'))
+                                        <span class="badge bg-danger ms-2">SĐT: {{ request('phone_number') }}</span>
+                                    @endif
+                                    
+                                    @if(request('university_id'))
+                                        @php
+                                            $uni = $universities->where('university_id', request('university_id'))->first();
+                                        @endphp
+                                        <span class="badge bg-danger ms-2">Trường: {{ $uni ? $uni->name : request('university_id') }}</span>
+                                    @endif
+                                    
+                                    @if(request('gender'))
+                                        <span class="badge bg-danger ms-2">Giới tính: {{ request('gender') == 'male' ? 'Nam' : (request('gender') == 'female' ? 'Nữ' : 'Khác') }}</span>
+                                    @endif
+                                    
+                                    @if(request('active') !== null && request('active') !== '')
+                                        <span class="badge bg-danger ms-2">{{ request('active') == '1' ? 'Đang hoạt động' : 'Đã ẩn' }}</span>
+                                    @endif
+                                    
+                                    @if(request('skill'))
+                                        <span class="badge bg-danger ms-2">Kỹ năng: {{ request('skill') }}</span>
+                                    @endif
+                                </div>
+                                <a href="{{ route('admin.candidates') }}" class="btn btn-outline-danger btn-sm">
+                                    <i class="bi bi-x-circle"></i> Xóa tìm kiếm
+                                </a>
+                            </div>
+                        </div>
+                    @endif
 
                     <!-- Main Content Table -->
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
                             <thead class="table-light">
-                            <tr>
+                                <tr>
                                     <th class="text-center" style="width: 120px">Thao tác</th>
-                                <th class="text-center" style="width: 60px">ID</th>
-                                <th class="text-center" style="width: 80px">Ảnh</th>
-                                <th style="min-width: 200px">Họ tên</th>
-                                <th style="min-width: 250px">Thông tin cơ bản</th>
-                                <th style="min-width: 200px">Thông tin khác</th>
-                                <th class="text-center" style="width: 120px">Trạng thái</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($candidates as $candidate)
-                    <tr>
+                                    <th class="text-center" style="width: 60px">ID</th>
+                                    <th class="text-center" style="width: 80px">Ảnh</th>
+                                    <th style="min-width: 200px">Họ tên</th>
+                                    <th style="min-width: 250px">Thông tin cơ bản</th>
+                                    <th style="min-width: 200px">Thông tin khác</th>
+                                    <th class="text-center" style="width: 120px">Trạng thái</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($candidates as $candidate)
+                                    <tr>
                                         <td class="text-center">
                                             <div class="btn-group">
                                                 <button class="btn btn-sm btn-outline-danger me-2" data-bs-toggle="modal" data-bs-target="#viewModal{{ $candidate->id }}" title="Xem chi tiết">
                                                     <i class="bi bi-eye"></i>
                                                 </button>
-                                                <form action="{{ route('admin.candidates.update', $candidate->id) }}" method="POST" class="d-inline">
-                                                    @csrf
-                                                    @method('PUT')
-                                                    <input type="hidden" name="active" value="{{ $candidate->active ? 0 : 1 }}">
-                                                    <button type="submit" class="btn btn-sm {{ $candidate->active ? 'btn-outline-danger' : 'btn-outline-danger' }}" 
-                                                            onclick="return confirm('{{ $candidate->active ? 'Bạn có chắc muốn ẩn ứng viên này?' : 'Bạn có chắc muốn hiển thị ứng viên này?' }}')"
-                                                            title="{{ $candidate->active ? 'Ẩn ứng viên' : 'Hiện ứng viên' }}">
-                                                        <i class="bi {{ $candidate->active ? 'bi-eye-slash' : 'bi-eye' }}"></i>
-                                                    </button>
-                                                </form>
+                                                <button type="button" class="btn btn-sm btn-outline-danger" 
+                                                        data-bs-toggle="modal" 
+                                                        data-bs-target="#statusModal{{ $candidate->id }}"
+                                                        title="{{ $candidate->active ? 'Ẩn ứng viên' : 'Hiện ứng viên' }}">
+                                                    <i class="bi {{ $candidate->active ? 'bi-eye-slash' : 'bi-eye' }}"></i>
+                                                </button>
                                             </div>
                                         </td>
                                         <td class="text-center">
                                             <div class="avatar-circle bg-danger bg-opacity-10 text-danger mx-auto">
-                                                {{ $candidate->id }}
+                                               {{ $candidate->id }}
                                             </div>
                                         </td>
-                                    <td class="text-center">
-                                        @if($candidate->url_avatar)
-                                            <img src="{{ asset('uploads/' . $candidate->url_avatar) }}" alt="Avatar" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">
-                                        @else
-                                                <div class="avatar-circle bg-danger bg-opacity-10 text-danger mx-auto">
-                                                {{ substr($candidate->fullname, 0, 1) }}
-                                            </div>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        <div class="fw-bold mb-1">{{ $candidate->fullname }}</div>
-                                        <div class="text-muted small">
-                                            @if ($candidate->gender == 'male')
-                                                    <i class="bi bi-gender-male text-danger"></i> Nam
-                                            @elseif ($candidate->gender == 'female')
-                                                <i class="bi bi-gender-female text-danger"></i> Nữ
+                                        <td class="text-center">
+                                            @if($candidate->url_avatar)
+                                                <img src="{{ asset('uploads/' . $candidate->url_avatar) }}" alt="Avatar" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">
                                             @else
-                                                    <i class="bi bi-gender-trans text-danger"></i> Khác
+                                                <div class="avatar-circle bg-danger bg-opacity-10 text-danger mx-auto">
+                                                    {{ substr($candidate->fullname, 0, 1) }}
+                                                </div>
                                             @endif
-                                        </div>
-                        </td>
-                                    <td>
-                                        <div class="mb-1">
+                                        </td>
+                                        <td>
+                                            <div class="fw-bold mb-1">{{ $candidate->fullname }}</div>
+                                            <div class="text-muted small">
+                                                @if ($candidate->gender == 'male')
+                                                    <i class="bi bi-gender-male text-danger"></i> Nam
+                                                @elseif ($candidate->gender == 'female')
+                                                    <i class="bi bi-gender-female text-danger"></i> Nữ
+                                                @else
+                                                    <i class="bi bi-gender-trans text-danger"></i> Khác
+                                                @endif
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="mb-1">
                                                 <i class="bi bi-envelope text-danger me-2"></i>
-                                            <span class="text-muted">{{ $candidate->email }}</span>
-                                </div>
-                                        <div class="mb-1">
+                                                <span class="text-muted">{{ $candidate->email }}</span>
+                                            </div>
+                                            <div class="mb-1">
                                                 <i class="bi bi-phone text-danger me-2"></i>
-                                            <span class="text-muted">{{ $candidate->phone_number }}</span>
-                                        </div>
-                                        <div>
+                                                <span class="text-muted">{{ $candidate->phone_number }}</span>
+                                            </div>
+                                            <div>
                                                 <i class="bi bi-building text-danger me-2"></i>
                                                 <span class="text-muted">
                                                     @if($candidate->university)
@@ -292,40 +462,30 @@
                                                         Chưa cập nhật
                                                     @endif
                                                 </span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="mb-1">
-                                            <span class="fw-medium">CCCD/CMND:</span>
-                                            <span class="text-muted">{{ $candidate->identity_number }}</span>
-                                        </div>
-                                        <div class="mb-1">
-                                            <span class="fw-medium">Kinh nghiệm:</span>
-                                            <span class="text-muted">{{ $candidate->experience_year ?? 'Chưa có' }}</span>
-                                        </div>
-                                        <div>
-                                            <span class="fw-medium">Đang tìm việc:</span>
-                                            <span class="text-muted">{{ $candidate->finding_job ? 'Có' : 'Không' }}</span>
-                                        </div>
-                                    </td>
-                                    <td class="text-center">
-                                        @if ($candidate->active)
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="mb-1">
+                                                <span class="fw-medium">CCCD/CMND:</span>
+                                                <span class="text-muted">{{ $candidate->identity_number }}</span>
+                                            </div>
+                                        </td>
+                                        <td class="text-center">
+                                            @if ($candidate->active)
                                                 <span class="badge bg-danger-subtle text-danger">
-                                                <i class="bi bi-check-circle me-1"></i>Hoạt động
-                                            </span>
-                                        @else
-                                            <span class="badge bg-danger-subtle text-danger">
-                                                <i class="bi bi-x-circle me-1"></i>Đã ẩn
-                                            </span>
-                                        @endif
-                                    </td>
-                                        
-                                </tr>
-                @endforeach
-            </tbody>
-        </table>
+                                                    <i class="bi bi-check-circle me-1"></i>Hoạt động
+                                                </span>
+                                            @else
+                                                <span class="badge bg-danger-subtle text-danger">
+                                                    <i class="bi bi-x-circle me-1"></i>Đã ẩn
+                                                </span>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
                     </div>
-                </div>
                 </div>
             </div>
         </div>
@@ -358,7 +518,7 @@
                                     @if($candidate->url_avatar)
                                         <img src="{{ asset('uploads/' . $candidate->url_avatar) }}" alt="Avatar" class="img-thumbnail" style="max-width: 200px;">
                                     @else
-                                    <div class="bg-danger bg-opacity-10 text-white d-flex align-items-center justify-content-center" style="width: 200px; height: 200px;">
+                                        <div class="bg-danger bg-opacity-10 text-white d-flex align-items-center justify-content-center" style="width: 200px; height: 200px;">
                                             {{ substr($candidate->fullname, 0, 1) }}
                                         </div>
                                     @endif
@@ -369,14 +529,6 @@
                                         <img src="{{ asset('uploads/' . $candidate->identity_image) }}" alt="Identity Card" class="img-thumbnail" style="max-width: 200px;">
                                     @else
                                         <p class="text-muted">Chưa có ảnh CCCD/CMND</p>
-                                    @endif
-                                </div>
-                                <div class="col-md-4 mb-3">
-                                    <h6>Ảnh công ty</h6>
-                                    @if($candidate->image_company)
-                                        <img src="{{ asset('uploads/' . $candidate->image_company) }}" alt="Company" class="img-thumbnail" style="max-width: 200px;">
-                                    @else
-                                        <p class="text-muted">Chưa có ảnh công ty</p>
                                     @endif
                                 </div>
                             </div>
@@ -401,8 +553,6 @@
                                 <div class="col-md-6 mb-3">
                                     <h6>Thông tin khác</h6>
                                     <p><strong>CCCD/CMND:</strong> {{ $candidate->identity_number }}</p>
-                                    <p><strong>Kinh nghiệm:</strong> {{ $candidate->experience_year ?? 'Chưa có' }} năm</p>
-                                    <p><strong>Trạng thái tìm việc:</strong> {{ $candidate->finding_job ? 'Đang tìm việc' : 'Không tìm việc' }}</p>
                                 </div>
                             </div>
 
@@ -515,17 +665,6 @@
                                     </tbody>
                                 </table>
                             </div>
-
-                            <!-- Mong muốn -->
-                            <h6 class="mt-4">Mong muốn</h6>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <p><strong>Mức lương mong muốn:</strong> {{ $candidate->desires->pay_from ?? 'Chưa cập nhật' }} - {{ $candidate->desires->pay_to ?? 'Chưa cập nhật' }}</p>
-                                </div>
-                                <div class="col-md-6">
-                                    <p><strong>Địa điểm mong muốn:</strong> {{ $candidate->desires->location ?? 'Chưa cập nhật' }}</p>
-                                </div>
-                            </div>
                         </div>
 
                         <!-- Đơn ứng tuyển -->
@@ -622,6 +761,45 @@
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endforeach
+
+    <!-- Modal cập nhật trạng thái ứng viên -->
+    @foreach ($candidates as $candidate)
+    <div class="modal fade" id="statusModal{{ $candidate->id }}" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header {{ $candidate->active ? 'bg-danger' : 'bg-success' }} text-white">
+                    <h5 class="modal-title">{{ $candidate->active ? 'Ẩn ứng viên' : 'Hiển thị ứng viên' }}</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center mb-4">
+                        <i class="bi {{ $candidate->active ? 'bi-eye-slash' : 'bi-eye' }} text-{{ $candidate->active ? 'danger' : 'success' }} fs-1"></i>
+                    </div>
+                    <p class="text-center fs-5">
+                        Bạn có chắc chắn muốn {{ $candidate->active ? 'ẩn' : 'hiển thị' }} ứng viên <strong>{{ $candidate->fullname }}</strong> không?
+                    </p>
+                    <p class="text-center text-muted small">
+                        {{ $candidate->active ? 'Ứng viên sẽ không hiển thị trong các danh sách công khai sau khi bị ẩn.' : 'Ứng viên sẽ hiển thị trong các danh sách công khai sau khi được kích hoạt.' }}
+                    </p>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle me-2"></i>Hủy
+                    </button>
+                    <form action="{{ route('admin.candidates.update', $candidate->id) }}" method="POST" class="d-inline">
+                        @csrf
+                        @method('PUT')
+                        <input type="hidden" name="active" value="{{ $candidate->active ? 0 : 1 }}">
+                        <button type="submit" class="btn {{ $candidate->active ? 'btn-danger' : 'btn-success' }}">
+                            <i class="bi {{ $candidate->active ? 'bi-eye-slash me-2' : 'bi-eye me-2' }}"></i>
+                            {{ $candidate->active ? 'Ẩn ứng viên' : 'Hiển thị ứng viên' }}
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -739,24 +917,24 @@
                             <form action="{{ route('admin.applications.update', $application->id) }}" method="POST">
                                 @csrf
                                 @method('PUT')
-                        <div class="mb-3">
+                                <div class="mb-3">
                                     <label class="form-label fw-bold">Cập nhật trạng thái</label>
                                     <select class="form-select" name="status">
                                         @foreach($modalStatusTexts as $value => $text)
                                             <option value="{{ $value }}" {{ $application->status == $value ? 'selected' : '' }}>
                                                 {{ $text }}
                                             </option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="mb-3">
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="mb-3">
                                     <label class="form-label fw-bold">Phản hồi</label>
                                     <textarea class="form-control" name="feedback" rows="3">{{ $application->feedback }}</textarea>
                                 </div>
                                 <button type="submit" class="btn btn-primary">Cập nhật</button>
                             </form>
                         </div>
-                        </div>
+                    </div>
                 </div>
             </div>
             @endforeach
@@ -781,6 +959,36 @@ $(document).ready(function() {
     
     $('.modal').on('hide.bs.modal', function (e) {
         $(this).addClass("fade");
+    });
+    
+    // Toggle advanced search section
+    $('#toggleAdvancedSearch').on('click', function() {
+        $('#advancedSearchSection').slideToggle();
+    });
+    
+    // Auto-submit khi select thay đổi
+    $('.auto-submit').change(function() {
+        $('#searchForm').submit();
+    });
+    
+    // Xử lý log cho debug
+    console.log('Form initialized, request params:', {
+        fullname: "{{ request('fullname') }}",
+        email: "{{ request('email') }}",
+        phone_number: "{{ request('phone_number') }}",
+        university_id: "{{ request('university_id') }}",
+        gender: "{{ request('gender') }}",
+        experience_min: "{{ request('experience_min') }}",
+        experience_max: "{{ request('experience_max') }}",
+        finding_job: "{{ request('finding_job') }}",
+        active: "{{ request('active') }}",
+        skill: "{{ request('skill') }}"
+    });
+    
+    // Hiệu ứng cho modal cập nhật trạng thái
+    $('.status-modal-btn').click(function() {
+        const modal = $($(this).data('bs-target'));
+        modal.find('.modal-dialog').addClass('animate__animated animate__bounceIn');
     });
 });
 </script>

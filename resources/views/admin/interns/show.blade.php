@@ -72,7 +72,15 @@
                                             <div class="info-grid">
                                                 <div class="info-item mb-3">
                                                     <label class="text-muted small mb-1">Trường học</label>
-                                                    <p class="mb-0">{{ $intern->university ? $intern->university->name : 'Chưa phân công' }}</p>
+                                                    <p class="mb-0">
+                                                        @if($intern->university)
+                                                            {{ $intern->university->name }}
+                                                        @elseif($intern->university_id)
+                                                            {{ \App\Models\University::find($intern->university_id)->name ?? 'Chưa phân công' }}
+                                                        @else
+                                                            Chưa phân công
+                                                        @endif
+                                                    </p>
                                                 </div>
                                                 <div class="info-item mb-3">
                                                     <label class="text-muted small mb-1">Chuyên ngành</label>
@@ -187,54 +195,6 @@
                             </div>
                         </div>
                     </div>
-
-                    <!-- University and Department Info -->
-                    <div class="row g-4 mt-2">
-                        <div class="col-md-6">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h5 class="card-title mb-0">
-                                        <i class="bi bi-building text-danger me-1"></i>
-                                        Thông tin trường đại học
-                                    </h5>
-                                </div>
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <p><strong>Tên trường:</strong> {{ $intern->university ? $intern->university->name : 'Chưa phân công' }}</p>
-                                            <p><strong>Địa chỉ:</strong> {{ $intern->university ? $intern->university->address : 'N/A' }}</p>
-                                            <p><strong>Website:</strong> 
-                                                @if($intern->university && $intern->university->website)
-                                                    <a href="{{ $intern->university->website }}" target="_blank">{{ $intern->university->website }}</a>
-                                                @else
-                                                    N/A
-                                                @endif
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h5 class="card-title mb-0">
-                                        <i class="bi bi-building text-danger me-1"></i>
-                                        Thông tin phòng ban
-                                    </h5>
-                                </div>
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <p><strong>Tên phòng ban:</strong> {{ $intern->department ? $intern->department->name : 'Chưa phân công' }}</p>
-                                            <p><strong>Địa chỉ:</strong> {{ $intern->department ? $intern->department->location : 'N/A' }}</p>
-                                            <p><strong>Mô tả:</strong> {{ $intern->department ? $intern->department->description : 'N/A' }}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -303,4 +263,4 @@
         margin-right: 0.5rem;
     }
 </style>
-@endsection 
+@endsection
