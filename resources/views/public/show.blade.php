@@ -284,12 +284,6 @@
                                 <p><i class="bi bi-telephone"></i> {{ $candidate->phone_number }}</p>
                                 <p><i class="bi bi-geo-alt"></i> {{ $candidate->address }}</p>
                             </div>
-                            <div class="col-md-6">
-                                <p><i class="bi bi-briefcase"></i> {{ $candidate->experience_year }} năm kinh nghiệm</p>
-                                @if ($candidate->position)
-                                    <p><i class="bi bi-person-badge"></i> {{ $candidate->position }}</p>
-                                @endif
-                            </div>
                         </div>
                     </div>
                 </div>
