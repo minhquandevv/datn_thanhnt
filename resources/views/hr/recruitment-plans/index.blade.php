@@ -44,10 +44,10 @@
                 <table class="table table-hover">
                     <thead class="table-light">
                         <tr>
-                            <th class="text-center" style="width: 150px">Thao tác</th>
+                            <th class="text-center" style="width: 200px">Thao tác</th>
                             <th class="text-center" style="width: 60px">ID</th>
-                            <th>Tên kế hoạch</th>
-                            <th>Trường đại học</th>
+                            <th style="width: 200px" >Tên kế hoạch</th>
+                            <th style="width: 350px" >Trường đại học</th>
                             <th class="text-center">Thời gian</th>
                             <th class="text-center">Trạng thái</th>
 
@@ -82,7 +82,6 @@
                                            data-bs-toggle="tooltip" 
                                            title="Xem chi tiết">
                                             <i class="bi bi-eye"></i>
-                                            <span class="d-none d-md-inline ms-1">Chi tiết</span>
                                         </a>
                                 
                                         @if($plan->status === 'draft')
@@ -92,7 +91,6 @@
                                                data-bs-toggle="tooltip"
                                                title="Chỉnh sửa">
                                                 <i class="bi bi-pencil"></i>
-                                                <span class="d-none d-md-inline ms-1">Sửa</span>
                                             </a>
                                 
                                             {{-- Nút gửi duyệt --}}
@@ -103,7 +101,7 @@
                                                     data-bs-toggle="tooltip"
                                                     title="Nộp duyệt">
                                                 <i class="bi bi-send"></i>
-                                                <span class="d-none d-md-inline ms-1">Duyệt</span>
+     
                                             </button>
                                 
                                             {{-- Nút xóa --}}
@@ -114,7 +112,6 @@
                                                     data-bs-toggle="tooltip"
                                                     title="Xóa">
                                                 <i class="bi bi-trash"></i>
-                                                <span class="d-none d-md-inline ms-1">Xóa</span>
                                             </button>
                                         @endif
                                     </div>
