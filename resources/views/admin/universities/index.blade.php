@@ -54,7 +54,6 @@
                 <table class="table table-hover mb-0" id="universityTable">
                     <thead class="bg-light">
                         <tr>
-                            <th class="border-0">ID</th>
                             <th class="border-0">Tên trường</th>
                             <th class="border-0">Người đại diện</th>
                             <th class="border-0">Chức vụ</th>
@@ -66,14 +65,6 @@
                     <tbody>
                         @forelse($universities as $university)
                             <tr>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <div class="avatar-circle bg-danger bg-opacity-10 text-danger me-2">
-                                            {{ substr($university->university_id, 0, 1) }}
-                                        </div>
-                                        {{ $university->university_id }}
-                                    </div>
-                                </td>
                                 <td>
                                     <div class="d-flex align-items-center">
                                         <i class="bi bi-building text-danger me-2"></i>
