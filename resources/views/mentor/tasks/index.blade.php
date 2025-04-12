@@ -122,18 +122,17 @@
                                        class="btn btn-warning btn-sm">
                                         <i class="bi bi-pencil"></i>
                                     </a>
-                                    <button type="button" 
-                                            class="btn btn-primary btn-sm"
-                                            data-bs-toggle="modal" 
-                                            data-bs-target="#commentModal{{ $task->task_id }}">
-                                        <i class="bi bi-chat-dots"></i>
-                                    </button>
-                                    <button type="button" 
-                                            class="btn btn-danger btn-sm"
-                                            data-bs-toggle="modal" 
-                                            data-bs-target="#deleteModal{{ $task->task_id }}">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
+                                    <button class="btn btn-sm btn-primary btn-mentor-comment"
+                                        data-task-id="{{ $task->task_id }}"
+                                        data-task-status="{{ $task->status }}"
+                                        data-comment="{{ $task->mentor_comment }}"
+                                        data-evaluation="{{ $task->evaluation }}">
+                                    <i class="bi bi-chat-dots"></i>
+                                </button>
+                                <button class="btn btn-sm btn-danger btn-mentor-delete"
+                                        data-task-id="{{ $task->task_id }}">
+                                    <i class="bi bi-trash"></i>
+                                </button>
                                 </div>
 
                                 <!-- Comment Modal -->
@@ -218,10 +217,144 @@
 
             @if($tasks instanceof \Illuminate\Pagination\LengthAwarePaginator)
                 <div class="mt-4">
-                    {{ $tasks->appends(request()->query())->links() }}
-                </div>
+                    {{ $tasks->appends(request()->query())->onEachSide(1)->links('vendor.pagination.custom-bootstrap') }}                </div>
             @endif
         </div>
     </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+    // 📝 Nhận xét mentor
+    document.querySelectorAll('.btn-mentor-comment').forEach(button => {
+    button.addEventListener('click', () => {
+        const taskId = button.dataset.taskId;
+        const status = button.dataset.taskStatus;
+        const comment = button.dataset.comment ?? '';
+        const evaluation = button.dataset.evaluation ?? '';
+
+        let html = `
+            <div class="mb-3 text-start">
+                <label for="swalComment" class="form-label fw-semibold">Nhận xét:</label>
+                <textarea id="swalComment" class="form-control" placeholder="Nhập nhận xét..." rows="4" style="resize: vertical; border-radius: 6px;">${comment}</textarea>
+            </div>
+        `;
+
+        if (status === 'Hoàn thành') {
+            html += `
+                <div class="mb-2 text-start">
+                    <label for="swalEvaluation" class="form-label fw-semibold">Đánh giá:</label>
+                    <select id="swalEvaluation" class="form-select" style="border-radius: 6px;">
+                        <option value="">-- Chọn đánh giá --</option>
+                        <option value="Rất tốt" ${evaluation === 'Rất tốt' ? 'selected' : ''}>🌟 Rất tốt</option>
+                        <option value="Tốt" ${evaluation === 'Tốt' ? 'selected' : ''}>👍 Tốt</option>
+                        <option value="Trung bình" ${evaluation === 'Trung bình' ? 'selected' : ''}>😐 Trung bình</option>
+                        <option value="Kém" ${evaluation === 'Kém' ? 'selected' : ''}>👎 Kém</option>
+                    </select>
+                </div>
+            `;
+        }
+
+        Swal.fire({
+            title: '<i class="bi bi-chat-dots-fill me-2 text-primary"></i>Nhận xét công việc',
+            html: html,
+            width: 600,
+            showCancelButton: true,
+            confirmButtonText: '<i class="bi bi-save2"></i> Lưu',
+            cancelButtonText: 'Hủy',
+            focusConfirm: false,
+            didOpen: () => {
+                document.getElementById('swalComment').focus();
+            },
+            preConfirm: () => {
+                const commentVal = document.getElementById('swalComment').value.trim();
+                const evalVal = document.getElementById('swalEvaluation')?.value || '';
+
+                if (!commentVal) {
+                    Swal.showValidationMessage('Vui lòng nhập nhận xét');
+                    return false;
+                }
+
+                return {
+                    comment: commentVal,
+                    evaluation: evalVal
+                };
+            }
+        }).then(result => {
+            if (result.isConfirmed) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = `/mentor/tasks/${taskId}`;
+                form.innerHTML = `
+                    <input type="hidden" name="_token" value="${document.querySelector('meta[name="csrf-token"]').content}">
+                    <input type="hidden" name="_method" value="PUT">
+                    <input type="hidden" name="mentor_comment" value="${result.value.comment}">
+                    <input type="hidden" name="evaluation" value="${result.value.evaluation}">
+                `;
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
+    });
+});
+
+    // ❌ Xóa công việc
+    document.querySelectorAll('.btn-mentor-delete').forEach(button => {
+        button.addEventListener('click', () => {
+            const taskId = button.dataset.taskId;
+
+            Swal.fire({
+                title: 'Xóa công việc?',
+                text: 'Bạn có chắc chắn muốn xóa công việc này không?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Xóa',
+                cancelButtonText: 'Hủy',
+                confirmButtonColor: '#d33'
+            }).then(result => {
+                if (result.isConfirmed) {
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = `/mentor/tasks/${taskId}`;
+                    form.innerHTML = `
+                        <input type="hidden" name="_token" value="${csrfToken}">
+                        <input type="hidden" name="_method" value="DELETE">
+                    `;
+                    document.body.appendChild(form);
+                    form.submit();
+
+                }
+            });
+        });
+    });
+    // ✅ Thông báo thành công (sau sửa hoặc xóa)
+@if(session('success'))
+    Swal.fire({
+        icon: 'success',
+        title: 'Thành công!',
+        text: @json(session('success')),
+        showConfirmButton: false,
+        timer: 2000,
+        toast: true,
+        position: 'top-end'
+    });
+@endif
+
+@if(session('error'))
+    Swal.fire({
+        icon: 'error',
+        title: 'Lỗi!',
+        text: @json(session('error')),
+        showConfirmButton: false,
+        timer: 2500,
+        toast: true,
+        position: 'top-end'
+    });
+@endif
+});
+</script>
 @endsection 
+

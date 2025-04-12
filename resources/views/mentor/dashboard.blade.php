@@ -9,7 +9,7 @@
                     <h5 class="card-title">Thông tin Mentor</h5>
                     <p class="card-text">
                         <strong>Tên:</strong> {{ $mentor->mentor_name }}<br>
-                        <strong>Phòng ban:</strong> {{ $mentor->department }}<br>
+                        <strong>Phòng ban:</strong> {{ $mentor->department->name }}<br>
                         <strong>Chức vụ:</strong> {{ $mentor->position }}
                     </p>
                 </div>
