@@ -12,11 +12,6 @@
                     <h3 class="card-title">
                         <i class="fas fa-calendar-alt mr-2"></i> Lịch Phỏng Vấn
                     </h3>
-                    <div class="card-tools">
-                        <button type="button" class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#interviewModal">
-                            <i class="fas fa-plus"></i> Lên Lịch Phỏng Vấn
-                        </button>
-                    </div>
                 </div>
                 <div class="card-body p-2">
                     <!-- Thống kê -->
@@ -66,7 +61,6 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- Add the new "Chờ lên lịch" card -->
                         <div class="col-6 col-md-3 mb-2">
                             <div class="card bg-gradient-warning text-white h-100">
                                 <div class="card-body p-2">
@@ -84,79 +78,88 @@
                         </div>
                     </div>
 
-                    <!-- View Switcher -->
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <div class="btn-group" role="group">
-                            <button type="button" class="btn btn-outline-danger active" id="calendarViewBtn">
-                                <i class="fas fa-calendar-alt me-1"></i> Lịch Phỏng Vấn
-                            </button>
-                            <button type="button" class="btn btn-outline-danger" id="candidatesViewBtn">
-                                <i class="fas fa-users me-1"></i> Danh Sách Đơn Ứng Tuyển
-                            </button>
-                        </div>
+                    <!-- Chỉ có nút lên lịch phỏng vấn -->
+                    <div class="d-flex justify-content-end align-items-center mb-3">
                         <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#interviewModal">
                             <i class="fas fa-plus"></i> Lên Lịch Phỏng Vấn
                         </button>
                     </div>
-
-                    <!-- Calendar View -->
-                    <div id="calendarView" class="view-section">
-                        <div id="calendar" class="fc-theme-standard"></div>
-                    </div>
-
-                    <!-- Candidates View -->
-                    <div id="candidatesView" class="view-section d-none">
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-hover">
-                                <thead class="table-dark">
-                                    <tr>
-                                        <th>STT</th>
-                                        <th>Vị Trí Ứng Tuyển</th>
-                                        <th>Ứng Viên</th>
-                                        <th>Email</th>
-                                        <th>Trạng Thái</th>
-                                        <th>Thao Tác</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @forelse ($jobApplications as $index => $application)
+                    
+                    <!-- Tab Navigation -->
+                    <ul class="nav nav-tabs full-width-tabs mb-3" id="interviewTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="calendar-tab" data-bs-toggle="tab" data-bs-target="#calendar-tab-pane" type="button" role="tab" aria-controls="calendar-tab-pane" aria-selected="true">
+                                <i class="fas fa-calendar-alt me-2"></i>Lịch Tổng Quan
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="applications-tab" data-bs-toggle="tab" data-bs-target="#applications-tab-pane" type="button" role="tab" aria-controls="applications-tab-pane" aria-selected="false">
+                                <i class="fas fa-users me-2"></i>Danh Sách Đơn Ứng Tuyển
+                            </button>
+                        </li>
+                    </ul>
+                    
+                    <!-- Tab Content -->
+                    <div class="tab-content" id="interviewTabsContent">
+                        <!-- Calendar Tab -->
+                        <div class="tab-pane fade show active" id="calendar-tab-pane" role="tabpanel" aria-labelledby="calendar-tab" tabindex="0">
+                            <div id="calendar" class="fc-theme-standard"></div>
+                        </div>
+                        
+                        <!-- Applications Tab -->
+                        <div class="tab-pane fade" id="applications-tab-pane" role="tabpanel" aria-labelledby="applications-tab" tabindex="0">
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-hover">
+                                    <thead class="table-dark">
                                         <tr>
-                                            <td>{{ $index + 1 }}</td>
-                                            <td>{{ $application->jobOffer->job_name }}</td>
-                                            <td>{{ $application->candidate->fullname }}</td>
-                                            <td>{{ $application->candidate->email }}</td>
-                                            <td>
-                                                @if($application->interviews->isEmpty())
-                                                    <span class="badge bg-warning">Chưa có lịch</span>
-                                                @else
-                                                    <span class="badge bg-success">Đã có lịch</span>
-                                                @endif
-                                            </td>
-                                            <td>
-                                                @if($application->interviews->isEmpty())
-                                                    <button class="btn btn-danger btn-sm"
-                                                            onclick="openInterviewModal({{ $application->id }})">
-                                                        <i class="fas fa-plus"></i> Lên lịch
-                                                    </button>
-                                                @else
-                                                    <a href="{{ route('admin.interviews.show', $application->interviews->first()->id) }}"
-                                                       class="btn btn-secondary btn-sm">
-                                                        <i class="fas fa-eye"></i> Xem lịch
-                                                    </a>
-                                                @endif
-                                            </td>
+                                            <th>STT</th>
+                                            <th>Vị Trí Ứng Tuyển</th>
+                                            <th>Ứng Viên</th>
+                                            <th>Email</th>
+                                            <th>Trạng Thái</th>
+                                            <th>Thao Tác</th>
                                         </tr>
-                                    @empty
-                                        <tr>
-                                            <td colspan="6" class="text-center">
-                                                <div class="alert alert-info">
-                                                    <i class="fas fa-info-circle me-1"></i> Không có đơn ứng tuyển nào đang trong quá trình xử lý.
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    @endforelse
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                        @forelse ($jobApplications as $index => $application)
+                                            <tr>
+                                                <td>{{ $index + 1 }}</td>
+                                                <td>{{ $application->jobOffer->job_name }}</td>
+                                                <td>{{ $application->candidate->fullname }}</td>
+                                                <td>{{ $application->candidate->email }}</td>
+                                                <td>
+                                                    @if($application->interviews->isEmpty())
+                                                        <span class="badge bg-warning">Chưa có lịch</span>
+                                                    @else
+                                                        <span class="badge bg-success">Đã có lịch</span>
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    @if($application->interviews->isEmpty())
+                                                        <button class="btn btn-danger btn-sm"
+                                                                onclick="openInterviewModal({{ $application->id }})">
+                                                            <i class="fas fa-plus"></i> Lên lịch
+                                                        </button>
+                                                    @else
+                                                        <a href="{{ route('admin.interviews.show', $application->interviews->first()->id) }}"
+                                                        class="btn btn-secondary btn-sm">
+                                                            <i class="fas fa-eye"></i> Xem lịch
+                                                        </a>
+                                                    @endif
+                                                </td>
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="6" class="text-center">
+                                                    <div class="alert alert-info">
+                                                        <i class="fas fa-info-circle me-1"></i> Không có đơn ứng tuyển nào đang trong quá trình xử lý.
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -387,23 +390,45 @@
     #calendar {
         width: 100%;
         overflow-x: auto;
+        margin-bottom: 20px;
     }
     
     /* Tab styles */
-    .nav-tabs .nav-link {
+    .full-width-tabs {
+        display: flex;
+        width: 100%;
+        border-bottom: 1px solid #dee2e6;
+    }
+    .full-width-tabs .nav-item {
+        flex: 1;
+        text-align: center;
+    }
+    .full-width-tabs .nav-link {
+        width: 100%;
         color: #495057;
         font-weight: 500;
+        border: none;
+        border-radius: 0;
+        padding: 0.75rem 0;
+        transition: all 0.2s ease;
     }
-    .nav-tabs .nav-link.active {
+    .full-width-tabs .nav-link.active {
         color: #dc3545;
         font-weight: 600;
-        border-bottom: 2px solid #dc3545;
+        background-color: transparent;
+        border-bottom: 3px solid #dc3545;
     }
-    .nav-tabs .nav-link:hover {
-        border-color: transparent;
+    .full-width-tabs .nav-link:hover:not(.active) {
+        background-color: rgba(220, 53, 69, 0.05);
         color: #dc3545;
+        border-bottom: 1px solid #dc3545;
     }
-
+    
+    /* Tab content spacing */
+    .tab-pane {
+        padding: 15px 0;
+    }
+    
     /* Table styles */
     .table-responsive {
         width: 100%;
@@ -465,37 +490,38 @@
         border-radius: 4px;
     }
 
-    /* View switcher styles */
-    .btn-group .btn {
-        border-radius: 0;
-    }
-    .btn-group .btn:first-child {
-        border-top-left-radius: 4px;
-        border-bottom-left-radius: 4px;
-    }
-    .btn-group .btn:last-child {
-        border-top-right-radius: 4px;
-        border-bottom-right-radius: 4px;
-    }
-    .btn-outline-danger.active {
-        background-color: #dc3545;
-        color: white;
-    }
-    .view-section {
-        transition: all 0.3s ease;
-    }
+    /* View container spacing */
     #calendar {
-        min-height: 600px;
+        min-height: 500px;
     }
 </style>
 @endpush
 
 @push('scripts')
-
 <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js'></script>
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales/vi.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Ẩn/hiện trường link phỏng họp dựa vào loại phỏng vấn
+    function toggleMeetingLinkField() {
+        var interviewType = document.getElementById('interview_type').value;
+        var meetingLinkGroup = document.getElementById('meeting_link').closest('.form-group');
+        
+        if (interviewType === 'online') {
+            meetingLinkGroup.style.display = 'block';
+        } else {
+            meetingLinkGroup.style.display = 'none';
+        }
+    }
+    
+    // Thêm event listener cho dropdown loại phỏng vấn
+    document.getElementById('interview_type').addEventListener('change', toggleMeetingLinkField);
+    
+    // Đảm bảo trạng thái ban đầu được thiết lập đúng ngay khi mở form
+    document.getElementById('interviewModal').addEventListener('shown.bs.modal', function() {
+        setTimeout(toggleMeetingLinkField, 100); // Thêm timeout nhỏ để đảm bảo DOM đã cập nhật
+    });
+    
     var calendarEl = document.getElementById('calendar');
     var calendar = new FullCalendar.Calendar(calendarEl, {
         locale: 'vi',
@@ -506,7 +532,12 @@ document.addEventListener('DOMContentLoaded', function() {
             center: 'title',
             right: 'dayGridMonth,timeGridWeek,timeGridDay'
         },
-        
+        buttonText: {
+            today: 'Hôm nay',
+            month: 'Tháng',
+            week: 'Tuần',
+            day: 'Ngày'
+        },
         slotDuration: "00:30:00",
         nowIndicator: true,
         allDaySlot: false,
@@ -518,18 +549,17 @@ document.addEventListener('DOMContentLoaded', function() {
         dayMaxEvents: true,
         height: 'auto',
         contentHeight: 'auto',
-        eventColor: function(info) {
-            if (info.event.extendedProps.status === 'completed') {
-                return '#28a745';
-            } else if (info.event.extendedProps.status === 'cancelled') {
-                return '#ffc107';
-            } else {
-                return '#dc3545';
-            }
+        eventColor: '#dc3545',
+        eventTextColor: '#fff',
+        eventTimeFormat: {
+            hour: '2-digit',
+            minute: '2-digit',
+            meridiem: false,
+            hour12: false
         },
         eventDidMount: function(info) {
-            // Add tooltip
-            $(info.el).tooltip({
+            // Add tooltip using Bootstrap 5 syntax
+            var tooltip = new bootstrap.Tooltip(info.el, {
                 title: info.event.title + ' - ' + info.event.extendedProps.candidate,
                 placement: 'top',
                 trigger: 'hover',
@@ -537,14 +567,35 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         },
         select: function(arg) {
-            $('#interviewModal').modal('show');
-            $('#start_time').val(arg.startStr);
-            $('#end_time').val(arg.endStr);
+            var interviewModal = new bootstrap.Modal(document.getElementById('interviewModal'));
+            interviewModal.show();
+            // Format dates for datetime-local input
+            var startDate = new Date(arg.start);
+            var endDate = new Date(arg.end);
+            
+            // Adjust end time to be 1 hour after start by default
+            if (arg.view.type !== 'timeGridDay' && arg.view.type !== 'timeGridWeek') {
+                // For month view, set reasonable interview times
+                var currentHour = new Date().getHours();
+                startDate.setHours(Math.max(9, currentHour), 0, 0);
+                endDate = new Date(startDate);
+                endDate.setHours(startDate.getHours() + 1);
+            }
+            
+            // Format to datetime-local string (YYYY-MM-DDThh:mm)
+            var startStr = startDate.toISOString().slice(0, 16);
+            var endStr = endDate.toISOString().slice(0, 16);
+            
+            document.getElementById('start_time').value = startStr;
+            document.getElementById('end_time').value = endStr;
+            
             // Reset form for new interview
-            $('#interviewForm')[0].reset();
-            $('#formMethod').val('POST');
-            $('#interviewForm').attr('action', '{{ route("admin.interviews.store") }}');
-            $('#interviewModalLabel').html('<i class="fas fa-calendar-plus mr-2"></i> Lên Lịch Phỏng Vấn');
+            document.getElementById('interviewForm').reset();
+            document.getElementById('start_time').value = startStr; // Set again after reset
+            document.getElementById('end_time').value = endStr; // Set again after reset
+            document.getElementById('formMethod').value = 'POST';
+            document.getElementById('interviewForm').action = '{{ route("admin.interviews.store") }}';
+            document.getElementById('interviewModalLabel').innerHTML = '<i class="fas fa-calendar-plus mr-2"></i> Lên Lịch Phỏng Vấn';
         },
         eventClick: function(info) {
             window.location.href = info.event.url;
@@ -554,124 +605,195 @@ document.addEventListener('DOMContentLoaded', function() {
         },
         eventResize: function(info) {
             updateEventTime(info.event, info);
-        },
-        eventAllow: function(dropInfo, draggedEvent) {
-            return draggedEvent.extendedProps.status === 'scheduled';
         }
     });
+    
     calendar.render();
 
     // Hàm cập nhật thời gian qua AJAX
     function updateEventTime(event, info) {
-        $.ajax({
-            url: `/admin/interviews/${event.id}`,
+        fetch(`/admin/interviews/${event.id}`, {
             method: 'PUT',
-            data: {
-                _token: '{{ csrf_token() }}',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({
                 start_time: event.start.toISOString(),
                 end_time: event.end.toISOString()
-            },
-            success: function(response) {
-                if (response.success) {
-                    toastr.success(response.message);
-                } else {
-                    toastr.error('Không thể cập nhật lịch phỏng vấn');
-                    info.revert();
-                }
-            },
-            error: function(xhr) {
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                toastr.success(data.message);
+            } else {
                 toastr.error('Không thể cập nhật lịch phỏng vấn');
                 info.revert();
             }
+        })
+        .catch(error => {
+            toastr.error('Không thể cập nhật lịch phỏng vấn');
+            info.revert();
         });
     }
 
     // Hàm mở modal đặt lịch với application_id đã chọn
     window.openInterviewModal = function(applicationId) {
-        $('#interviewModal').modal('show');
-        $('#application_id').val(applicationId);
-        $('#formMethod').val('POST');
-        $('#interviewForm').attr('action', '{{ route("admin.interviews.store") }}');
-        $('#interviewForm')[0].reset();
-        $('#interviewModalLabel').html('<i class="fas fa-calendar-plus mr-2"></i> Lên Lịch Phỏng Vấn');
+        try {
+            console.log('Opening modal for application ID:', applicationId);
+            
+            // Đặt giá trị cho trường application_id ẩn
+            document.getElementById('job_application_id').value = applicationId;
+            
+            // Reset form fields TRƯỚC khi thiết lập giá trị 
+            document.getElementById('interviewForm').reset();
+            
+            // Thiết lập lại giá trị sau khi reset form
+            document.getElementById('job_application_id').value = applicationId;
+            
+            // Chọn option trong dropdown dựa trên applicationId
+            const applicationSelect = document.getElementById('application_id');
+            const options = applicationSelect.options;
+            
+            for (let i = 0; i < options.length; i++) {
+                if (options[i].value == applicationId) {
+                    options[i].selected = true;
+                } else {
+                    options[i].selected = false;
+                }
+            }
+            
+            // Kiểm tra xem đã chọn được tùy chọn trong dropdown chưa
+            console.log('Selected application in dropdown:', document.getElementById('application_id').value);
+            
+            // Set up form for submission
+            document.getElementById('formMethod').value = 'POST';
+            document.getElementById('interviewForm').action = '{{ route("admin.interviews.store") }}';
+            document.getElementById('interviewModalLabel').innerHTML = '<i class="fas fa-calendar-plus mr-2"></i> Lên Lịch Phỏng Vấn';
+            
+            // Set default interview times (current time + 1 hour)
+            var now = new Date();
+            var start = new Date();
+            var end = new Date();
+            
+            // Set business hours for interviews
+            start.setHours(Math.max(9, now.getHours()), 0, 0);
+            end.setHours(start.getHours() + 1, 0, 0);
+            
+            // Format to datetime-local string (YYYY-MM-DDThh:mm)
+            var startStr = start.toISOString().slice(0, 16);
+            var endStr = end.toISOString().slice(0, 16);
+            
+            document.getElementById('start_time').value = startStr;
+            document.getElementById('end_time').value = endStr;
+            
+            // Ensure interview type default is set
+            document.getElementById('interview_type').value = 'online';
+            
+            // Apply meeting link visibility based on interview type
+            toggleMeetingLinkField();
+            
+            // Hiển thị modal bằng Bootstrap
+            var interviewModal = new bootstrap.Modal(document.getElementById('interviewModal'));
+            interviewModal.show();
+            
+        } catch (error) {
+            console.error('Error in openInterviewModal:', error);
+        }
     };
 
     // Handle form submission
-    $('#interviewForm').on('submit', function(e) {
+    document.getElementById('interviewForm').addEventListener('submit', function(e) {
         e.preventDefault();
-        var form = $(this);
-        var url = form.attr('action');
-        var method = $('#formMethod').val();
+        var form = this;
+        var url = form.action;
+        var method = document.getElementById('formMethod').value;
+        var formData = new FormData(form);
 
-        $.ajax({
-            url: url,
+        fetch(url, {
             method: method,
-            data: form.serialize(),
-            success: function(response) {
-                if (response.success) {
-                    $('#interviewModal').modal('hide');
-                    calendar.refetchEvents();
-                    toastr.success(response.message);
-                    
-                    // Nếu đang ở tab ứng viên, làm mới trang để cập nhật danh sách
-                    if ($('#candidatesView').hasClass('active')) {
-                        location.reload();
-                    }
-                } else {
-                    toastr.error(response.message);
-                }
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
             },
-            error: function(xhr) {
-                if (xhr.status === 422) {
-                    var errors = xhr.responseJSON.errors;
-                    Object.keys(errors).forEach(function(key) {
-                        var input = $(`[name="${key}"]`);
-                        input.addClass('is-invalid');
-                        input.next('.invalid-feedback').text(errors[key][0]);
-                    });
-                } else {
-                    toastr.error('Lỗi khi lưu phỏng vấn');
-                }
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                var interviewModal = bootstrap.Modal.getInstance(document.getElementById('interviewModal'));
+                interviewModal.hide();
+                calendar.refetchEvents();
+                toastr.success(data.message);
+                
+                // Nếu đang ở tab ứng viên, làm mới trang để cập nhật danh sách
+                setTimeout(function() {
+                    location.reload();
+                }, 1000);
+            } else {
+                toastr.error(data.message);
+            }
+        })
+        .catch(error => {
+            if (error.status === 422) {
+                var errors = error.responseJSON.errors;
+                Object.keys(errors).forEach(function(key) {
+                    var input = document.querySelector(`[name="${key}"]`);
+                    input.classList.add('is-invalid');
+                    input.nextElementSibling.textContent = errors[key][0];
+                });
+            } else {
+                toastr.error('Lỗi khi lưu phỏng vấn');
             }
         });
     });
 
     // Clear validation errors when modal is closed
-    $('#interviewModal').on('hidden.bs.modal', function() {
-        $('.is-invalid').removeClass('is-invalid');
+    document.getElementById('interviewModal').addEventListener('hidden.bs.modal', function() {
+        document.querySelectorAll('.is-invalid').forEach(function(el) {
+            el.classList.remove('is-invalid');
+        });
     });
     
-    // Toggle meeting link field based on interview type
-    $('#interview_type').on('change', function() {
-        if ($(this).val() === 'online') {
-            $('#meeting_link').closest('.form-group').show();
-        } else {
-            $('#meeting_link').closest('.form-group').hide();
-        }
-    });
+    // Đảm bảo toggleMeetingLinkField được chạy khi trang load
+    toggleMeetingLinkField();
     
     // Initialize tooltips
-    $('[data-toggle="tooltip"]').tooltip();
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
     
     // Handle window resize
-    $(window).on('resize', function() {
+    window.addEventListener('resize', function() {
         calendar.render();
     });
-
-    // View switcher functionality
-    document.getElementById('calendarViewBtn').addEventListener('click', function() {
-        document.getElementById('calendarView').classList.remove('d-none');
-        document.getElementById('candidatesView').classList.add('d-none');
-        this.classList.add('active');
-        document.getElementById('candidatesViewBtn').classList.remove('active');
-        calendar.render(); // Re-render calendar when switching back
-    });
-
-    document.getElementById('candidatesViewBtn').addEventListener('click', function() {
-        document.getElementById('calendarView').classList.add('d-none');
-        document.getElementById('candidatesView').classList.remove('d-none');
-        this.classList.add('active');
-        document.getElementById('calendarViewBtn').classList.remove('active');
+    
+    // Ensure tab functionality works properly
+    document.querySelectorAll('#interviewTabs button').forEach(button => {
+        button.addEventListener('click', function(event) {
+            event.preventDefault();
+            const tabTarget = this.getAttribute('data-bs-target');
+            
+            // Remove active class from all tabs and tab panes
+            document.querySelectorAll('#interviewTabs button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-pane').forEach(pane => {
+                pane.classList.remove('show', 'active');
+            });
+            
+            // Add active class to clicked tab and target tab pane
+            this.classList.add('active');
+            document.querySelector(tabTarget).classList.add('show', 'active');
+            
+            // Rerender calendar when its tab becomes active
+            if (tabTarget === '#calendar-tab-pane') {
+                setTimeout(() => {
+                    calendar.render();
+                }, 10);
+            }
+        });
     });
 });
 </script>
