@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Admin Dashboard')</title>
 
     <link rel="icon" href="{{ asset('assets/Logo_viettel.png') }}" type="image/x-icon">
@@ -643,7 +644,7 @@
                         <div class="user-name">{{ Auth::user()->name }}</div>
                         <div class="user-role">
                             <i class="bi bi-shield-check"></i>
-                            {{ Auth::user()->role === 'admin' ? 'Quản trị viên' : (Auth::user()->role === 'hr' ? 'Nhân viên HR' : 'Giám đốc') }}
+                            {{ Auth::user()->role === 'admin' ? 'Quản trị viên' : (Auth::user()->role === 'hr' ? 'Chuyên viên tuyển dụng' : 'Giám đốc') }}
                         </div>
                     </div>
                 @else
