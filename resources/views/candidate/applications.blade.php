@@ -58,7 +58,7 @@
                                 <td>
                                     @switch($application->status)
                                         @case('pending')
-                                            <span class="badge bg-warning">Chờ xem xét</span>
+                                            <span class="badge bg-warning">Chờ tiếp nhận</span>
                                             @break
                                         @case('approved')
                                             <span class="badge bg-success">Đã duyệt</span>
@@ -342,7 +342,7 @@
                                             'pending_review' => [
                                                 'icon' => 'hourglass-split',
                                                 'color' => 'warning',
-                                                'text' => 'Chờ xem xét'
+                                                'text' => 'Chờ tiếp nhận'
                                             ],
                                             'interview_scheduled' => [
                                                 'icon' => 'calendar-check',
