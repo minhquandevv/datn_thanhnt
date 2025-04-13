@@ -20,7 +20,7 @@ class AdminController extends Controller
 
     public function dashboard()
     {
-        return view('admin.dexuattuyendungg'); 
+        return view('admin.splash');
     }
 
     public function candidate(Request $request)
