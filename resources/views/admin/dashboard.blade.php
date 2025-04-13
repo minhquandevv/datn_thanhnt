@@ -426,7 +426,7 @@
                                                 ($statusClass === 'success' ? 'background-color: #d4edda; color: #155724;' : 
                                                 ($statusClass === 'danger' ? 'background-color: #f8d7da; color: #721c24;' :
                                                 ($statusClass === 'info' ? 'background-color: #cff4ff; color: #004085;' :
-                                                'background-color: #cce5ff; color: #004085;')) 
+                                                'background-color: #cce5ff; color: #004085;'))) 
                                             }}">
                                             {{ $statusText }}
                                         </span>

@@ -14,6 +14,7 @@ return new class extends Migration
             $table->date('report_date')->nullable();
             $table->text('work_done')->nullable();
             $table->text('next_day_plan')->nullable();
+            $table->text('attachment_result')->nullable();
             $table->timestamps();
         });
     }

@@ -13,7 +13,7 @@ class TaskReports extends Model
     protected $guarded = ['report_id'];
     
     protected $fillable = [
-        'task_id', 'report_date', 'work_done', 'next_day_plan'
+        'task_id', 'report_date', 'work_done', 'next_day_plan', 'attachment_result'
     ];
     // Relationship với task
     public function task()
