@@ -9,14 +9,6 @@
                 <i class="bi bi-person-badge me-2"></i>Quản lý Thực tập sinh
             </h1>
         </div>
-        <div>
-            <a href="{{ route('admin.interns.create') }}" class="btn btn-danger btn-sm">
-                <i class="bi bi-plus-circle me-1"></i>Thêm mới
-            </a>
-            <a href="{{ route('admin.interns.import') }}" class="btn btn-outline-danger btn-sm ms-2">
-                <i class="bi bi-file-earmark-excel me-1"></i>Nhập Excel
-            </a>
-        </div>
     </div>
 
     <!-- Stats Cards -->

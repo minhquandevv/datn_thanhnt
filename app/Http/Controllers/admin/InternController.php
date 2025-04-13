@@ -72,6 +72,8 @@ class InternController extends Controller
     public function store(Request $request)
     {
         try {
+            DB::beginTransaction();
+            
             // Nếu có application_id, xử lý chuyển từ đơn ứng tuyển sang thực tập sinh
             if ($request->has('application_id')) {
                 $application = JobApplication::with(['candidate', 'jobOffer.position', 'candidate.university'])
@@ -80,6 +82,12 @@ class InternController extends Controller
                 // Kiểm tra trạng thái đơn ứng tuyển
                 if ($application->status !== 'approved') {
                     throw new \Exception('Chỉ có thể chuyển đơn ứng tuyển đã được duyệt sang thực tập sinh.');
+                }
+
+                // Kiểm tra xem ứng viên đã là thực tập sinh chưa
+                $existingIntern = Intern::where('email', $application->candidate->email)->first();
+                if ($existingIntern) {
+                    throw new \Exception('Ứng viên này đã là thực tập sinh.');
                 }
 
                 // Tạo username từ email
@@ -118,7 +126,7 @@ class InternController extends Controller
                     $attributes['address'] = $application->candidate->address;
                 }
                 if ($application->candidate->university) {
-                    $attributes['university'] = $application->candidate->university->name;
+                    $attributes['university_id'] = $application->candidate->university->university_id;
                 }
                 if ($application->candidate->major) {
                     $attributes['major'] = $application->candidate->major;
@@ -142,8 +150,16 @@ class InternController extends Controller
                     'is_active' => true
                 ]);
 
+                // Cập nhật trạng thái của đơn ứng tuyển hiện tại
                 $application->status = 'transferred';
                 $application->save();
+
+                // Xóa tất cả các đơn ứng tuyển khác của ứng viên này
+                JobApplication::where('candidate_id', $application->candidate_id)
+                    ->where('id', '!=', $application->id)
+                    ->delete();
+
+                DB::commit();
 
                 // Gửi email thông báo tài khoản cho thực tập sinh
                 // TODO: Implement email notification
@@ -193,6 +209,8 @@ class InternController extends Controller
 
             $intern->save();
 
+            DB::commit();
+
             if ($request->ajax()) {
                 return response()->json([
                     'success' => true,
@@ -203,6 +221,8 @@ class InternController extends Controller
             return redirect()->route('admin.interns.index')
                            ->with('success', 'Thêm thực tập sinh thành công!');
         } catch (\Exception $e) {
+            DB::rollBack();
+            
             if ($request->ajax()) {
                 return response()->json([
                     'success' => false,

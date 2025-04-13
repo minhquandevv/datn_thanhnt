@@ -631,26 +631,39 @@
             </div>
 
             <div class="user-profile">
-                @if(Auth::user()->url_avatar)
-                    <img src="{{ asset('uploads/' . Auth::user()->url_avatar) }}" alt="Avatar" class="user-avatar">
+                @if(Auth::check())
+                    @if(Auth::user()->url_avatar)
+                        <img src="{{ asset('uploads/' . Auth::user()->url_avatar) }}" alt="Avatar" class="user-avatar">
+                    @else
+                        <div class="user-avatar bg-secondary text-white d-flex align-items-center justify-content-center">
+                            {{ substr(Auth::user()->name, 0, 7) }}
+                        </div>
+                    @endif
+                    <div class="user-info">
+                        <div class="user-name">{{ Auth::user()->name }}</div>
+                        <div class="user-role">
+                            <i class="bi bi-shield-check"></i>
+                            {{ Auth::user()->role === 'admin' ? 'Quản trị viên' : (Auth::user()->role === 'hr' ? 'Nhân viên HR' : 'Giám đốc') }}
+                        </div>
+                    </div>
                 @else
                     <div class="user-avatar bg-secondary text-white d-flex align-items-center justify-content-center">
-                        {{ substr(Auth::user()->name, 0, 7) }}
+                        Guest
+                    </div>
+                    <div class="user-info">
+                        <div class="user-name">Guest</div>
+                        <div class="user-role">
+                            <i class="bi bi-shield-check"></i>
+                            Not Authenticated
+                        </div>
                     </div>
                 @endif
-                <div class="user-info">
-                    <div class="user-name">{{ Auth::user()->name }}</div>
-                    <div class="user-role">
-                        <i class="bi bi-shield-check"></i>
-                        {{ Auth::user()->role === 'admin' ? 'Quản trị viên' : (Auth::user()->role === 'hr' ? 'Nhân viên HR' : 'Giám đốc') }}
-                    </div>
-                </div>
             </div>
 
             <div class="nav-section">
                 <div class="nav-section-title">Quản lý</div>
                 <ul class="nav flex-column">
-                    @if(Auth::user()->role === 'admin')
+                    @if(Auth::check() && Auth::user()->role === 'admin')
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}" href="{{ route('admin.users.index') }}">
                                 <i class="bi bi-person-gear"></i>
@@ -659,7 +672,7 @@
                         </li>
                     @endif
 
-                    @if(Auth::user()->role === 'hr')
+                    @if(Auth::check() && Auth::user()->role === 'hr')
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('admin.evaluations.*') ? 'active' : '' }}" href="{{ route('admin.evaluations.index') }}">
                                 <i class="bi bi-graph-up"></i>
@@ -764,7 +777,7 @@
                         </li>
                     @endif
 
-                    @if(Auth::user()->role === 'director')
+                    @if(Auth::check() && Auth::user()->role === 'director')
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('admin.recruitment-plans.*') ? 'active' : '' }}" href="{{ route('admin.recruitment-plans.index') }}">
                                 <i class="bi bi-file-earmark-text"></i>
