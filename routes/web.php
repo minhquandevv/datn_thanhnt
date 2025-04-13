@@ -24,6 +24,7 @@ use App\Http\Controllers\hr\JobApplicationController as HRJobApplicationControll
 use App\Http\Controllers\ApplicationManagementController;
 use App\Http\Controllers\admin\InterviewScheduleController;
 use App\Http\Controllers\admin\EvaluationController;
+use App\Http\Controllers\Intern\TaskController;
 
 // Authentication Routes
 Route::middleware('guest')->group(function () {
@@ -232,6 +233,8 @@ Route::middleware(['auth:intern'])->prefix('intern')->name('intern.')->group(fun
     Route::get('/tasks/{task}', [App\Http\Controllers\Intern\TaskController::class, 'show'])->name('tasks.show');
     Route::post('/tasks/{task}/report', [App\Http\Controllers\Intern\TaskController::class, 'submitReport'])->name('tasks.report');
     Route::put('/tasks/{task}/status', [App\Http\Controllers\Intern\TaskController::class, 'updateStatus'])->name('tasks.updateStatus');
+    Route::post('/tasks/{task}/submit-result', [TaskController::class, 'submitResult'])->name('tasks.submitResult');
+    Route::delete('/tasks/{task}/delete-result', [TaskController::class, 'deleteResult'])->name('tasks.deleteResult');
 });
 
 //Logout route (accessible to all authenticated users)

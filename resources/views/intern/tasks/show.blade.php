@@ -11,6 +11,11 @@
             <button type="button" class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#reportModal">
                 <i class="bi bi-file-earmark-text"></i> Báo cáo công việc
             </button>
+            @if($task->status === 'Đang thực hiện')
+                <button type="button" class="btn btn-success me-2" data-bs-toggle="modal" data-bs-target="#submitResultModal">
+                    <i class="bi bi-upload"></i> Nộp kết quả
+                </button>
+            @endif
             <a href="{{ route('intern.tasks.index') }}" class="btn btn-secondary">
                 <i class="bi bi-arrow-left"></i> Quay lại
             </a>
@@ -67,6 +72,27 @@
                         Tên file: <a href="{{ asset('' . $task->attachment) }}" target="_blank" class="btn btn-outline-primary btn-sm">
                             <i class="bi bi-file-earmark"></i> Tải xuống
                         </a>
+                    </div>
+                    @endif
+
+                    @php
+                        $latestReport = $task->reports()->whereNotNull('attachment_result')->latest()->first();
+                    @endphp
+                    @if($latestReport && $latestReport->attachment_result)
+                    <div class="mb-3">
+                        <h6 class="text-muted">Kết quả đã nộp</h6>
+                        <div class="d-flex align-items-center">
+                            <div class="me-2">
+                                <span class="text-muted">Tên file: </span>
+                                <span class="fw-bold">{{ basename($latestReport->attachment_result) }}</span>
+                            </div>
+                            <a href="{{ asset($latestReport->attachment_result) }}" target="_blank" class="btn btn-outline-success btn-sm me-2">
+                                <i class="bi bi-file-earmark-check"></i> Xem kết quả
+                            </a>
+                            <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteResultModal">
+                                <i class="bi bi-trash"></i> Xóa kết quả
+                            </button>
+                        </div>
                     </div>
                     @endif
                 </div>
@@ -216,6 +242,56 @@
                     <button type="submit" class="btn btn-primary">Cập nhật</button>
                 </div>
             </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Nộp kết quả -->
+<div class="modal fade" id="submitResultModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="{{ route('intern.tasks.submitResult', $task->task_id) }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                <div class="modal-header">
+                    <h5 class="modal-title">Nộp kết quả công việc</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="result_file" class="form-label">File kết quả</label>
+                        <input type="file" class="form-control" id="result_file" name="result_file" required>
+                        <small class="form-text text-muted">Cho phép các file: PDF, DOC, DOCX, XLS, XLSX, TXT, ZIP, RAR (Tối đa 10MB)</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button type="submit" class="btn btn-success">Nộp kết quả</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Xóa kết quả -->
+<div class="modal fade" id="deleteResultModal" tabindex="-1" aria-labelledby="deleteResultModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteResultModalLabel">Xác nhận xóa kết quả</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Bạn có chắc chắn muốn xóa kết quả này không?</p>
+                <p class="text-danger"><small>Hành động này không thể hoàn tác.</small></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <form action="{{ route('intern.tasks.deleteResult', $task->task_id) }}" method="POST" class="d-inline">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-danger">Xóa</button>
+                </form>
+            </div>
         </div>
     </div>
 </div>

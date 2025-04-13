@@ -17,6 +17,12 @@ class CheckRole
         $user = $request->user();
         $allowedRoles = is_array($roles) ? $roles : explode('|', $roles[0]);
 
+        // Handle intern role
+        if (in_array('intern', $allowedRoles) && $user->role === 'intern') {
+            return $next($request);
+        }
+
+        // Handle director role
         if ($user->role === 'director') {
             $allowedRoutes = [
                 'admin.dashboard',
@@ -40,12 +46,15 @@ class CheckRole
                 ->with('error', 'Bạn không có quyền truy cập trang này.');
         }
 
+        // Handle HR role
         if (in_array('admin', $allowedRoles) && $user->role === 'hr') {
             return $next($request);
         }
 
+        // Handle other roles
         if (!in_array($user->role, $allowedRoles)) {
-            return redirect()->route('admin.dashboard')
+            $redirectRoute = $user->role === 'intern' ? 'intern.dashboard' : 'admin.dashboard';
+            return redirect()->route($redirectRoute)
                 ->with('error', 'Bạn không có quyền truy cập trang này.');
         }
 
