@@ -727,7 +727,7 @@
                                                         $modalStatusTexts = [
                                                             'pending' => 'Chờ xử lý',
                                                             'submitted' => 'Đã nộp',
-                                                            'pending_review' => 'Chờ xem xét',
+                                                            'pending_review' => 'Chờ tiếp nhận',
                                                             'interview_scheduled' => 'Đã lên lịch PV',
                                                             'result_pending' => 'Chờ kết quả',
                                                             'approved' => 'Đã duyệt',
@@ -880,7 +880,7 @@
                                             $modalStatusTexts = [
                                                 'pending' => 'Chờ xử lý',
                                                 'submitted' => 'Đã nộp',
-                                                'pending_review' => 'Chờ xem xét',
+                                                'pending_review' => 'Chờ tiếp nhận',
                                                 'interview_scheduled' => 'Đã lên lịch PV',
                                                 'result_pending' => 'Chờ kết quả',
                                                 'approved' => 'Đã duyệt',
