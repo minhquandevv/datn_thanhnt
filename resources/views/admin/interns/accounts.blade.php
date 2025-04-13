@@ -119,9 +119,10 @@
                                         </a>
                                         <button type="button" 
                                                 class="btn btn-sm {{ $account->is_active ? 'btn-outline-danger' : 'btn-outline-success' }}"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#toggleStatusModal{{ $account->id }}"
                                                 data-bs-toggle="tooltip"
-                                                data-bs-title="{{ $account->is_active ? 'Vô hiệu hóa tài khoản' : 'Kích hoạt tài khoản' }}"
-                                                onclick="document.getElementById('toggleStatusModal{{ $account->id }}').classList.add('show'); document.getElementById('toggleStatusModal{{ $account->id }}').style.display='block';">
+                                                data-bs-title="{{ $account->is_active ? 'Vô hiệu hóa tài khoản' : 'Kích hoạt tài khoản' }}">
                                             <i class="bi {{ $account->is_active ? 'bi-person-x' : 'bi-person-check' }}"></i>
                                         </button>
                                     </div>
