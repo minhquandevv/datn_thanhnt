@@ -236,7 +236,7 @@
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="form-group">
+                            <div class="form-group" id="locationGroup" style="display: none;">
                                 <label for="location">Địa Điểm</label>
                                 <input type="text" class="form-control @error('location') is-invalid @enderror" id="location" name="location">
                                 @error('location')
@@ -502,24 +502,29 @@
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales/vi.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Ẩn/hiện trường link phỏng họp dựa vào loại phỏng vấn
-    function toggleMeetingLinkField() {
+    // Ẩn/hiện trường link phỏng họp và địa điểm dựa vào loại phỏng vấn
+    function toggleInterviewFields() {
         var interviewType = document.getElementById('interview_type').value;
         var meetingLinkGroup = document.getElementById('meeting_link').closest('.form-group');
+        var locationGroup = document.getElementById('locationGroup');
         
         if (interviewType === 'online') {
             meetingLinkGroup.style.display = 'block';
+            locationGroup.style.display = 'none';
+            document.getElementById('location').value = ''; // Clear location when online
         } else {
             meetingLinkGroup.style.display = 'none';
+            locationGroup.style.display = 'block';
+            document.getElementById('meeting_link').value = ''; // Clear meeting link when in-person
         }
     }
     
     // Thêm event listener cho dropdown loại phỏng vấn
-    document.getElementById('interview_type').addEventListener('change', toggleMeetingLinkField);
+    document.getElementById('interview_type').addEventListener('change', toggleInterviewFields);
     
     // Đảm bảo trạng thái ban đầu được thiết lập đúng ngay khi mở form
     document.getElementById('interviewModal').addEventListener('shown.bs.modal', function() {
-        setTimeout(toggleMeetingLinkField, 100); // Thêm timeout nhỏ để đảm bảo DOM đã cập nhật
+        setTimeout(toggleInterviewFields, 100); // Thêm timeout nhỏ để đảm bảo DOM đã cập nhật
     });
     
     var calendarEl = document.getElementById('calendar');
@@ -692,7 +697,7 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('interview_type').value = 'online';
             
             // Apply meeting link visibility based on interview type
-            toggleMeetingLinkField();
+            toggleInterviewFields();
             
             // Hiển thị modal bằng Bootstrap
             var interviewModal = new bootstrap.Modal(document.getElementById('interviewModal'));
@@ -755,8 +760,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Đảm bảo toggleMeetingLinkField được chạy khi trang load
-    toggleMeetingLinkField();
+    // Đảm bảo toggleInterviewFields được chạy khi trang load
+    toggleInterviewFields();
     
     // Initialize tooltips
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
