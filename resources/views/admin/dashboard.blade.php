@@ -78,7 +78,8 @@
                                     'pending' => 'Chờ duyệt',
                                     'processing' => 'Đã tiếp nhận',
                                     'approved' => 'Đã duyệt',
-                                    'rejected' => 'Từ chối'
+                                    'rejected' => 'Từ chối',
+                                    'transferred' => 'Đã hoàn thành'
                                 ];
                             @endphp
                             @foreach($statusOptions as $value => $label)
@@ -154,7 +155,8 @@
                                 'pending' => 'Chờ duyệt',
                                 'processing' => 'Đã tiếp nhận',
                                 'approved' => 'Đã duyệt',
-                                'rejected' => 'Từ chối'
+                                'rejected' => 'Từ chối',
+                                'transferred' => 'Đã hoàn thành'
                             ];
                             $statusTexts = array_map(function($status) use ($statusLabels) {
                                 return $statusLabels[$status] ?? $status;
@@ -344,14 +346,16 @@
                                 'pending' => 'warning',
                                 'processing' => 'primary',
                                 'approved' => 'success',
-                                'rejected' => 'danger'
+                                'rejected' => 'danger',
+                                'transferred' => 'info'
                             ];
                             
                             $statusLabels = [
                                 'pending' => 'Chờ duyệt',
                                 'processing' => 'Đã tiếp nhận',
                                 'approved' => 'Đã duyệt',
-                                'rejected' => 'Từ chối'
+                                'rejected' => 'Từ chối',
+                                'transferred' => 'Đã hoàn thành'
                             ];
                         @endphp
                         
@@ -404,6 +408,7 @@
                                                 'pending' => 'warning',
                                                 'processing' => 'primary',
                                                 'rejected' => 'danger',
+                                                'transferred' => 'info',
                                                 default => 'secondary'
                                             };
                                             
@@ -412,6 +417,7 @@
                                                 'processing' => 'Đã tiếp nhận',
                                                 'approved' => 'Đã duyệt',
                                                 'rejected' => 'Từ chối',
+                                                'transferred' => 'Đã hoàn thành',
                                                 default => $application['status']
                                             };
                                         @endphp
@@ -419,6 +425,7 @@
                                                 $statusClass === 'warning' ? 'background-color: #fff3cd; color: #856404;' : 
                                                 ($statusClass === 'success' ? 'background-color: #d4edda; color: #155724;' : 
                                                 ($statusClass === 'danger' ? 'background-color: #f8d7da; color: #721c24;' :
+                                                ($statusClass === 'info' ? 'background-color: #cff4ff; color: #004085;' :
                                                 'background-color: #cce5ff; color: #004085;')) 
                                             }}">
                                             {{ $statusText }}
@@ -777,6 +784,7 @@
                         case 'success': return '#1cc88a';
                         case 'danger': return '#e74a3b';
                         case 'primary': return '#4e73df';
+                        case 'info': return '#36b9cc';
                         default: return '#858796';
                     }
                 })) !!},
@@ -787,6 +795,7 @@
                         case 'success': return '#17a673';
                         case 'danger': return '#c93a2d';
                         case 'primary': return '#2e59d9';
+                        case 'info': return '#24aec2';
                         default: return '#6e707e';
                     }
                 })) !!},
