@@ -128,20 +128,29 @@
                 <div class="row">
                     <input type="hidden" name="status" value="Chưa bắt đầu">
 
-                    <div class="col-md-6">
+                    <div class="col-md-12">
                         <div class="mb-3">
-                            <label for="attachments" class="form-label">File đính kèm</label>
-                            <input type="file" 
-                                   class="form-control @error('attachments') is-invalid @enderror" 
-                                   id="attachments" 
-                                   name="attachments[]" 
-                                   multiple
-                                   accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.zip,.rar">
-                            <small class="form-text text-muted">Cho phép các file: PDF, DOC, DOCX, XLS, XLSX, TXT, ZIP, RAR (Tối đa 10MB)</small>
-                            @error('attachments')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                            <div id="fileList" class="mt-2"></div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label for="attachments" class="form-label">File đính kèm</label>
+                                    <input type="file" 
+                                           class="form-control @error('attachments') is-invalid @enderror" 
+                                           id="attachments" 
+                                           name="attachments[]" 
+                                           multiple
+                                           accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.zip,.rar"
+                                           onchange="showFileNames(this)">
+                                    <small class="form-text text-muted">Cho phép các file: PDF, DOC, DOCX, XLS, XLSX, TXT, ZIP, RAR (Tối đa 10MB)</small>
+                                    @error('attachments')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="col-md-8">
+                                    <div id="fileList" class="mt-4">
+                                        <div class="alert alert-info">Chưa có file nào được chọn</div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -259,15 +268,135 @@
     font-size: 0.875rem;
     color: #6c757d;
 }
+
+.file-list-container {
+    margin-top: 0;
+    border: 1px solid #e3e6f0;
+    border-radius: 0.35rem;
+    padding: 10px;
+    background-color: #f8f9fc;
+    height: 100%;
+}
+
+.file-list-header {
+    margin-bottom: 10px;
+    color: #4e73df;
+    font-size: 1rem;
+}
+
+.file-list {
+    margin-bottom: 0;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.file-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    margin-bottom: 5px;
+    border-radius: 0.25rem;
+    background-color: #fff;
+    border: 1px solid #e3e6f0;
+}
+
+.file-info {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    overflow: hidden;
+}
+
+.file-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 300px;
+    font-size: 0.9rem;
+    color: #333;
+}
+
+/* Add styles for the delete button */
+.btn-danger {
+    background-color: #e74a3b;
+    border-color: #e74a3b;
+    color: white;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+}
+
+.btn-danger:hover {
+    background-color: #d52a1a;
+    border-color: #d52a1a;
+}
+
+.bi-x {
+    font-weight: bold;
+}
 </style>
 
 @push('scripts')
 <script>
+// Function to display file names - defined in global scope
+function showFileNames(input) {
+    const fileList = document.getElementById('fileList');
+    
+    if (input.files.length > 0) {
+        let html = '<div class="card">';
+        html += '<div class="card-header bg-primary text-white">';
+        html += `<strong>Danh sách file đã chọn (${input.files.length})</strong>`;
+        html += '</div>';
+        html += '<div class="card-body">';
+        html += '<ul class="list-group">';
+        
+        for (let i = 0; i < input.files.length; i++) {
+            const file = input.files[i];
+            const fileSize = (file.size / 1024 / 1024).toFixed(2);
+            
+            html += '<li class="list-group-item d-flex justify-content-between align-items-center">';
+            html += `<span>${file.name}</span>`;
+            html += '<div>';
+            html += `<span class="badge bg-primary rounded-pill me-2">${fileSize} MB</span>`;
+            html += `<button type="button" class="btn btn-sm btn-danger" onclick="removeFile(${i})"><i class="bi bi-x"></i></button>`;
+            html += '</div>';
+            html += '</li>';
+        }
+        
+        html += '</ul>';
+        html += '</div>';
+        html += '</div>';
+        
+        fileList.innerHTML = html;
+    } else {
+        fileList.innerHTML = '<div class="alert alert-info">Chưa có file nào được chọn</div>';
+    }
+}
+
+// Function to remove a file from the input
+function removeFile(index) {
+    const fileInput = document.getElementById('attachments');
+    
+    // Create a new FileList without the selected file
+    const dt = new DataTransfer();
+    const { files } = fileInput;
+    
+    for (let i = 0; i < files.length; i++) {
+        if (i !== index) {
+            dt.items.add(files[i]);
+        }
+    }
+    
+    // Update the file input with the new FileList
+    fileInput.files = dt.files;
+    
+    // Update the display
+    showFileNames(fileInput);
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     const statusSelect = document.getElementById('status');
     const resultFields = document.getElementById('resultFields');
-    const fileInput = document.getElementById('attachments');
-    const fileList = document.getElementById('fileList');
 
     function toggleResultFields() {
         if (statusSelect.value === 'Hoàn thành') {
@@ -279,30 +408,11 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('evaluation').value = '';
         }
     }
-
-    function updateFileList() {
-        fileList.innerHTML = '';
-        if (fileInput.files.length > 0) {
-            const ul = document.createElement('ul');
-            ul.className = 'list-group';
-            
-            Array.from(fileInput.files).forEach(file => {
-                const li = document.createElement('li');
-                li.className = 'list-group-item d-flex justify-content-between align-items-center';
-                li.innerHTML = `
-                    <span>${file.name}</span>
-                    <span class="badge bg-primary rounded-pill">${(file.size / 1024 / 1024).toFixed(2)} MB</span>
-                `;
-                ul.appendChild(li);
-            });
-            
-            fileList.appendChild(ul);
-        }
+    
+    if (statusSelect) {
+        statusSelect.addEventListener('change', toggleResultFields);
+        toggleResultFields();
     }
-
-    statusSelect.addEventListener('change', toggleResultFields);
-    fileInput.addEventListener('change', updateFileList);
-    toggleResultFields();
 });
 </script>
 @endpush
