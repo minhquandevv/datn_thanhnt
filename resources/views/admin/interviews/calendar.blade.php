@@ -117,6 +117,53 @@
                         
                         <!-- Applications Tab -->
                         <div class="tab-pane fade" id="applications-tab-pane" role="tabpanel" aria-labelledby="applications-tab" tabindex="0">
+                            <!-- Filter Form -->
+                            <form action="{{ route('admin.interviews.calendar') }}" method="GET" class="row g-3 mb-3">
+                                <input type="hidden" name="tab" value="applications">
+                                <div class="col-md-4">
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light border-end-0">
+                                            <i class="bi bi-search text-muted"></i>
+                                        </span>
+                                        <input type="text" class="form-control border-start-0" name="search" placeholder="Tìm theo tên ứng viên" value="{{ request('search') }}">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light border-end-0">
+                                            <i class="bi bi-briefcase text-muted"></i>
+                                        </span>
+                                        <select class="form-select border-start-0" name="position">
+                                            <option value="">Tất cả vị trí</option>
+                                            @foreach($positions as $pos)
+                                                <option value="{{ $pos->name }}" {{ request('position') == $pos->name ? 'selected' : '' }}>
+                                                    {{ $pos->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light border-end-0">
+                                            <i class="bi bi-check-circle text-muted"></i>
+                                        </span>
+                                        <select class="form-select border-start-0" name="status">
+                                            <option value="">Tất cả trạng thái</option>
+                                            <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Chưa có lịch</option>
+                                            <option value="scheduled" {{ request('status') == 'scheduled' ? 'selected' : '' }}>Đã có lịch</option>
+                                            <option value="passed" {{ request('status') == 'passed' ? 'selected' : '' }}>Đỗ phỏng vấn</option>
+                                            <option value="failed" {{ request('status') == 'failed' ? 'selected' : '' }}>Trượt phỏng vấn</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <button type="submit" class="btn btn-danger w-100">
+                                        <i class="bi bi-funnel me-1"></i>Lọc
+                                    </button>
+                                </div>
+                            </form>
+
                             <div class="table-responsive">
                                 <table class="table table-bordered table-hover">
                                     <thead class="table-dark">
@@ -690,6 +737,29 @@ function updateInterviewResult(applicationId, result) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Kiểm tra nếu có tab trong URL thì kích hoạt tab đó
+    const urlParams = new URLSearchParams(window.location.search);
+    const tabParam = urlParams.get('tab');
+    if (tabParam) {
+        const tabButton = document.querySelector(`#interviewTabs button[data-bs-target="#${tabParam}-tab-pane"]`);
+        if (tabButton) {
+            tabButton.click();
+        }
+    }
+
+    // Xử lý form submit
+    const filterForm = document.querySelector('form[action="{{ route('admin.interviews.calendar') }}"]');
+    if (filterForm) {
+        filterForm.addEventListener('submit', function(e) {
+            // Thêm tab=applications vào URL nếu chưa có
+            const tabInput = document.createElement('input');
+            tabInput.type = 'hidden';
+            tabInput.name = 'tab';
+            tabInput.value = 'applications';
+            this.appendChild(tabInput);
+        });
+    }
+
     // Ẩn/hiện trường link phỏng họp và địa điểm dựa vào loại phỏng vấn
     function toggleInterviewFields() {
         var interviewType = document.getElementById('interview_type').value;

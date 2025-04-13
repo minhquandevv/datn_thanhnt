@@ -32,9 +32,46 @@ class InterviewScheduleController extends Controller
     public function calendar()
     {
         // Lấy danh sách đơn ứng tuyển đã được duyệt
-        $jobApplications = JobApplication::where('status', 'approved')
-            ->with(['jobOffer', 'candidate', 'interviews'])
-            ->get();
+        $query = JobApplication::where('status', 'approved')
+            ->with(['jobOffer', 'candidate', 'interviews']);
+            
+        // Lọc theo tên ứng viên
+        if (request('search')) {
+            $query->whereHas('candidate', function($q) {
+                $q->where('fullname', 'like', '%' . request('search') . '%');
+            });
+        }
+        
+        // Lọc theo vị trí
+        if (request('position')) {
+            $query->whereHas('jobOffer', function($q) {
+                $q->whereHas('position', function($q2) {
+                    $q2->where('name', request('position'));
+                });
+            });
+        }
+        
+        // Lọc theo trạng thái
+        if (request('status')) {
+            switch (request('status')) {
+                case 'pending':
+                    $query->whereDoesntHave('interviews');
+                    break;
+                case 'scheduled':
+                    $query->whereHas('interviews', function($q) {
+                        $q->where('status', 'scheduled');
+                    });
+                    break;
+                case 'passed':
+                    $query->where('status', 'passed');
+                    break;
+                case 'failed':
+                    $query->where('status', 'failed');
+                    break;
+            }
+        }
+            
+        $jobApplications = $query->get();
             
         // Get interview statistics
         $scheduledCount = InterviewSchedule::where('status', 'scheduled')->count();
@@ -45,8 +82,18 @@ class InterviewScheduleController extends Controller
         $pendingSchedulingCount = $jobApplications->filter(function($application) {
             return $application->interviews->isEmpty();
         })->count();
+        
+        // Lấy danh sách các vị trí để hiển thị trong dropdown
+        $positions = \App\Models\RecruitmentPosition::select('name')->distinct()->orderBy('name')->get();
             
-        return view('admin.interviews.calendar', compact('jobApplications', 'scheduledCount', 'completedCount', 'cancelledCount', 'pendingSchedulingCount'));
+        return view('admin.interviews.calendar', compact(
+            'jobApplications', 
+            'scheduledCount', 
+            'completedCount', 
+            'cancelledCount', 
+            'pendingSchedulingCount',
+            'positions'
+        ));
     }
 
     /**

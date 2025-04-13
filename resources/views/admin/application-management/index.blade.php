@@ -10,261 +10,304 @@
         transform: translateY(-1px);
         transition: 0.2s ease-in-out;
     }
+    .input-group-text {
+        border-radius: 0.375rem 0 0 0.375rem !important;
+    }
+    .form-control, .form-select {
+        border-radius: 0 0.375rem 0.375rem 0 !important;
+    }
+    .form-control:focus, .form-select:focus {
+        border-color: #dc3545;
+        box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25);
+    }
+    .input-group:focus-within {
+        box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25);
+    }
+    .form-select {
+        cursor: pointer;
+    }
 </style>
 
 <div class="container-fluid">
-    <div class="card border-0 shadow-sm">
-        <div class="card-header bg-white py-3">
-            <div class="d-flex justify-content-between align-items-center">
-                <h1 class="h4 text-danger fw-bold mb-0">
-                    <i class="bi bi-file-earmark-text text-danger me-2"></i>
-                    Quản lý đơn ứng tuyển
-                </h1>
-                <div class="d-flex align-items-center">
-                    <div class="me-2">
-                        <span class="badge bg-primary rounded-pill">
-                            <i class="bi bi-clock me-1"></i>{{ $counts['pending'] }}
-                        </span>
-                    </div>
-                    <div class="me-2">
-                        <span class="badge bg-warning rounded-pill">
-                            <i class="bi bi-hourglass-split me-1"></i>{{ $counts['processing'] }}
-                        </span>
-                    </div>
-                    <div class="me-2">
-                        <span class="badge bg-success rounded-pill">
-                            <i class="bi bi-check-circle me-1"></i>{{ $counts['approved'] }}
-                        </span>
-                    </div>
-                    <div>
-                        <span class="badge bg-danger rounded-pill">
-                            <i class="bi bi-x-circle me-1"></i>{{ $counts['rejected'] }}
-                        </span>
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <h5 class="card-title mb-0 text-danger fs-4 fw-bold">
+                                <i class="bi bi-file-earmark-text"></i>
+                                Quản lý đơn ứng tuyển
+                            </h5>
+                        </div>
+                        <div class="col-md-6">
+                            <form action="{{ route('admin.job-applications.index') }}" method="GET" class="row g-2" id="filterForm">
+                                <input type="hidden" name="status" value="{{ $status }}">
+                                <div class="col-md-4">
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light border-end-0">
+                                            <i class="bi bi-search text-muted"></i>
+                                        </span>
+                                        <input type="text" class="form-control border-start-0" name="search" placeholder="Tìm theo tên" value="{{ request('search') }}">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light border-end-0">
+                                            <i class="bi bi-mortarboard text-muted"></i>
+                                        </span>
+                                        <select class="form-select border-start-0" name="university" id="universitySelect">
+                                            <option value="">Tất cả trường</option>
+                                            @foreach($universities as $uni)
+                                                <option value="{{ $uni->name }}" {{ request('university') == $uni->name ? 'selected' : '' }}>
+                                                    {{ $uni->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light border-end-0">
+                                            <i class="bi bi-briefcase text-muted"></i>
+                                        </span>
+                                        <select class="form-select border-start-0" name="position" id="positionSelect">
+                                            <option value="">Tất cả vị trí</option>
+                                            @foreach($positions as $pos)
+                                                <option value="{{ $pos->name }}" {{ request('position') == $pos->name ? 'selected' : '' }}>
+                                                    {{ $pos->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <div class="card-body p-0">
-            <!-- Tabs -->
-            <ul class="nav nav-tabs nav-fill border-bottom" id="applicationTabs" role="tablist">
-                @foreach(['pending' => 'Chờ tiếp nhận', 'processing' => 'Chờ xử lý', 'approved' => 'Đã duyệt', 'rejected' => 'Đã từ chối'] as $key => $label)
-                    <li class="nav-item" role="presentation">
-                        <a class="nav-link {{ $status === $key ? 'active' : '' }}"
-                           href="{{ route('admin.job-applications.index', ['status' => $key]) }}"
-                           role="tab">
-                            <i class="bi bi-{{ $key === 'pending' ? 'clock' : ($key === 'processing' ? 'hourglass-split' : ($key === 'approved' ? 'check-circle' : 'x-circle')) }} me-1"></i>{{ $label }}
-                            <span class="badge bg-{{ $key === 'pending' ? 'primary' : ($key === 'processing' ? 'warning' : ($key === 'approved' ? 'success' : 'danger')) }} ms-1">
-                                {{ $counts[$key] }}
-                            </span>
-                        </a>
-                    </li>
-                @endforeach
-            </ul>
+                <div class="card-body p-0">
+                    <!-- Tabs -->
+                    <ul class="nav nav-tabs nav-fill border-bottom" id="applicationTabs" role="tablist">
+                        @foreach(['pending' => 'Chờ tiếp nhận', 'processing' => 'Chờ xử lý', 'approved' => 'Đã duyệt', 'rejected' => 'Đã từ chối'] as $key => $label)
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link {{ $status === $key ? 'active' : '' }}"
+                                   href="{{ route('admin.job-applications.index', ['status' => $key]) }}"
+                                   role="tab">
+                                    <i class="bi bi-{{ $key === 'pending' ? 'clock' : ($key === 'processing' ? 'hourglass-split' : ($key === 'approved' ? 'check-circle' : 'x-circle')) }} me-1"></i>{{ $label }}
+                                    <span class="badge bg-{{ $key === 'pending' ? 'primary' : ($key === 'processing' ? 'warning' : ($key === 'approved' ? 'success' : 'danger')) }} ms-1">
+                                        {{ $counts[$key] }}
+                                    </span>
+                                </a>
+                            </li>
+                        @endforeach
+                    </ul>
 
-            <!-- Tab Content -->
-            <div class="tab-content p-3" id="applicationTabContent">
-                <div class="tab-pane fade show active" role="tabpanel">
-                    <!-- Bulk Action Buttons -->
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <div>
-                            <button type="button" class="btn btn-sm btn-outline-primary me-2 bulk-check" 
-                            id="selectAllBtn"
-                                    data-action="select"
-                                    data-text="Chọn tất cả">
-                                <i class="bi bi-check-all me-1"></i>Chọn tất cả
-                            </button>
-                        
-                            <button type="button" class="btn btn-sm btn-outline-secondary bulk-check"
-                            id="deselectAllBtn"
-                                    data-action="deselect"
-                                    data-text="Bỏ chọn tất cả">
-                                <i class="bi bi-x-lg me-1"></i>Bỏ chọn tất cả
-                            </button>
-                        </div>
-                        <div class="bulk-actions">
-                            @if($status === 'pending')
-                            <button type="button" class="btn btn-sm btn-success bulk-confirm"
-                                    id="processSelectedBtn"
-                                    data-status="processing"
-                                    data-text="tiếp nhận"
-                                    disabled>
-                                <i class="bi bi-check-circle me-1"></i>Tiếp nhận
-                            </button>
-                        @elseif($status === 'processing')
-                            <div class="btn-group">
-                                <button type="button" class="btn btn-sm btn-success bulk-confirm"
-                                        id="approveSelectedBtn"
-                                        data-status="approved"
-                                        data-text="duyệt"
-                                        disabled>
-                                    <i class="bi bi-check-lg me-1"></i>Duyệt
-                                </button>
-                                <button type="button" class="btn btn-sm btn-danger bulk-confirm"
-                                        id="rejectSelectedBtn"
-                                        data-status="rejected"
-                                        data-text="từ chối"
-                                        disabled>
-                                    <i class="bi bi-x-lg me-1"></i>Từ chối
-                                </button>
+                    <!-- Tab Content -->
+                    <div class="tab-content p-3" id="applicationTabContent">
+                        <div class="tab-pane fade show active" role="tabpanel">
+                            <!-- Bulk Action Buttons -->
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div>
+                                    <button type="button" class="btn btn-sm btn-outline-primary me-2 bulk-check" 
+                                    id="selectAllBtn"
+                                            data-action="select"
+                                            data-text="Chọn tất cả">
+                                        <i class="bi bi-check-all me-1"></i>Chọn tất cả
+                                    </button>
+                                
+                                    <button type="button" class="btn btn-sm btn-outline-secondary bulk-check"
+                                    id="deselectAllBtn"
+                                            data-action="deselect"
+                                            data-text="Bỏ chọn tất cả">
+                                        <i class="bi bi-x-lg me-1"></i>Bỏ chọn tất cả
+                                    </button>
+                                </div>
+                                <div class="bulk-actions">
+                                    @if($status === 'pending')
+                                    <button type="button" class="btn btn-sm btn-success bulk-confirm"
+                                            id="processSelectedBtn"
+                                            data-status="processing"
+                                            data-text="tiếp nhận"
+                                            disabled>
+                                        <i class="bi bi-check-circle me-1"></i>Tiếp nhận
+                                    </button>
+                                @elseif($status === 'processing')
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-sm btn-success bulk-confirm"
+                                                id="approveSelectedBtn"
+                                                data-status="approved"
+                                                data-text="duyệt"
+                                                disabled>
+                                            <i class="bi bi-check-lg me-1"></i>Duyệt
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-danger bulk-confirm"
+                                                id="rejectSelectedBtn"
+                                                data-status="rejected"
+                                                data-text="từ chối"
+                                                disabled>
+                                            <i class="bi bi-x-lg me-1"></i>Từ chối
+                                        </button>
+                                    </div>
+                                @endif
+                                </div>
                             </div>
-                        @endif
-                        </div>
-                    </div>
 
-                    <!-- Applications Table -->
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle">
-                            <thead class="table-light">
-                                <tr>
-                                    <th width="40">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" id="headerCheckbox">
-                                        </div>
-                                    </th>
-                                    <th>Tên</th>
-                                    <th>Trường</th>
-                                    <th>Vị trí</th>
-                                    <th>CV</th>
-                                    <th>Ngày nộp</th>
-                                    <th>Trạng thái</th>
-                                    <th width="180">Thao tác</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse($applications as $application)
-                                <tr>
-                                    <td>
-                                        <div class="form-check">
-                                            <input class="form-check-input application-checkbox"
-                                                   type="checkbox"
-                                                   name="application_ids[]"
-                                                   value="{{ $application->id }}"
-                                                   data-status="{{ $application->status }}">
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            @if($application->candidate->url_avatar)
-                                                <img src="{{ asset('uploads/' . $application->candidate->url_avatar) }}" class="rounded-circle me-2" style="width: 32px; height: 32px; object-fit: cover;">
-                                            @else
-                                                <div class="bg-secondary rounded-circle text-white d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px; font-size: 0.8rem;">
-                                                    {{ substr($application->candidate->fullname, 0, 2) }}
+                            <!-- Applications Table -->
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th width="40">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" id="headerCheckbox">
                                                 </div>
-                                            @endif
-                                            <div>
-                                                <div class="fw-medium">{{ $application->candidate->fullname }}</div>
-                                                <div class="small text-muted">{{ $application->candidate->email }}</div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        @if($application->candidate->university)
-                                            <span class="badge bg-light text-dark">
-                                                <i class="bi bi-mortarboard me-1"></i>
-                                                {{ $application->candidate->university->name }}
-                                            </span>
-                                        @elseif($application->candidate->education && $application->candidate->education->first())
-                                            <span class="badge bg-light text-dark">
-                                                <i class="bi bi-mortarboard me-1"></i>
-                                                {{ $application->candidate->education->first()->school_name ?? 'Chưa cập nhật' }}
-                                            </span>
-                                        @else
-                                            <span class="text-muted">Chưa cập nhật</span>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        @if($application->jobOffer && $application->jobOffer->position)
-                                            <div class="d-flex align-items-center">
-                                                <i class="bi bi-briefcase text-primary me-2"></i>
-                                                {{ $application->jobOffer->position->name }}
-                                            </div>
-                                        @else
-                                            <span class="text-muted">Chưa cập nhật</span>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        @if($application->cv_path)
-                                            <a href="{{ asset('uploads/cv/' . basename($application->cv_path)) }}" class="btn btn-sm btn-outline-primary" target="_blank">
-                                                <i class="bi bi-file-earmark-pdf me-1"></i>Xem CV
-                                            </a>
-                                        @else
-                                            <span class="text-muted">Chưa cập nhật</span>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <i class="bi bi-calendar-event text-primary me-2"></i>
-                                            {{ date('d/m/Y H:i', strtotime($application->created_at)) }}
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <span class="badge bg-{{ $application->status === 'pending' ? 'primary' : ($application->status === 'processing' ? 'warning' : ($application->status === 'approved' ? 'success' : 'danger')) }}">
-                                            <i class="bi bi-{{ $application->status === 'pending' ? 'clock' : ($application->status === 'processing' ? 'hourglass-split' : ($application->status === 'approved' ? 'check-circle' : 'x-circle')) }} me-1"></i>
-                                            {{ $application->status === 'pending' ? 'Chờ tiếp nhận' : ($application->status === 'processing' ? 'Chờ xử lý' : ($application->status === 'approved' ? 'Đã duyệt' : 'Đã từ chối')) }}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <div class="d-flex gap-1">
-                                            @if($application->status === 'pending')
-                                                <form action="{{ route('admin.job-applications.update-status') }}" method="POST" class="d-inline">
-                                                    @csrf
-                                                    <input type="hidden" name="application_ids[]" value="{{ $application->id }}">
-                                                    <input type="hidden" name="status" value="processing">
-                                                    <button type="submit"
-                                                    class="btn btn-sm btn-success confirm-action"
-                                                    data-message="Bạn có chắc chắn muốn tiếp nhận đơn ứng tuyển này?">
-                                                    <i class="bi bi-check-circle me-1"></i> 
-                                                </button>
-                                                </form>
-                                            @elseif($application->status === 'processing')
-                                                <form action="{{ route('admin.job-applications.update-status') }}" method="POST" class="d-inline">
-                                                    @csrf
-                                                    <input type="hidden" name="application_ids[]" value="{{ $application->id }}">
-                                                    <input type="hidden" name="status" value="approved">
-                                                    <button type="submit"
-                                                    class="btn btn-sm btn-success confirm-action"
-                                                    data-message="Bạn có chắc chắn muốn duyệt đơn ứng tuyển này?">
-                                                    <i class="bi bi-check-lg me-1"></i> 
-                                                </button>
-                                                </form>
-                                                <form action="{{ route('admin.job-applications.update-status') }}" method="POST" class="d-inline">
-                                                    @csrf
-                                                    <input type="hidden" name="application_ids[]" value="{{ $application->id }}">
-                                                    <input type="hidden" name="status" value="rejected">
-                                                    <button type="submit"
-                                                        class="btn btn-sm btn-danger confirm-action"
-                                                        data-message="Bạn có chắc chắn muốn từ chối đơn ứng tuyển này?">
-                                                    <i class="bi bi-x-lg me-1"></i> 
-                                                </button>
-                                            </form>
-                                            @elseif($application->status === 'passed')
-                                                <form action="{{ route('admin.interns.store') }}" method="POST" class="d-inline">
-                                                    @csrf
-                                                    <input type="hidden" name="application_id" value="{{ $application->id }}">
-                                                    <button type="submit"
-                                                        class="btn btn-sm btn-info confirm-action"
-                                                        data-message="Bạn có chắc chắn muốn chuyển ứng viên này sang thực tập sinh?">
-                                                        <i class="bi bi-person-plus me-1"></i> 
-                                                    </button>
-                                                </form>
-                                            @endif
-                                            <a href="{{ route('admin.candidates.show', $application->candidate->id) }}" class="btn btn-sm btn-primary">
-                                                <i class="bi bi-person me-1"></i> 
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                                @empty
-                                <tr>
-                                    <td colspan="10" class="text-center py-4">
-                                        <i class="bi bi-inbox text-muted fs-1 d-block mb-2"></i>
-                                        <p class="text-muted mb-0">Không có đơn ứng tuyển nào</p>
-                                    </td>
-                                </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
+                                            </th>
+                                            <th>Tên</th>
+                                            <th>Trường</th>
+                                            <th>Vị trí</th>
+                                            <th>CV</th>
+                                            <th>Ngày nộp</th>
+                                            <th>Trạng thái</th>
+                                            <th width="180">Thao tác</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @forelse($applications as $application)
+                                        <tr>
+                                            <td>
+                                                <div class="form-check">
+                                                    <input class="form-check-input application-checkbox"
+                                                           type="checkbox"
+                                                           name="application_ids[]"
+                                                           value="{{ $application->id }}"
+                                                           data-status="{{ $application->status }}">
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    @if($application->candidate->url_avatar)
+                                                        <img src="{{ asset('uploads/' . $application->candidate->url_avatar) }}" class="rounded-circle me-2" style="width: 32px; height: 32px; object-fit: cover;">
+                                                    @else
+                                                        <div class="bg-secondary rounded-circle text-white d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px; font-size: 0.8rem;">
+                                                            {{ substr($application->candidate->fullname, 0, 2) }}
+                                                        </div>
+                                                    @endif
+                                                    <div>
+                                                        <div class="fw-medium">{{ $application->candidate->fullname }}</div>
+                                                        <div class="small text-muted">{{ $application->candidate->email }}</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                @if($application->candidate->university)
+                                                    <span class="badge bg-light text-dark">
+                                                        <i class="bi bi-mortarboard me-1"></i>
+                                                        {{ $application->candidate->university->name }}
+                                                    </span>
+                                                @elseif($application->candidate->education && $application->candidate->education->first())
+                                                    <span class="badge bg-light text-dark">
+                                                        <i class="bi bi-mortarboard me-1"></i>
+                                                        {{ $application->candidate->education->first()->school_name ?? 'Chưa cập nhật' }}
+                                                    </span>
+                                                @else
+                                                    <span class="text-muted">Chưa cập nhật</span>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @if($application->jobOffer && $application->jobOffer->position)
+                                                    <div class="d-flex align-items-center">
+                                                        <i class="bi bi-briefcase text-primary me-2"></i>
+                                                        {{ $application->jobOffer->position->name }}
+                                                    </div>
+                                                @else
+                                                    <span class="text-muted">Chưa cập nhật</span>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @if($application->cv_path)
+                                                    <a href="{{ asset('uploads/cv/' . basename($application->cv_path)) }}" class="btn btn-sm btn-outline-primary" target="_blank">
+                                                        <i class="bi bi-file-earmark-pdf me-1"></i>Xem CV
+                                                    </a>
+                                                @else
+                                                    <span class="text-muted">Chưa cập nhật</span>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <i class="bi bi-calendar-event text-primary me-2"></i>
+                                                    {{ date('d/m/Y H:i', strtotime($application->created_at)) }}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-{{ $application->status === 'pending' ? 'primary' : ($application->status === 'processing' ? 'warning' : ($application->status === 'approved' ? 'success' : 'danger')) }}">
+                                                    <i class="bi bi-{{ $application->status === 'pending' ? 'clock' : ($application->status === 'processing' ? 'hourglass-split' : ($application->status === 'approved' ? 'check-circle' : 'x-circle')) }} me-1"></i>
+                                                    {{ $application->status === 'pending' ? 'Chờ tiếp nhận' : ($application->status === 'processing' ? 'Chờ xử lý' : ($application->status === 'approved' ? 'Đã duyệt' : 'Đã từ chối')) }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex gap-1">
+                                                    @if($application->status === 'pending')
+                                                        <form action="{{ route('admin.job-applications.update-status') }}" method="POST" class="d-inline">
+                                                            @csrf
+                                                            <input type="hidden" name="application_ids[]" value="{{ $application->id }}">
+                                                            <input type="hidden" name="status" value="processing">
+                                                            <button type="submit"
+                                                            class="btn btn-sm btn-success confirm-action"
+                                                            data-message="Bạn có chắc chắn muốn tiếp nhận đơn ứng tuyển này?">
+                                                            <i class="bi bi-check-circle me-1"></i> 
+                                                        </button>
+                                                        </form>
+                                                    @elseif($application->status === 'processing')
+                                                        <form action="{{ route('admin.job-applications.update-status') }}" method="POST" class="d-inline">
+                                                            @csrf
+                                                            <input type="hidden" name="application_ids[]" value="{{ $application->id }}">
+                                                            <input type="hidden" name="status" value="approved">
+                                                            <button type="submit"
+                                                            class="btn btn-sm btn-success confirm-action"
+                                                            data-message="Bạn có chắc chắn muốn duyệt đơn ứng tuyển này?">
+                                                            <i class="bi bi-check-lg me-1"></i> 
+                                                        </button>
+                                                        </form>
+                                                        <form action="{{ route('admin.job-applications.update-status') }}" method="POST" class="d-inline">
+                                                            @csrf
+                                                            <input type="hidden" name="application_ids[]" value="{{ $application->id }}">
+                                                            <input type="hidden" name="status" value="rejected">
+                                                            <button type="submit"
+                                                                class="btn btn-sm btn-danger confirm-action"
+                                                                data-message="Bạn có chắc chắn muốn từ chối đơn ứng tuyển này?">
+                                                            <i class="bi bi-x-lg me-1"></i> 
+                                                        </button>
+                                                    </form>
+                                                    @elseif($application->status === 'passed')
+                                                        <form action="{{ route('admin.interns.store') }}" method="POST" class="d-inline">
+                                                            @csrf
+                                                            <input type="hidden" name="application_id" value="{{ $application->id }}">
+                                                            <button type="submit"
+                                                                class="btn btn-sm btn-info confirm-action"
+                                                                data-message="Bạn có chắc chắn muốn chuyển ứng viên này sang thực tập sinh?">
+                                                                <i class="bi bi-person-plus me-1"></i> 
+                                                            </button>
+                                                        </form>
+                                                    @endif
+                                                    <a href="{{ route('admin.candidates.show', $application->candidate->id) }}" class="btn btn-sm btn-primary">
+                                                        <i class="bi bi-person me-1"></i> 
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        @empty
+                                        <tr>
+                                            <td colspan="10" class="text-center py-4">
+                                                <i class="bi bi-inbox text-muted fs-1 d-block mb-2"></i>
+                                                <p class="text-muted mb-0">Không có đơn ứng tuyển nào</p>
+                                            </td>
+                                        </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -448,7 +491,27 @@
             });
         });
 
-        
+        // Lấy các phần tử select
+        const universitySelect = document.getElementById('universitySelect');
+        const positionSelect = document.getElementById('positionSelect');
+        const filterForm = document.getElementById('filterForm');
+
+        // Thêm sự kiện change cho các select
+        universitySelect.addEventListener('change', function() {
+            // Giữ lại các tham số lọc hiện tại
+            const currentParams = new URLSearchParams(window.location.search);
+            const status = currentParams.get('status') || 'pending';
+            filterForm.querySelector('input[name="status"]').value = status;
+            filterForm.submit();
+        });
+
+        positionSelect.addEventListener('change', function() {
+            // Giữ lại các tham số lọc hiện tại
+            const currentParams = new URLSearchParams(window.location.search);
+            const status = currentParams.get('status') || 'pending';
+            filterForm.querySelector('input[name="status"]').value = status;
+            filterForm.submit();
+        });
     });
 </script>
 @endsection 

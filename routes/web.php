@@ -171,10 +171,10 @@ Route::middleware(['auth', 'check.role:admin,hr,director'])->prefix('admin')->na
     Route::resource('recruitment-plans', RecruitmentPlanController::class)->except(['index', 'show', 'approve', 'reject', 'submit']);
 
     // Job Applications Routes
-    Route::get('/job-applications', [ApplicationManagementController::class, 'index'])->name('job-applications.index');
-    Route::post('/job-applications/update-status', [ApplicationManagementController::class, 'updateStatus'])->name('job-applications.update-status');
-    Route::get('/job-applications/{id}/download-cv', [ApplicationManagementController::class, 'downloadCV'])->name('job-applications.download-cv');
-    Route::get('/job-applications/{id}/details', [ApplicationManagementController::class, 'details'])->name('job-applications.details');
+    Route::get('/job-applications', [\App\Http\Controllers\admin\ApplicationManagementController::class, 'index'])->name('job-applications.index');
+    Route::post('/job-applications/update-status', [\App\Http\Controllers\admin\ApplicationManagementController::class, 'updateStatus'])->name('job-applications.update-status');
+    Route::get('/job-applications/{id}/download-cv', [\App\Http\Controllers\admin\ApplicationManagementController::class, 'downloadCV'])->name('job-applications.download-cv');
+    Route::get('/job-applications/{id}/details', [\App\Http\Controllers\admin\ApplicationManagementController::class, 'details'])->name('job-applications.details');
 
     // Evaluation routes
     Route::get('/evaluations', [EvaluationController::class, 'index'])->name('evaluations.index');

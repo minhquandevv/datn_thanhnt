@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -15,6 +15,9 @@ class ApplicationManagementController extends Controller
     public function index(Request $request)
     {
         $status = $request->get('status', 'pending');
+        $search = $request->get('search');
+        $university = $request->get('university');
+        $position = $request->get('position');
         
         // Lấy số lượng đơn ứng tuyển theo từng trạng thái
         $counts = [
@@ -24,13 +27,57 @@ class ApplicationManagementController extends Controller
             'rejected' => JobApplication::where('status', 'rejected')->count(),
         ];
         
-        // Lấy danh sách đơn ứng tuyển theo trạng thái
-        $applications = JobApplication::where('status', $status)
-            ->with(['candidate', 'jobOffer'])
-            ->orderBy('created_at', 'desc')
-            ->get();
+        // Lấy danh sách đơn ứng tuyển theo trạng thái và các điều kiện lọc
+        $query = JobApplication::where('status', $status)
+            ->with(['candidate', 'jobOffer', 'jobOffer.position', 'candidate.university']);
         
-        return view('admin.application-management.index', compact('applications', 'status', 'counts'));
+        // Lọc theo tên ứng viên
+        if ($search) {
+            $query->whereHas('candidate', function($q) use ($search) {
+                $q->where('fullname', 'like', '%' . $search . '%');
+            });
+        }
+        
+        // Lọc theo trường
+        if ($university) {
+            $university = urldecode($university);
+            $query->whereHas('candidate', function($q) use ($university) {
+                $q->whereHas('university', function($q2) use ($university) {
+                    $q2->where('name', $university);
+                });
+            });
+        }
+        
+        // Lọc theo vị trí
+        if ($position) {
+            $position = urldecode($position);
+            $query->whereHas('jobOffer', function($q) use ($position) {
+                $q->whereHas('position', function($q2) use ($position) {
+                    $q2->where('name', $position);
+                });
+            });
+        }
+        
+        $applications = $query->orderBy('created_at', 'desc')->get();
+        
+        // Debug query
+        \Log::info('SQL Query: ' . $query->toSql());
+        \Log::info('Bindings: ' . json_encode($query->getBindings()));
+        
+        // Lấy danh sách các trường và vị trí để hiển thị trong dropdown
+        $universities = \App\Models\University::orderBy('name')->get();
+        $positions = \App\Models\RecruitmentPosition::select('name')->distinct()->orderBy('name')->get();
+        
+        return view('admin.application-management.index', compact(
+            'applications', 
+            'status', 
+            'counts',
+            'universities',
+            'positions',
+            'search',
+            'university',
+            'position'
+        ));
     }
     
     /**
