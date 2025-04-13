@@ -657,6 +657,7 @@ class AdminController extends Controller
         $approvedApplications = (clone $applicationQuery)->where('status', 'approved')->count();
         $rejectedApplications = (clone $applicationQuery)->where('status', 'rejected')->count();
         $processingApplications = (clone $applicationQuery)->where('status', 'processing')->count();
+        $transferredApplications = (clone $applicationQuery)->where('status', 'transferred')->count();
         
         // Get recent applications for the table with same filters applied
         $recentApplications = (clone $applicationQuery)
@@ -984,7 +985,8 @@ class AdminController extends Controller
             'submitted' => 'Đã nộp',
             'pending_review' => 'Chờ xem xét',
             'interview_scheduled' => 'Đã lên lịch phỏng vấn',
-            'result_pending' => 'Chờ kết quả'
+            'result_pending' => 'Chờ kết quả',
+            'transferred' => 'Đã hoàn thành'
         ];
         
         return $translations[$status] ?? ucfirst($status);
