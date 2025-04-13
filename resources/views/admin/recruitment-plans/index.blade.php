@@ -22,7 +22,7 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <h6 class="card-subtitle mb-0 opacity-75 small">Tổng số kế hoạch</h6>
-                            <h4 class="card-title mb-0 fw-bold">{{ $recruitmentPlans->total() }}</h4>
+                            <h4 class="card-title mb-0 fw-bold">{{ $totalPlans }}</h4>
                         </div>
                         <div class="icon-box rounded-circle bg-white bg-opacity-25 p-1">
                             <i class="bi bi-file-earmark-text"></i>
@@ -37,7 +37,7 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <h6 class="card-subtitle mb-0 opacity-75 small">Chờ duyệt</h6>
-                            <h4 class="card-title mb-0 fw-bold">{{ $recruitmentPlans->where('status', 'pending')->count() }}</h4>
+                            <h4 class="card-title mb-0 fw-bold">{{ $pendingPlans }}</h4>
                         </div>
                         <div class="icon-box rounded-circle bg-white bg-opacity-25 p-1">
                             <i class="bi bi-clock"></i>
@@ -52,7 +52,7 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <h6 class="card-subtitle mb-0 opacity-75 small">Đã duyệt</h6>
-                            <h4 class="card-title mb-0 fw-bold">{{ $recruitmentPlans->where('status', 'approved')->count() }}</h4>
+                            <h4 class="card-title mb-0 fw-bold">{{ $approvedPlans }}</h4>
                         </div>
                         <div class="icon-box rounded-circle bg-white bg-opacity-25 p-1">
                             <i class="bi bi-check-circle"></i>
@@ -67,7 +67,7 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <h6 class="card-subtitle mb-0 opacity-75 small">Từ chối</h6>
-                            <h4 class="card-title mb-0 fw-bold">{{ $recruitmentPlans->where('status', 'rejected')->count() }}</h4>
+                            <h4 class="card-title mb-0 fw-bold">{{ $rejectedPlans }}</h4>
                         </div>
                         <div class="icon-box rounded-circle bg-white bg-opacity-25 p-1">
                             <i class="bi bi-x-circle"></i>
@@ -96,7 +96,7 @@
                     <tbody>
                         @forelse($recruitmentPlans as $plan)
                             <tr>
-                                <td class="px-2">
+                                <td class="px-2 text-center">
                                     <div class="btn-group" role="group">
                                         <a href="{{ route('admin.recruitment-plans.show', $plan) }}" 
                                            class="btn btn-outline-danger btn-sm" 
@@ -121,14 +121,6 @@
                                                 <i class="bi bi-x-lg"></i>
                                             </button>
                                         @endif
-
-                                        <button type="button" 
-                                                class="btn btn-outline-danger btn-sm" 
-                                                data-bs-toggle="modal" 
-                                                data-bs-target="#deleteModal{{ $plan->plan_id }}"
-                                                title="Xóa">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
                                     </div>
                                 </td>
                                 <td class="px-2">
@@ -154,9 +146,6 @@
                                 <td class="px-2">{{ $plan->created_at->format('d/m/Y H:i') }}</td>
                                 <td class="px-2">
                                     @switch($plan->status)
-                                        @case('draft')
-                                            <span class="badge bg-secondary">Nháp</span>
-                                            @break
                                         @case('pending')
                                             <span class="badge bg-warning">Chờ duyệt</span>
                                             @break
@@ -173,7 +162,7 @@
                             <tr>
                                 <td colspan="6" class="text-center py-4">
                                     <div class="text-muted">
-                                        <i class="bi bi-inbox me-2"></i>Không có kế hoạch tuyển dụng nào cần duyệt.
+                                        <i class="bi bi-inbox me-2"></i>Không có kế hoạch tuyển dụng nào.
                                     </div>
                                 </td>
                             </tr>

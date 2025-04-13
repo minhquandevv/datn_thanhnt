@@ -26,6 +26,7 @@ class CheckRole
         if ($user->role === 'director') {
             $allowedRoutes = [
                 'admin.dashboard',
+                'admin.dashboard.export',
                 'admin.recruitment-plans.index',
                 'admin.recruitment-plans.show',
                 'admin.recruitment-plans.approve',

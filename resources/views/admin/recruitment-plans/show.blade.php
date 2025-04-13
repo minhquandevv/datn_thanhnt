@@ -88,9 +88,26 @@
 
                     <div class="mb-3">
                         <h6 class="font-weight-bold">Trạng thái</h6>
-                        <span class="badge bg-warning">Chờ duyệt</span>
+                        @switch($recruitmentPlan->status)
+                            @case('pending')
+                                <span class="badge bg-warning">Chờ duyệt</span>
+                                @break
+                            @case('approved')
+                                <span class="badge bg-success">Đã duyệt</span>
+                                @break
+                            @case('rejected')
+                                <span class="badge bg-danger">Từ chối</span>
+                                @if($recruitmentPlan->rejection_reason)
+                                    <p class="mt-2 small text-danger">
+                                        <strong>Lý do từ chối:</strong><br>
+                                        {{ $recruitmentPlan->rejection_reason }}
+                                    </p>
+                                @endif
+                                @break
+                        @endswitch
                     </div>
 
+                    @if($recruitmentPlan->status === 'pending')
                     <div class="mt-4">
                         <button type="button" 
                                 class="btn btn-success w-100 mb-2"
@@ -106,6 +123,7 @@
                             <i class="bi bi-x-lg me-2"></i>Từ chối kế hoạch
                         </button>
                     </div>
+                    @endif
                 </div>
             </div>
         </div>

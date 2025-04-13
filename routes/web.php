@@ -94,6 +94,7 @@ Route::middleware(['auth:candidate'])->group(function () {
 //Admin routes
 Route::middleware(['auth', 'check.role:admin,hr,director'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+    Route::get('/dashboard/export', [AdminController::class, 'exportDashboard'])->name('dashboard.export');
     
     // Candidate routes - using the new controller
     Route::get('/candidates', [AdminController::class, 'candidate'])->name('candidates');
@@ -174,6 +175,9 @@ Route::middleware(['auth', 'check.role:admin,hr,director'])->prefix('admin')->na
 
     // Evaluation routes
     Route::get('/evaluations', [EvaluationController::class, 'index'])->name('evaluations.index');
+
+    // New route for refreshing dashboard data
+    Route::get('/dashboard/refresh', [AdminController::class, 'refreshDashboardData'])->name('admin.dashboard.refresh');
 });
 
 // Mentor login routes

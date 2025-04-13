@@ -21,16 +21,36 @@ class RecruitmentPlanController extends Controller
         if ($user->role === 'hr') {
             $query->where('created_by', $user->id);
         } else {
-            $query->where('status', 'pending');
+            // For admin/director, exclude draft plans
+            $query->where('status', '!=', 'draft');
         }
 
+        // Get counts for statistics
+        $totalPlans = $query->count();
+        $pendingPlans = (clone $query)->where('status', 'pending')->count();
+        $approvedPlans = (clone $query)->where('status', 'approved')->count();
+        $rejectedPlans = (clone $query)->where('status', 'rejected')->count();
+
+        // Get paginated results
         $recruitmentPlans = $query->latest()->paginate(10);
         
         if ($user->role === 'hr') {
-            return view('hr.recruitment-plans.index', compact('recruitmentPlans'));
+            return view('hr.recruitment-plans.index', compact(
+                'recruitmentPlans',
+                'totalPlans',
+                'pendingPlans',
+                'approvedPlans',
+                'rejectedPlans'
+            ));
         }
         
-        return view('admin.recruitment-plans.index', compact('recruitmentPlans'));
+        return view('admin.recruitment-plans.index', compact(
+            'recruitmentPlans',
+            'totalPlans',
+            'pendingPlans',
+            'approvedPlans',
+            'rejectedPlans'
+        ));
     }
 
     public function create()
@@ -107,6 +127,11 @@ class RecruitmentPlanController extends Controller
         
         if ($user->role === 'hr' && $recruitmentPlan->created_by !== $user->id) {
             abort(403, 'Unauthorized action.');
+        }
+
+        // For admin/director, prevent viewing draft plans
+        if (!in_array($user->role, ['hr']) && $recruitmentPlan->status === 'draft') {
+            abort(404, 'Plan not found.');
         }
 
         if ($user->role === 'hr') {
