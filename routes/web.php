@@ -146,6 +146,7 @@ Route::middleware(['auth', 'check.role:admin,hr,director'])->prefix('admin')->na
     Route::get('interviews/calendar', [InterviewScheduleController::class, 'calendar'])->name('interviews.calendar');
     Route::get('interviews/events', [InterviewScheduleController::class, 'events'])->name('interviews.events');
     Route::post('/interviews/{interview}/status', [InterviewScheduleController::class, 'updateStatus'])->name('interviews.status');
+    Route::post('/interviews/update-result/{application}', [InterviewScheduleController::class, 'updateResult'])->name('interviews.update-result');
     Route::resource('interviews', InterviewScheduleController::class);
 
     // Mentor management routes

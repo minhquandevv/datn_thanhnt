@@ -214,7 +214,7 @@
                                                     <button type="submit"
                                                     class="btn btn-sm btn-success confirm-action"
                                                     data-message="Bạn có chắc chắn muốn tiếp nhận đơn ứng tuyển này?">
-                                                    <i class="bi bi-check-circle me-1"></i> Tiếp nhận
+                                                    <i class="bi bi-check-circle me-1"></i> 
                                                 </button>
                                                 </form>
                                             @elseif($application->status === 'processing')
@@ -225,7 +225,7 @@
                                                     <button type="submit"
                                                     class="btn btn-sm btn-success confirm-action"
                                                     data-message="Bạn có chắc chắn muốn duyệt đơn ứng tuyển này?">
-                                                    <i class="bi bi-check-lg me-1"></i> Duyệt
+                                                    <i class="bi bi-check-lg me-1"></i> 
                                                 </button>
                                                 </form>
                                                 <form action="{{ route('admin.job-applications.update-status') }}" method="POST" class="d-inline">
@@ -235,22 +235,22 @@
                                                     <button type="submit"
                                                         class="btn btn-sm btn-danger confirm-action"
                                                         data-message="Bạn có chắc chắn muốn từ chối đơn ứng tuyển này?">
-                                                    <i class="bi bi-x-lg me-1"></i> Từ chối
+                                                    <i class="bi bi-x-lg me-1"></i> 
                                                 </button>
                                             </form>
-                                            @elseif($application->status === 'approved')
+                                            @elseif($application->status === 'passed')
                                                 <form action="{{ route('admin.interns.store') }}" method="POST" class="d-inline">
                                                     @csrf
                                                     <input type="hidden" name="application_id" value="{{ $application->id }}">
                                                     <button type="submit"
                                                         class="btn btn-sm btn-info confirm-action"
                                                         data-message="Bạn có chắc chắn muốn chuyển ứng viên này sang thực tập sinh?">
-                                                        <i class="bi bi-person-plus me-1"></i> Chuyển thực tập
+                                                        <i class="bi bi-person-plus me-1"></i> 
                                                     </button>
                                                 </form>
                                             @endif
                                             <a href="{{ route('admin.candidates.show', $application->candidate->id) }}" class="btn btn-sm btn-primary">
-                                                <i class="bi bi-person me-1"></i> Chi tiết
+                                                <i class="bi bi-person me-1"></i> 
                                             </a>
                                         </div>
                                     </td>

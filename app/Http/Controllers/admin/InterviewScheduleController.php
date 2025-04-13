@@ -10,6 +10,10 @@ use App\Models\JobApplication;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Hash;
+use App\Models\Intern;
+use App\Models\InternAccount;
 
 class InterviewScheduleController extends Controller
 {
@@ -36,8 +40,13 @@ class InterviewScheduleController extends Controller
         $scheduledCount = InterviewSchedule::where('status', 'scheduled')->count();
         $completedCount = InterviewSchedule::where('status', 'completed')->count();
         $cancelledCount = InterviewSchedule::where('status', 'cancelled')->count();
+        
+        // Count job applications that are approved but don't have any interviews scheduled
+        $pendingSchedulingCount = $jobApplications->filter(function($application) {
+            return $application->interviews->isEmpty();
+        })->count();
             
-        return view('admin.interviews.calendar', compact('jobApplications', 'scheduledCount', 'completedCount', 'cancelledCount'));
+        return view('admin.interviews.calendar', compact('jobApplications', 'scheduledCount', 'completedCount', 'cancelledCount', 'pendingSchedulingCount'));
     }
 
     /**
@@ -136,11 +145,9 @@ class InterviewScheduleController extends Controller
             ]);
 
             if ($validator->fails()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Validation error',
-                    'errors' => $validator->errors()
-                ], 422);
+                return redirect()->back()
+                    ->withErrors($validator)
+                    ->withInput();
             }
 
             // Get the job application
@@ -161,17 +168,14 @@ class InterviewScheduleController extends Controller
                 'meeting_link' => $request->meeting_link,
             ]);
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Lịch phỏng vấn đã được tạo thành công',
-                'interview' => $interview
-            ]);
+            // Redirect back to calendar view with success message
+            return redirect()->route('admin.interviews.calendar')
+                ->with('success', 'Lịch phỏng vấn đã được tạo thành công');
 
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Có lỗi xảy ra: ' . $e->getMessage()
-            ], 500);
+            return redirect()->back()
+                ->with('error', 'Có lỗi xảy ra: ' . $e->getMessage())
+                ->withInput();
         }
     }
 
@@ -254,7 +258,7 @@ class InterviewScheduleController extends Controller
         $interview->delete();
 
         return redirect()->route('admin.interviews.calendar')
-            ->with('success', 'Interview deleted successfully');
+            ->with('success', 'Cuộc phỏng vấn đã được xóa thành công');
     }
 
     /**
@@ -325,5 +329,131 @@ class InterviewScheduleController extends Controller
             });
 
         return response()->json($interviews);
+    }
+
+    /**
+     * Update the interview result and job application status
+     */
+    public function updateResult(Request $request, JobApplication $application)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'result' => 'required|in:passed,failed',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Validation error',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            // Update the job application status
+            $application->update([
+                'status' => $request->result
+            ]);
+
+            // Update the interview status to completed
+            $interview = $application->interviews->first();
+            if ($interview) {
+                $interview->update([
+                    'status' => 'completed'
+                ]);
+            }
+
+            // Nếu kết quả là passed, tự động chuyển sang thực tập sinh
+            if ($request->result === 'passed') {
+                // Kiểm tra xem ứng viên đã là thực tập sinh chưa
+                $existingIntern = Intern::where('email', $application->candidate->email)->first();
+                if (!$existingIntern) {
+                    // Tạo username từ email
+                    $username = explode('@', $application->candidate->email)[0];
+                    
+                    // Tạo mật khẩu ngẫu nhiên
+                    $password = Str::random(10);
+
+                    // Tạo thực tập sinh mới từ thông tin ứng viên
+                    $intern = new Intern();
+                    
+                    // Chỉ đẩy những thông tin đã có
+                    $attributes = [
+                        'fullname' => $application->candidate->fullname,
+                        'email' => $application->candidate->email,
+                        'username' => $username,
+                        'password' => Hash::make($password),
+                        'citizen_id' => $application->candidate->identity_number ?? 'PENDING_' . time(),
+                        'birthdate' => $application->candidate->dob
+                    ];
+
+                    // Thêm các trường nếu có dữ liệu
+                    if ($application->candidate->phone_number) {
+                        $attributes['phone'] = $application->candidate->phone_number;
+                    }
+                    if ($application->candidate->gender) {
+                        // Chuyển đổi giới tính từ tiếng Anh sang tiếng Việt
+                        $genderMap = [
+                            'male' => 'Nam',
+                            'female' => 'Nữ',
+                            'other' => 'Khác'
+                        ];
+                        $attributes['gender'] = $genderMap[strtolower($application->candidate->gender)] ?? 'Khác';
+                    }
+                    if ($application->candidate->address) {
+                        $attributes['address'] = $application->candidate->address;
+                    }
+                    if ($application->candidate->university) {
+                        $attributes['university_id'] = $application->candidate->university->university_id;
+                    }
+                    if ($application->candidate->major) {
+                        $attributes['major'] = $application->candidate->major;
+                    }
+                    if ($application->jobOffer && $application->jobOffer->position) {
+                        $attributes['position'] = $application->jobOffer->position->name;
+                    }
+                    if ($application->jobOffer && $application->jobOffer->department_id) {
+                        $attributes['department_id'] = $application->jobOffer->department_id;
+                    }
+
+                    $intern->fill($attributes);
+                    $intern->save();
+
+                    // Lưu thông tin tài khoản
+                    InternAccount::create([
+                        'intern_id' => $intern->intern_id,
+                        'username' => $username,
+                        'email' => $application->candidate->email,
+                        'password_plain' => $password,
+                        'is_active' => false // Tài khoản chưa kích hoạt
+                    ]);
+
+                    // Cập nhật trạng thái của đơn ứng tuyển hiện tại
+                    $application->status = 'transferred';
+                    $application->save();
+
+                    // Xóa tất cả các đơn ứng tuyển khác của ứng viên này
+                    JobApplication::where('candidate_id', $application->candidate_id)
+                        ->where('id', '!=', $application->id)
+                        ->delete();
+
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Cập nhật kết quả phỏng vấn thành công và đã chuyển ứng viên sang thực tập sinh. Tài khoản: ' . $username . ', Mật khẩu: ' . $password
+                    ]);
+                }
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Cập nhật kết quả phỏng vấn thành công'
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Error updating interview result: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }

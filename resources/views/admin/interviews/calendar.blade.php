@@ -10,18 +10,41 @@
             <div class="card">
                 <div class="card-header bg-danger text-white">
                     <h3 class="card-title">
-                        <i class="fas fa-calendar-alt mr-2"></i> Lịch Phỏng Vấn
+                        <i class="fas fa-calendar-alt mr-2"></i> LỊCH PHỎNG VẤN
                     </h3>
                 </div>
                 <div class="card-body p-2">
+                    
+                    @if(session('error'))
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-circle me-2"></i> {{ session('error') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    @endif
+                    
                     <!-- Thống kê -->
                     <div class="row mb-3">
+                        <div class="col-6 col-md-3 mb-2">
+                            <div class="card bg-gradient-warning text-white h-100">
+                                <div class="card-body p-2">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="mb-0">Chờ lên lịch</h6>
+                                            <h2 class="mb-0">{{ $pendingSchedulingCount }}</h2>
+                                        </div>
+                                        <div class="icon">
+                                            <i class="fas fa-clock fa-2x"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <div class="col-6 col-md-3 mb-2">
                             <div class="card bg-gradient-danger text-white h-100">
                                 <div class="card-body p-2">
                                     <div class="d-flex justify-content-between align-items-center">
                                         <div>
-                                            <h6 class="mb-0">Đã Lên Lịch</h6>
+                                            <h6 class="mb-0">Đã lên lịch</h6>
                                             <h2 class="mb-0">{{ $scheduledCount ?? 0 }}</h2>
                                         </div>
                                         <div class="icon">
@@ -36,7 +59,7 @@
                                 <div class="card-body p-2">
                                     <div class="d-flex justify-content-between align-items-center">
                                         <div>
-                                            <h6 class="mb-0">Đã Hoàn Thành</h6>
+                                            <h6 class="mb-0">Đã hoàn thành</h6>
                                             <h2 class="mb-0">{{ $completedCount ?? 0 }}</h2>
                                         </div>
                                         <div class="icon">
@@ -51,7 +74,7 @@
                                 <div class="card-body p-2">
                                     <div class="d-flex justify-content-between align-items-center">
                                         <div>
-                                            <h6 class="mb-0">Đã Hủy</h6>
+                                            <h6 class="mb-0">Đã hủy</h6>
                                             <h2 class="mb-0">{{ $cancelledCount ?? 0 }}</h2>
                                         </div>
                                         <div class="icon">
@@ -61,27 +84,13 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-6 col-md-3 mb-2">
-                            <div class="card bg-gradient-warning text-white h-100">
-                                <div class="card-body p-2">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <h6 class="mb-0">Chờ lên lịch</h6>
-                                            <h2 class="mb-0">{{ $jobApplications->where('status', 'approved')->count() }}</h2>
-                                        </div>
-                                        <div class="icon">
-                                            <i class="fas fa-clock fa-2x"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        
                     </div>
 
                     <!-- Chỉ có nút lên lịch phỏng vấn -->
                     <div class="d-flex justify-content-end align-items-center mb-3">
                         <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#interviewModal">
-                            <i class="fas fa-plus"></i> Lên Lịch Phỏng Vấn
+                            <i class="fas fa-plus"></i> Lên lịch phỏng vấn
                         </button>
                     </div>
                     
@@ -89,12 +98,12 @@
                     <ul class="nav nav-tabs full-width-tabs mb-3" id="interviewTabs" role="tablist">
                         <li class="nav-item" role="presentation">
                             <button class="nav-link active" id="calendar-tab" data-bs-toggle="tab" data-bs-target="#calendar-tab-pane" type="button" role="tab" aria-controls="calendar-tab-pane" aria-selected="true">
-                                <i class="fas fa-calendar-alt me-2"></i>Lịch Tổng Quan
+                                <i class="fas fa-calendar-alt me-2"></i>LỊCH TỔNG QUAN
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="applications-tab" data-bs-toggle="tab" data-bs-target="#applications-tab-pane" type="button" role="tab" aria-controls="applications-tab-pane" aria-selected="false">
-                                <i class="fas fa-users me-2"></i>Danh Sách Đơn Ứng Tuyển
+                                <i class="fas fa-users me-2"></i>DANH SÁCH ĐƠN ỨNG TUYỂN
                             </button>
                         </li>
                     </ul>
@@ -130,21 +139,64 @@
                                                 <td>
                                                     @if($application->interviews->isEmpty())
                                                         <span class="badge bg-warning">Chưa có lịch</span>
+                                                    @elseif($application->status === 'failed')
+                                                        <span class="badge bg-danger">Trượt phỏng vấn</span>
+                                                    @elseif($application->status === 'passed')
+                                                        <span class="badge bg-success">Đỗ phỏng vấn</span>
                                                     @else
-                                                        <span class="badge bg-success">Đã có lịch</span>
+                                                        <span class="badge bg-info">Đã có lịch</span>
                                                     @endif
                                                 </td>
                                                 <td>
                                                     @if($application->interviews->isEmpty())
                                                         <button class="btn btn-danger btn-sm"
-                                                                onclick="openInterviewModal({{ $application->id }})">
+                                                                onclick="openInterviewModal({{ $application->id }})"
+                                                                data-bs-toggle="tooltip" 
+                                                                data-bs-placement="top" 
+                                                                title="Lên lịch phỏng vấn">
                                                             <i class="fas fa-plus"></i> Lên lịch
                                                         </button>
-                                                    @else
-                                                        <a href="{{ route('admin.interviews.show', $application->interviews->first()->id) }}"
-                                                        class="btn btn-secondary btn-sm">
-                                                            <i class="fas fa-eye"></i> Xem lịch
-                                                        </a>
+                                                    @elseif($application->status !== 'failed' && $application->status !== 'passed')
+                                                        <div class="btn-group" role="group">
+                                                            <a href="{{ route('admin.interviews.show', $application->interviews->first()->id) }}"
+                                                               class="btn btn-secondary btn-sm"
+                                                               data-bs-toggle="tooltip" 
+                                                               data-bs-placement="top" 
+                                                               title="Xem chi tiết lịch phỏng vấn">
+                                                                <i class="fas fa-eye"></i>
+                                                            </a>
+                                                            <button onclick="updateInterviewResult({{ $application->id }}, 'passed')" 
+                                                                    class="btn btn-success btn-sm"
+                                                                    data-bs-toggle="tooltip" 
+                                                                    data-bs-placement="top" 
+                                                                    title="Đánh dấu đỗ phỏng vấn">
+                                                                <i class="fas fa-check"></i>
+                                                            </button>
+                                                            <button onclick="updateInterviewResult({{ $application->id }}, 'failed')" 
+                                                                    class="btn btn-danger btn-sm"
+                                                                    data-bs-toggle="tooltip" 
+                                                                    data-bs-placement="top" 
+                                                                    title="Đánh dấu trượt phỏng vấn">
+                                                                <i class="fas fa-times"></i>
+                                                            </button>
+                                                        </div>
+                                                    @elseif($application->status === 'passed')
+                                                        <div class="btn-group" role="group">
+                                                            <a href="{{ route('admin.interviews.show', $application->interviews->first()->id) }}"
+                                                               class="btn btn-secondary btn-sm"
+                                                               data-bs-toggle="tooltip" 
+                                                               data-bs-placement="top" 
+                                                               title="Xem chi tiết lịch phỏng vấn">
+                                                                <i class="fas fa-eye"></i>
+                                                            </a>
+                                                            <a href="{{ route('admin.interns.create', ['application' => $application->id]) }}"
+                                                               class="btn btn-primary btn-sm"
+                                                               data-bs-toggle="tooltip" 
+                                                               data-bs-placement="top" 
+                                                               title="Chuyển sang thực tập">
+                                                                <i class="fas fa-graduation-cap"></i>
+                                                            </a>
+                                                        </div>
                                                     @endif
                                                 </td>
                                             </tr>
@@ -275,6 +327,44 @@
         </div>
     </div>
 </div>
+
+<!-- Modal Xác nhận Kết quả Phỏng vấn -->
+<div class="modal fade" id="confirmResultModal" tabindex="-1" aria-labelledby="confirmResultModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmResultModalLabel">Xác nhận kết quả phỏng vấn</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="confirmResultMessage"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-primary" id="confirmResultBtn">Xác nhận</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Thông báo -->
+<div class="modal fade" id="notificationModal" tabindex="-1" aria-labelledby="notificationModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="notificationModalLabel">Thông báo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="notificationMessage"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @endsection
 
 @push('styles')
@@ -501,6 +591,67 @@
 <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js'></script>
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales/vi.js"></script>
 <script>
+// Define updateInterviewResult function in global scope
+function updateInterviewResult(applicationId, result) {
+    // Get CSRF token from meta tag
+    const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+    
+    // Set up confirmation modal
+    const confirmModal = new bootstrap.Modal(document.getElementById('confirmResultModal'));
+    const confirmMessage = document.getElementById('confirmResultMessage');
+    const confirmBtn = document.getElementById('confirmResultBtn');
+    
+    // Set message based on result
+    confirmMessage.textContent = result === 'passed' 
+        ? 'Bạn có chắc chắn muốn đánh dấu ứng viên này đỗ phỏng vấn?' 
+        : 'Bạn có chắc chắn muốn đánh dấu ứng viên này trượt phỏng vấn?';
+    
+    // Handle confirmation
+    confirmBtn.onclick = function() {
+        confirmModal.hide();
+        
+        fetch(`/admin/interviews/update-result/${applicationId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': token,
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ result: result })
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Show notification modal
+            const notificationModal = new bootstrap.Modal(document.getElementById('notificationModal'));
+            const notificationMessage = document.getElementById('notificationMessage');
+            
+            if (data.success) {
+                notificationMessage.textContent = data.message;
+                notificationModal.show();
+                
+                // Reload page after modal is closed
+                document.getElementById('notificationModal').addEventListener('hidden.bs.modal', function () {
+                    window.location.reload();
+                }, { once: true });
+            } else {
+                notificationMessage.textContent = data.message || 'Có lỗi xảy ra khi cập nhật kết quả phỏng vấn';
+                notificationModal.show();
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            // Show notification modal
+            const notificationModal = new bootstrap.Modal(document.getElementById('notificationModal'));
+            const notificationMessage = document.getElementById('notificationMessage');
+            notificationMessage.textContent = 'Có lỗi xảy ra khi cập nhật kết quả phỏng vấn';
+            notificationModal.show();
+        });
+    };
+    
+    // Show confirmation modal
+    confirmModal.show();
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     // Ẩn/hiện trường link phỏng họp và địa điểm dựa vào loại phỏng vấn
     function toggleInterviewFields() {
@@ -710,47 +861,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Handle form submission
     document.getElementById('interviewForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        var form = this;
-        var url = form.action;
-        var method = document.getElementById('formMethod').value;
-        var formData = new FormData(form);
-
-        fetch(url, {
-            method: method,
-            headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            },
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                var interviewModal = bootstrap.Modal.getInstance(document.getElementById('interviewModal'));
-                interviewModal.hide();
-                calendar.refetchEvents();
-                toastr.success(data.message);
-                
-                // Nếu đang ở tab ứng viên, làm mới trang để cập nhật danh sách
-                setTimeout(function() {
-                    location.reload();
-                }, 1000);
-            } else {
-                toastr.error(data.message);
-            }
-        })
-        .catch(error => {
-            if (error.status === 422) {
-                var errors = error.responseJSON.errors;
-                Object.keys(errors).forEach(function(key) {
-                    var input = document.querySelector(`[name="${key}"]`);
-                    input.classList.add('is-invalid');
-                    input.nextElementSibling.textContent = errors[key][0];
-                });
-            } else {
-                toastr.error('Lỗi khi lưu phỏng vấn');
-            }
-        });
+        // Let the form submit normally
+        // No need to prevent default or handle with AJAX
     });
 
     // Clear validation errors when modal is closed
@@ -765,7 +877,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize tooltips
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-    tooltipTriggerList.map(function (tooltipTriggerEl) {
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
         return new bootstrap.Tooltip(tooltipTriggerEl);
     });
     
