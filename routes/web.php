@@ -134,8 +134,9 @@ Route::middleware(['auth', 'check.role:admin,hr,director'])->prefix('admin')->na
     Route::resource('companies', CompanyController::class);
 
     // Intern account management routes
-    Route::get('interns/accounts', [InternController::class, 'accounts'])->name('interns.accounts');
-    Route::get('interns/accounts/export', [InternController::class, 'exportAccounts'])->name('interns.accounts.export');
+    Route::get('/interns/accounts', [InternController::class, 'accounts'])->name('interns.accounts');
+    Route::get('/interns/accounts/export', [InternController::class, 'exportAccounts'])->name('interns.accounts.export');
+    Route::post('/interns/accounts/{account}/toggle-status', [InternController::class, 'toggleAccountStatus'])->name('interns.accounts.toggle-status');
     Route::get('interns/template', [InternController::class, 'downloadTemplate'])->name('interns.template');
 
     // Intern management routes

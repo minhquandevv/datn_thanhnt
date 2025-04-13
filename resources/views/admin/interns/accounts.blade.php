@@ -110,10 +110,21 @@
                                 </td>
                                 <td>{{ $account->created_at->format('d/m/Y H:i') }}</td>
                                 <td>
-                                    <a href="{{ route('admin.interns.show', $account->intern_id) }}" 
-                                       class="btn btn-sm btn-outline-danger me-1">
-                                        <i class="bi bi-eye"></i>
-                                    </a>
+                                    <div class="d-flex">
+                                        <a href="{{ route('admin.interns.show', $account->intern_id) }}" 
+                                           class="btn btn-sm btn-outline-danger me-1"
+                                           data-bs-toggle="tooltip" 
+                                           data-bs-title="Xem chi tiết">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <button type="button" 
+                                                class="btn btn-sm {{ $account->is_active ? 'btn-outline-danger' : 'btn-outline-success' }}"
+                                                data-bs-toggle="tooltip"
+                                                data-bs-title="{{ $account->is_active ? 'Vô hiệu hóa tài khoản' : 'Kích hoạt tài khoản' }}"
+                                                onclick="document.getElementById('toggleStatusModal{{ $account->id }}').classList.add('show'); document.getElementById('toggleStatusModal{{ $account->id }}').style.display='block';">
+                                            <i class="bi {{ $account->is_active ? 'bi-person-x' : 'bi-person-check' }}"></i>
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                         @empty
@@ -132,6 +143,35 @@
         </div>
     </div>
 </div>
+
+<!-- Modals Container - Moved outside the table -->
+@foreach($accounts as $account)
+    <!-- Modal Toggle Status -->
+    <div class="modal fade" id="toggleStatusModal{{ $account->id }}" tabindex="-1" aria-labelledby="toggleStatusModalLabel{{ $account->id }}" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="toggleStatusModalLabel{{ $account->id }}">
+                        {{ $account->is_active ? 'Vô hiệu hóa tài khoản' : 'Kích hoạt tài khoản' }}
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Bạn có chắc chắn muốn {{ $account->is_active ? 'vô hiệu hóa' : 'kích hoạt' }} tài khoản của {{ $account->intern->fullname }}?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <form action="{{ route('admin.interns.accounts.toggle-status', $account->id) }}" method="POST">
+                        @csrf
+                        <button type="submit" class="btn {{ $account->is_active ? 'btn-danger' : 'btn-success' }}">
+                            {{ $account->is_active ? 'Vô hiệu hóa' : 'Kích hoạt' }}
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+@endforeach
 @endsection
 
 @push('scripts')

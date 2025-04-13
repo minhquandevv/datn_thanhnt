@@ -515,4 +515,19 @@ class InternController extends Controller
 
         return response()->download($tempFile, $filename)->deleteFileAfterSend(true);
     }
+
+    public function toggleAccountStatus(InternAccount $account)
+    {
+        try {
+            // Đảo ngược trạng thái is_active
+            $account->is_active = !$account->is_active;
+            $account->save();
+
+            return redirect()->route('admin.interns.accounts')
+                           ->with('success', 'Cập nhật trạng thái tài khoản thành công');
+        } catch (\Exception $e) {
+            return redirect()->route('admin.interns.accounts')
+                           ->with('error', 'Có lỗi xảy ra: ' . $e->getMessage());
+        }
+    }
 }

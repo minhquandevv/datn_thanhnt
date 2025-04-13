@@ -89,7 +89,7 @@
                                     data-status="processing"
                                     data-text="tiếp nhận"
                                     disabled>
-                                <i class="bi bi-check-circle me-1"></i>Tiếp nhận đã chọn
+                                <i class="bi bi-check-circle me-1"></i>Tiếp nhận
                             </button>
                         @elseif($status === 'processing')
                             <div class="btn-group">
@@ -98,14 +98,14 @@
                                         data-status="approved"
                                         data-text="duyệt"
                                         disabled>
-                                    <i class="bi bi-check-lg me-1"></i>Duyệt đã chọn
+                                    <i class="bi bi-check-lg me-1"></i>Duyệt
                                 </button>
                                 <button type="button" class="btn btn-sm btn-danger bulk-confirm"
                                         id="rejectSelectedBtn"
                                         data-status="rejected"
                                         data-text="từ chối"
                                         disabled>
-                                    <i class="bi bi-x-lg me-1"></i>Từ chối đã chọn
+                                    <i class="bi bi-x-lg me-1"></i>Từ chối
                                 </button>
                             </div>
                         @endif
