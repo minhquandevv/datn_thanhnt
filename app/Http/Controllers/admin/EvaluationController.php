@@ -11,7 +11,7 @@ class EvaluationController extends Controller
     public function index()
     {
         // Lấy tất cả interns với university_id, department và tasks
-        $interns = \App\Models\Intern::select('interns.*', 'universities.name as university_name')
+        $interns = \App\Models\Intern::select('interns.*', 'universities.short_name as university_name')
             ->leftJoin('universities', 'interns.university_id', '=', 'universities.university_id')
             ->with(['tasks', 'department'])
             ->get();
@@ -74,7 +74,7 @@ class EvaluationController extends Controller
                 $positionScores[$position]['count']++;
 
                 // Thống kê theo phòng ban
-                $department = $intern->department ? $intern->department->name : 'Chưa xác định';
+                $department = $intern->department ? $intern->department->short_name : 'Chưa xác định';
                 if (!isset($departmentScores[$department])) {
                     $departmentScores[$department] = [
                         'total_score' => 0,

@@ -88,8 +88,8 @@
                             <th class="px-2 py-1 text-center" style="width: 150px">Thao tác</th>
                             <th class="px-2 py-1">Tên kế hoạch</th>
                             <th class="px-2 py-1">Trường đại học</th>
-                            <th class="px-2 py-1">Người tạo</th>
                             <th class="px-2 py-1">Ngày tạo</th>
+                            <th class="px-2 py-1">Ngày kết thúc</th>
                             <th class="px-2 py-1">Trạng thái</th>
                         </tr>
                     </thead>
@@ -124,26 +124,17 @@
                                     </div>
                                 </td>
                                 <td class="px-2">
-                                    <a href="{{ route('admin.recruitment-plans.show', $plan) }}" class="text-decoration-none text-danger">
+                                    <a href="{{ route('admin.recruitment-plans.show', $plan) }}" class="text-decoration-none text-dark">
                                         <i class="bi bi-file-earmark-text me-1"></i>{{ $plan->name }}
                                     </a>
                                 </td>
                                 <td class="px-2">
                                     @foreach($plan->universities as $university)
-                                        <span class="badge bg-danger bg-opacity-10 text-danger me-1">{{ $university->name }}</span>
+                                        <span class="badge bg-light text-dark">{{ $university->short_name }}</span>
                                     @endforeach
                                 </td>
-                                <td class="px-2">
-                                    <div class="d-flex align-items-center">
-                                        <div class="avatar-circle me-2">
-                                            <i class="bi bi-person"></i>
-                                        </div>
-                                        <div>
-                                            <div class="fw-medium">{{ $plan->creator->name }}</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-2">{{ $plan->created_at->format('d/m/Y H:i') }}</td>
+                                <td class="px-2">{{ $plan->start_date->format('d/m/Y H:i') }}</td>
+                                <td class="px-2">{{ $plan->end_date->format('d/m/Y H:i') }}</td>
                                 <td class="px-2">
                                     @switch($plan->status)
                                         @case('pending')

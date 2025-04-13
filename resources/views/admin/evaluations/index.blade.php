@@ -102,28 +102,6 @@
             </div>
         </div>
 
-        <!-- Biểu đồ cột trường đại học -->
-        <div class="col-md-6">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-header bg-white border-0 py-3">
-                    <h5 class="card-title text-danger mb-0">
-                        <i class="bi bi-bar-chart-fill me-2"></i>
-                        Phân bố theo trường đại học
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="position-relative" style="height: 300px">
-                        <canvas id="universityChart"></canvas>
-                    </div>
-                    <hr class="my-3">
-                    <div class="text-muted small">
-                        <i class="bi bi-info-circle me-1"></i>
-                        Chiều cao của mỗi cột thể hiện số lượng thực tập sinh của trường tương ứng
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <!-- Biểu đồ điểm trung bình theo trường -->
         <div class="col-md-6">
             <div class="card border-0 shadow-sm h-100">
@@ -187,31 +165,6 @@
                             <span><i class="bi bi-circle-fill text-danger me-1"></i>Điểm trung bình</span>
                             <span><i class="bi bi-arrow-up text-success me-1"></i>Xu hướng tăng</span>
                             <span><i class="bi bi-arrow-down text-danger me-1"></i>Xu hướng giảm</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Biểu đồ phân bố xếp loại theo trường -->
-        <div class="col-md-12">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-header bg-white border-0 py-3">
-                    <h5 class="card-title text-danger mb-0">
-                        <i class="bi bi-bar-chart-steps me-2"></i>
-                        Phân bố xếp loại sinh viên theo trường đại học
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="position-relative" style="height: 300px">
-                        <canvas id="universityRatingChart"></canvas>
-                    </div>
-                    <hr class="my-3">
-                    <div class="text-muted small">
-                        <div class="d-flex justify-content-center gap-3">
-                            <span><i class="bi bi-square-fill text-success me-1"></i>Xuất sắc</span>
-                            <span><i class="bi bi-square-fill text-info me-1"></i>Tốt</span>
-                            <span><i class="bi bi-square-fill text-warning me-1"></i>Trung bình</span>
                         </div>
                     </div>
                 </div>
@@ -336,51 +289,6 @@ document.addEventListener('DOMContentLoaded', function() {
                             const percentage = Math.round((value / total) * 100);
                             return `${label}: ${value} (${percentage}%)`;
                         }
-                    }
-                }
-            }
-        }
-    });
-
-    // Biểu đồ cột trường đại học
-    const universityCtx = document.getElementById('universityChart').getContext('2d');
-    const universityData = @json($universityChartData);
-
-    new Chart(universityCtx, {
-        type: 'bar',
-        data: {
-            labels: universityData.labels,
-            datasets: [{
-                label: 'Số lượng thực tập sinh',
-                data: universityData.data,
-                backgroundColor: 'rgba(220, 53, 69, 0.7)',
-                borderColor: 'rgb(220, 53, 69)',
-                borderWidth: 1,
-                borderRadius: 4,
-                barThickness: 20
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    display: false
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        stepSize: 1
-                    },
-                    grid: {
-                        drawBorder: false
-                    }
-                },
-                x: {
-                    grid: {
-                        display: false
                     }
                 }
             }
@@ -531,90 +439,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     callbacks: {
                         label: function(context) {
                             return `Điểm TB: ${context.parsed.y.toFixed(1)}`;
-                        }
-                    }
-                }
-            }
-        }
-    });
-
-    // Biểu đồ phân bố xếp loại theo trường
-    const universityRatingCtx = document.getElementById('universityRatingChart').getContext('2d');
-    const universityRatingData = @json($universityRatingData);
-
-    new Chart(universityRatingCtx, {
-        type: 'bar',
-        data: {
-            labels: universityRatingData.labels,
-            datasets: [
-                {
-                    label: 'Xuất sắc',
-                    data: universityRatingData.excellent,
-                    backgroundColor: '#198754',
-                    borderColor: '#198754',
-                    borderWidth: 1,
-                    borderRadius: 4,
-                    barPercentage: 0.8
-                },
-                {
-                    label: 'Tốt',
-                    data: universityRatingData.good,
-                    backgroundColor: '#0dcaf0',
-                    borderColor: '#0dcaf0',
-                    borderWidth: 1,
-                    borderRadius: 4,
-                    barPercentage: 0.8
-                },
-                {
-                    label: 'Trung bình',
-                    data: universityRatingData.average,
-                    backgroundColor: '#ffc107',
-                    borderColor: '#ffc107',
-                    borderWidth: 1,
-                    borderRadius: 4,
-                    barPercentage: 0.8
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                x: {
-                    stacked: true,
-                    grid: {
-                        display: false
-                    }
-                },
-                y: {
-                    stacked: true,
-                    beginAtZero: true,
-                    ticks: {
-                        stepSize: 1
-                    },
-                    grid: {
-                        color: 'rgba(0,0,0,0.05)'
-                    }
-                }
-            },
-            plugins: {
-                legend: {
-                    position: 'top',
-                    labels: {
-                        usePointStyle: true,
-                        pointStyle: 'rectRounded',
-                        padding: 20
-                    }
-                },
-                tooltip: {
-                    backgroundColor: 'rgba(0,0,0,0.8)',
-                    padding: 12,
-                    titleColor: '#fff',
-                    bodyColor: '#fff',
-                    displayColors: false,
-                    callbacks: {
-                        label: function(context) {
-                            return `${context.dataset.label}: ${context.raw} sinh viên`;
                         }
                     }
                 }
