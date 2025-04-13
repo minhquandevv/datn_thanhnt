@@ -17,12 +17,6 @@ class CheckRole
         $user = $request->user();
         $allowedRoles = is_array($roles) ? $roles : explode('|', $roles[0]);
 
-        // Cho phép HR truy cập các trang admin
-        if (in_array('admin', $allowedRoles) && $user->role === 'hr') {
-            return $next($request);
-        }
-
-        // Cho phép Director truy cập dashboard và các trang được phép
         if ($user->role === 'director') {
             $allowedRoutes = [
                 'admin.dashboard',
@@ -37,16 +31,22 @@ class CheckRole
             ];
 
             $currentRoute = $request->route()->getName();
-            if (!in_array($currentRoute, $allowedRoutes)) {
-                return redirect()->route('admin.dashboard')->with('error', 'Bạn không có quyền truy cập trang này.');
+            
+            if (in_array($currentRoute, $allowedRoutes) || in_array('admin', $allowedRoles)) {
+                return $next($request);
             }
 
+            return redirect()->route('admin.dashboard')
+                ->with('error', 'Bạn không có quyền truy cập trang này.');
+        }
+
+        if (in_array('admin', $allowedRoles) && $user->role === 'hr') {
             return $next($request);
         }
 
-        // Kiểm tra role cho các trường hợp khác
         if (!in_array($user->role, $allowedRoles)) {
-            return redirect()->route('admin.dashboard');
+            return redirect()->route('admin.dashboard')
+                ->with('error', 'Bạn không có quyền truy cập trang này.');
         }
 
         return $next($request);

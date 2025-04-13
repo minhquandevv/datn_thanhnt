@@ -772,6 +772,12 @@
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('admin.dashboard.*') ? 'active' : '' }}" href="{{ route('admin.dashboard') }}">
+                                <i class="fas fa-tachometer-alt"></i>
+                                <span>Báo cáo thống kê ứng viên</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('admin.evaluations.*') ? 'active' : '' }}" href="{{ route('admin.evaluations.index') }}">
                                 <i class="bi bi-graph-up"></i>
                                 <span>Xem đánh giá thực tập sinh</span>
