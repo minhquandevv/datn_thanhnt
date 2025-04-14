@@ -15,7 +15,6 @@
                             @csrf
 
                             <!-- Email Input -->
-                            <!-- Email Input -->
                             <div class="form-floating mb-3">
                                 <input type="email" name="email"
                                     class="form-control @error('email') is-invalid @enderror" id="email"
@@ -36,9 +35,8 @@
                                 <label for="password">
                                     <i class="bi bi-lock me-2"></i>Mật khẩu
                                 </label>
-                                <button type="button"
-                                    class="btn btn-link position-absolute top-50 end-0 translate-middle-y"
-                                    id="togglePassword" tabindex="-1">
+                                <button class="btn btn-link position-absolute top-50 end-0 translate-middle-y" 
+                                        type="button" id="togglePassword">
                                     <i class="bi bi-eye"></i>
                                 </button>
                                 @error('password')
@@ -98,27 +96,22 @@
                 }, 100);
             }
         };
+
+        document.getElementById('togglePassword').addEventListener('click', function() {
+            const password = document.getElementById('password');
+            const icon = this.querySelector('i');
+            
+            if (password.type === 'password') {
+                password.type = 'text';
+                icon.classList.remove('bi-eye');
+                icon.classList.add('bi-eye-slash');
+            } else {
+                password.type = 'password';
+                icon.classList.remove('bi-eye-slash');
+                icon.classList.add('bi-eye');
+            }
+        });
     </script>
-
-    @push('scripts')
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const togglePassword = document.getElementById('togglePassword');
-                const password = document.getElementById('password');
-
-                if (togglePassword && password) {
-                    togglePassword.addEventListener('click', function() {
-                        const type = password.type === 'password' ? 'text' : 'password';
-                        password.type = type;
-
-                        const icon = this.querySelector('i');
-                        icon.classList.toggle('bi-eye');
-                        icon.classList.toggle('bi-eye-slash');
-                    });
-                }
-            });
-        </script>
-    @endpush
 
     @push('styles')
         <style>
@@ -132,19 +125,41 @@
                 display: flex;
                 align-items: center;
                 justify-content: center;
+                transition: all 0.2s ease;
             }
 
             #togglePassword:hover {
-                color: #0d6efd;
+                color: #dc3545;
                 background: none;
+                transform: scale(1.1);
             }
 
             #togglePassword i {
                 font-size: 1.2rem;
             }
 
+            .form-control {
+                padding-right: 3rem;
+                transition: all 0.2s ease;
+            }
+
+            .form-control:focus {
+                border-color: #dc3545;
+                box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.15);
+            }
+
+            .form-floating>.form-control {
+                height: calc(3.5rem + 2px);
+                line-height: 1.25;
+                padding: 1rem 0.75rem;
+            }
+
+            .form-floating>label {
+                padding: 1rem 0.75rem;
+            }
+
             body {
-                background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+                background: linear-gradient(135deg, #fff5f5 0%, #ffe3e3 100%);
             }
 
             .card {
@@ -156,20 +171,10 @@
             .form-floating>.form-control {
                 border-radius: 10px;
                 border: 1px solid #dee2e6;
-                padding: 1rem 0.75rem;
             }
 
-            .form-floating>.form-control:focus {
-                border-color: #86b7fe;
-                box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-            }
-
-            .form-floating>label {
-                padding: 1rem 0.75rem;
-            }
-
-            .btn-primary {
-                background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+            .btn-danger {
+                background: linear-gradient(135deg, #dc3545 0%, #b02a37 100%);
                 border: none;
                 border-radius: 10px;
                 padding: 0.8rem;
@@ -177,9 +182,9 @@
                 transition: all 0.3s ease;
             }
 
-            .btn-primary:hover {
+            .btn-danger:hover {
                 transform: translateY(-2px);
-                box-shadow: 0 5px 15px rgba(13, 110, 253, 0.3);
+                box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3);
             }
 
             .alert {
@@ -188,77 +193,16 @@
             }
 
             .form-check-input:checked {
-                background-color: #0d6efd;
-                border-color: #0d6efd;
+                background-color: #dc3545;
+                border-color: #dc3545;
             }
 
-            .text-primary {
-                color: #0d6efd !important;
+            .text-danger {
+                color: #dc3545 !important;
             }
 
-            .text-primary:hover {
-                color: #0a58ca !important;
-            }
-
-            .form-label {
-                z-index: 1;
-            }
-
-            #togglePassword {
-                color: #6c757d;
-                padding: 0 1rem;
-                z-index: 2;
-                border: none;
-                background: none;
-                height: 100%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-
-            #togglePassword:hover {
-                color: #0d6efd;
-                background: none;
-            }
-
-            #togglePassword i {
-                font-size: 1.2rem;
-            }
-
-            .form-control {
-                padding-right: 3rem;
-            }
-
-            .form-group.position-relative {
-                position: relative;
-            }
-
-            .form-group.position-relative input {
-                padding-right: 40px;
-            }
-
-            .form-group.position-relative button {
-                color: #6c757d;
-                padding: 0 10px;
-                z-index: 2;
-                top: 50%;
-                transform: translateY(-50%);
-                right: 0;
-                border: none;
-                background: none;
-                height: 100%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-
-            .form-group.position-relative button:hover {
-                color: #0d6efd;
-                background: none;
-            }
-
-            .form-group.position-relative button i {
-                font-size: 1.2rem;
+            .text-danger:hover {
+                color: #b02a37 !important;
             }
         </style>
     @endpush
