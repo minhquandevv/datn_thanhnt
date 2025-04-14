@@ -196,7 +196,7 @@
 
     .interview-content {
         padding: 1rem;
-        max-width: 1200px;
+        width: 1130px;
         margin: 0 auto;
     }
 
