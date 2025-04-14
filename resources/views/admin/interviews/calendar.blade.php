@@ -106,6 +106,11 @@
                                 <i class="fas fa-users me-2"></i>DANH SÁCH ĐƠN ỨNG TUYỂN
                             </button>
                         </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="completed-tab" data-bs-toggle="tab" data-bs-target="#completed-tab-pane" type="button" role="tab" aria-controls="completed-tab-pane" aria-selected="false">
+                                <i class="fas fa-check-circle me-2"></i>ĐÃ HOÀN THÀNH PHỎNG VẤN
+                            </button>
+                        </li>
                     </ul>
                     
                     <!-- Tab Content -->
@@ -152,8 +157,6 @@
                                             <option value="">Tất cả trạng thái</option>
                                             <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Chưa có lịch</option>
                                             <option value="scheduled" {{ request('status') == 'scheduled' ? 'selected' : '' }}>Đã có lịch</option>
-                                            <option value="passed" {{ request('status') == 'passed' ? 'selected' : '' }}>Đỗ phỏng vấn</option>
-                                            <option value="failed" {{ request('status') == 'failed' ? 'selected' : '' }}>Trượt phỏng vấn</option>
                                         </select>
                                     </div>
                                 </div>
@@ -186,10 +189,6 @@
                                                 <td>
                                                     @if($application->interviews->isEmpty())
                                                         <span class="badge bg-warning">Chưa có lịch</span>
-                                                    @elseif($application->status === 'failed')
-                                                        <span class="badge bg-danger">Trượt phỏng vấn</span>
-                                                    @elseif($application->status === 'passed')
-                                                        <span class="badge bg-success">Đỗ phỏng vấn</span>
                                                     @else
                                                         <span class="badge bg-info">Đã có lịch</span>
                                                     @endif
@@ -203,7 +202,7 @@
                                                                 title="Lên lịch phỏng vấn">
                                                             <i class="fas fa-plus"></i> Lên lịch
                                                         </button>
-                                                    @elseif($application->status !== 'failed' && $application->status !== 'passed')
+                                                    @else
                                                         <div class="btn-group" role="group">
                                                             <a href="{{ route('admin.interviews.show', $application->interviews->first()->id) }}"
                                                                class="btn btn-secondary btn-sm"
@@ -227,23 +226,6 @@
                                                                 <i class="fas fa-times"></i>
                                                             </button>
                                                         </div>
-                                                    @elseif($application->status === 'passed')
-                                                        <div class="btn-group" role="group">
-                                                            <a href="{{ route('admin.interviews.show', $application->interviews->first()->id) }}"
-                                                               class="btn btn-secondary btn-sm"
-                                                               data-bs-toggle="tooltip" 
-                                                               data-bs-placement="top" 
-                                                               title="Xem chi tiết lịch phỏng vấn">
-                                                                <i class="fas fa-eye"></i>
-                                                            </a>
-                                                            <a href="{{ route('admin.interns.create', ['application' => $application->id]) }}"
-                                                               class="btn btn-primary btn-sm"
-                                                               data-bs-toggle="tooltip" 
-                                                               data-bs-placement="top" 
-                                                               title="Chuyển sang thực tập">
-                                                                <i class="fas fa-graduation-cap"></i>
-                                                            </a>
-                                                        </div>
                                                     @endif
                                                 </td>
                                             </tr>
@@ -252,6 +234,114 @@
                                                 <td colspan="6" class="text-center">
                                                     <div class="alert alert-info">
                                                         <i class="fas fa-info-circle me-1"></i> Không có đơn ứng tuyển nào đang trong quá trình xử lý.
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Completed Interviews Tab -->
+                        <div class="tab-pane fade" id="completed-tab-pane" role="tabpanel" aria-labelledby="completed-tab" tabindex="0">
+                            <!-- Filter Form -->
+                            <form action="{{ route('admin.interviews.calendar') }}" method="GET" class="row g-3 mb-3">
+                                <input type="hidden" name="tab" value="completed">
+                                <div class="col-md-4">
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light border-end-0">
+                                            <i class="bi bi-search text-muted"></i>
+                                        </span>
+                                        <input type="text" class="form-control border-start-0" name="search" placeholder="Tìm theo tên ứng viên" value="{{ request('search') }}">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light border-end-0">
+                                            <i class="bi bi-briefcase text-muted"></i>
+                                        </span>
+                                        <select class="form-select border-start-0" name="position">
+                                            <option value="">Tất cả vị trí</option>
+                                            @foreach($positions as $pos)
+                                                <option value="{{ $pos->name }}" {{ request('position') == $pos->name ? 'selected' : '' }}>
+                                                    {{ $pos->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light border-end-0">
+                                            <i class="bi bi-check-circle text-muted"></i>
+                                        </span>
+                                        <select class="form-select border-start-0" name="status">
+                                            <option value="">Tất cả trạng thái</option>
+                                            <option value="passed" {{ request('status') == 'passed' ? 'selected' : '' }}>Đỗ phỏng vấn</option>
+                                            <option value="failed" {{ request('status') == 'failed' ? 'selected' : '' }}>Trượt phỏng vấn</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <button type="submit" class="btn btn-danger w-100">
+                                        <i class="bi bi-funnel me-1"></i>Lọc
+                                    </button>
+                                </div>
+                            </form>
+
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-hover">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th>STT</th>
+                                            <th>Vị Trí Ứng Tuyển</th>
+                                            <th>Ứng Viên</th>
+                                            <th>Email</th>
+                                            <th>Trạng Thái</th>
+                                            <th>Thao Tác</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @forelse ($completedApplications as $index => $application)
+                                            <tr>
+                                                <td>{{ $index + 1 }}</td>
+                                                <td>{{ $application->jobOffer->job_name }}</td>
+                                                <td>{{ $application->candidate->fullname }}</td>
+                                                <td>{{ $application->candidate->email }}</td>
+                                                <td>
+                                                    @if($application->status === 'passed')
+                                                        <span class="badge bg-success">Đỗ phỏng vấn</span>
+                                                    @else
+                                                        <span class="badge bg-danger">Trượt phỏng vấn</span>
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    @if($application->status === 'passed')
+                                                        <div class="btn-group">
+                                                            <button onclick="convertToIntern({{ $application->id }})"
+                                                               class="btn btn-primary btn-xs"
+                                                               data-bs-toggle="tooltip" 
+                                                               data-bs-placement="top" 
+                                                               title="Chuyển sang thực tập">
+                                                                <i class="fas fa-graduation-cap"></i> 
+                                                            </button>
+                                                            <button onclick="rejectApplication({{ $application->id }})"
+                                                               class="btn btn-danger btn-xs"
+                                                               data-bs-toggle="tooltip" 
+                                                               data-bs-placement="top" 
+                                                               title="Từ chối ứng viên">
+                                                                <i class="fas fa-times"></i> 
+                                                            </button>
+                                                        </div>
+                                                    @endif
+                                                </td>
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="6" class="text-center">
+                                                    <div class="alert alert-info">
+                                                        <i class="fas fa-info-circle me-1"></i> Không có đơn ứng tuyển nào đã hoàn thành phỏng vấn.
                                                     </div>
                                                 </td>
                                             </tr>
@@ -713,10 +803,17 @@ function updateInterviewResult(applicationId, result) {
                 notificationMessage.textContent = data.message;
                 notificationModal.show();
                 
-                // Reload page after modal is closed
-                document.getElementById('notificationModal').addEventListener('hidden.bs.modal', function () {
-                    window.location.reload();
-                }, { once: true });
+                // Nếu có redirect URL, chuyển hướng sau khi đóng modal
+                if (data.redirect) {
+                    document.getElementById('notificationModal').addEventListener('hidden.bs.modal', function () {
+                        window.location.href = data.redirect;
+                    }, { once: true });
+                } else {
+                    // Nếu không có redirect, reload trang
+                    document.getElementById('notificationModal').addEventListener('hidden.bs.modal', function () {
+                        window.location.reload();
+                    }, { once: true });
+                }
             } else {
                 notificationMessage.textContent = data.message || 'Có lỗi xảy ra khi cập nhật kết quả phỏng vấn';
                 notificationModal.show();
@@ -728,6 +825,123 @@ function updateInterviewResult(applicationId, result) {
             const notificationModal = new bootstrap.Modal(document.getElementById('notificationModal'));
             const notificationMessage = document.getElementById('notificationMessage');
             notificationMessage.textContent = 'Có lỗi xảy ra khi cập nhật kết quả phỏng vấn';
+            notificationModal.show();
+        });
+    };
+    
+    // Show confirmation modal
+    confirmModal.show();
+}
+
+// Thêm hàm convertToIntern
+function convertToIntern(applicationId) {
+    // Get CSRF token from meta tag
+    const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+    
+    // Set up confirmation modal
+    const confirmModal = new bootstrap.Modal(document.getElementById('confirmResultModal'));
+    const confirmMessage = document.getElementById('confirmResultMessage');
+    const confirmBtn = document.getElementById('confirmResultBtn');
+    
+    // Set message
+    confirmMessage.textContent = 'Bạn có chắc chắn muốn chuyển ứng viên này sang thực tập sinh?';
+    
+    // Handle confirmation
+    confirmBtn.onclick = function() {
+        confirmModal.hide();
+        
+        fetch(`/admin/interviews/convert-to-intern/${applicationId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': token,
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Show notification modal
+            const notificationModal = new bootstrap.Modal(document.getElementById('notificationModal'));
+            const notificationMessage = document.getElementById('notificationMessage');
+            
+            if (data.success) {
+                notificationMessage.textContent = data.message;
+                notificationModal.show();
+                
+                // Reload page after closing modal
+                document.getElementById('notificationModal').addEventListener('hidden.bs.modal', function () {
+                    window.location.reload();
+                }, { once: true });
+            } else {
+                notificationMessage.textContent = data.message || 'Có lỗi xảy ra khi chuyển sang thực tập sinh';
+                notificationModal.show();
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            // Show notification modal
+            const notificationModal = new bootstrap.Modal(document.getElementById('notificationModal'));
+            const notificationMessage = document.getElementById('notificationMessage');
+            notificationMessage.textContent = 'Có lỗi xảy ra khi chuyển sang thực tập sinh';
+            notificationModal.show();
+        });
+    };
+    
+    // Show confirmation modal
+    confirmModal.show();
+}
+
+// Thêm hàm rejectApplication
+function rejectApplication(applicationId) {
+    // Get CSRF token from meta tag
+    const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+    
+    // Set up confirmation modal
+    const confirmModal = new bootstrap.Modal(document.getElementById('confirmResultModal'));
+    const confirmMessage = document.getElementById('confirmResultMessage');
+    const confirmBtn = document.getElementById('confirmResultBtn');
+    
+    // Set message
+    confirmMessage.textContent = 'Bạn có chắc chắn muốn từ chối ứng viên này?';
+    
+    // Handle confirmation
+    confirmBtn.onclick = function() {
+        confirmModal.hide();
+        
+        fetch(`/admin/interviews/update-result/${applicationId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': token,
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ result: 'rejected' })
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Show notification modal
+            const notificationModal = new bootstrap.Modal(document.getElementById('notificationModal'));
+            const notificationMessage = document.getElementById('notificationMessage');
+            
+            if (data.success) {
+                notificationMessage.textContent = data.message;
+                notificationModal.show();
+                
+                // Reload page after closing modal
+                document.getElementById('notificationModal').addEventListener('hidden.bs.modal', function () {
+                    window.location.reload();
+                }, { once: true });
+            } else {
+                notificationMessage.textContent = data.message || 'Có lỗi xảy ra khi từ chối ứng viên';
+                notificationModal.show();
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            // Show notification modal
+            const notificationModal = new bootstrap.Modal(document.getElementById('notificationModal'));
+            const notificationMessage = document.getElementById('notificationMessage');
+            notificationMessage.textContent = 'Có lỗi xảy ra khi từ chối ứng viên';
             notificationModal.show();
         });
     };

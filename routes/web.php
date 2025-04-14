@@ -26,6 +26,7 @@ use App\Http\Controllers\admin\InterviewScheduleController;
 use App\Http\Controllers\admin\EvaluationController;
 use App\Http\Controllers\Intern\TaskController;
 use App\Http\Controllers\Auth\ChangePasswordController;
+use App\Http\Controllers\DashboardController;
 
 // Authentication Routes
 Route::middleware('guest')->group(function () {
@@ -155,6 +156,7 @@ Route::middleware(['auth', 'check.role:admin,hr,director'])->prefix('admin')->na
     Route::get('interviews/events', [InterviewScheduleController::class, 'events'])->name('interviews.events');
     Route::post('/interviews/{interview}/status', [InterviewScheduleController::class, 'updateStatus'])->name('interviews.status');
     Route::post('/interviews/update-result/{application}', [InterviewScheduleController::class, 'updateResult'])->name('interviews.update-result');
+    Route::post('/interviews/convert-to-intern/{application}', [InterviewScheduleController::class, 'convertToIntern'])->name('interviews.convert-to-intern');
     Route::resource('interviews', InterviewScheduleController::class);
 
     // Mentor management routes
@@ -187,7 +189,7 @@ Route::middleware(['auth', 'check.role:admin,hr,director'])->prefix('admin')->na
     Route::get('/evaluations', [EvaluationController::class, 'index'])->name('evaluations.index');
 
     // New route for refreshing dashboard data
-    Route::get('/dashboard/refresh', [AdminController::class, 'refreshDashboardData'])->name('admin.dashboard.refresh');
+    Route::get('/dashboard/refresh', [DashboardController::class, 'refreshData'])->name('dashboard.refresh');
 });
 
 // Mentor login routes

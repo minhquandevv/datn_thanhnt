@@ -14,6 +14,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Intern;
 use App\Models\InternAccount;
+use Illuminate\Support\Facades\DB;
 
 class InterviewScheduleController extends Controller
 {
@@ -50,9 +51,34 @@ class InterviewScheduleController extends Controller
                 });
             });
         }
+
+        // Lấy danh sách đơn đã hoàn thành phỏng vấn
+        $completedQuery = JobApplication::whereHas('interviews', function($q) {
+            $q->where('status', 'completed');
+        })->where('status', '!=', 'rejected')
+          ->with(['jobOffer', 'candidate', 'interviews']);
+            
+        // Áp dụng bộ lọc cho đơn đã hoàn thành
+        if (request('search')) {
+            $completedQuery->whereHas('candidate', function($q) {
+                $q->where('fullname', 'like', '%' . request('search') . '%');
+            });
+        }
         
-        // Lọc theo trạng thái
+        if (request('position')) {
+            $completedQuery->whereHas('jobOffer', function($q) {
+                $q->whereHas('position', function($q2) {
+                    $q2->where('name', request('position'));
+                });
+            });
+        }
+        
         if (request('status')) {
+            $completedQuery->where('status', request('status'));
+        }
+            
+        // Lọc theo trạng thái cho tab đơn đang xử lý
+        if (request('status') && request('tab') !== 'completed') {
             switch (request('status')) {
                 case 'pending':
                     $query->whereDoesntHave('interviews');
@@ -62,16 +88,11 @@ class InterviewScheduleController extends Controller
                         $q->where('status', 'scheduled');
                     });
                     break;
-                case 'passed':
-                    $query->where('status', 'passed');
-                    break;
-                case 'failed':
-                    $query->where('status', 'failed');
-                    break;
             }
         }
             
         $jobApplications = $query->get();
+        $completedApplications = $completedQuery->get();
             
         // Get interview statistics
         $scheduledCount = InterviewSchedule::where('status', 'scheduled')->count();
@@ -88,6 +109,7 @@ class InterviewScheduleController extends Controller
             
         return view('admin.interviews.calendar', compact(
             'jobApplications', 
+            'completedApplications',
             'scheduledCount', 
             'completedCount', 
             'cancelledCount', 
@@ -385,7 +407,7 @@ class InterviewScheduleController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                'result' => 'required|in:passed,failed',
+                'result' => 'required|in:passed,failed,rejected',
             ]);
 
             if ($validator->fails()) {
@@ -397,103 +419,57 @@ class InterviewScheduleController extends Controller
             }
 
             // Update the job application status
-            $application->update([
-                'status' => $request->result
-            ]);
-
-            // Update the interview status to completed
-            $interview = $application->interviews->first();
-            if ($interview) {
-                $interview->update([
-                    'status' => 'completed'
-                ]);
-            }
-
-            // Nếu kết quả là passed, tự động chuyển sang thực tập sinh
             if ($request->result === 'passed') {
-                // Kiểm tra xem ứng viên đã là thực tập sinh chưa
-                $existingIntern = Intern::where('email', $application->candidate->email)->first();
-                if (!$existingIntern) {
-                    // Tạo username từ email
-                    $username = explode('@', $application->candidate->email)[0];
-                    
-                    // Tạo mật khẩu ngẫu nhiên
-                    $password = Str::random(10);
+                $application->update([
+                    'status' => 'passed'
+                ]);
 
-                    // Tạo thực tập sinh mới từ thông tin ứng viên
-                    $intern = new Intern();
-                    
-                    // Chỉ đẩy những thông tin đã có
-                    $attributes = [
-                        'fullname' => $application->candidate->fullname,
-                        'email' => $application->candidate->email,
-                        'username' => $username,
-                        'password' => Hash::make($password),
-                        'citizen_id' => $application->candidate->identity_number ?? 'PENDING_' . time(),
-                        'birthdate' => $application->candidate->dob
-                    ];
-
-                    // Thêm các trường nếu có dữ liệu
-                    if ($application->candidate->phone_number) {
-                        $attributes['phone'] = $application->candidate->phone_number;
-                    }
-                    if ($application->candidate->gender) {
-                        // Chuyển đổi giới tính từ tiếng Anh sang tiếng Việt
-                        $genderMap = [
-                            'male' => 'Nam',
-                            'female' => 'Nữ',
-                            'other' => 'Khác'
-                        ];
-                        $attributes['gender'] = $genderMap[strtolower($application->candidate->gender)] ?? 'Khác';
-                    }
-                    if ($application->candidate->address) {
-                        $attributes['address'] = $application->candidate->address;
-                    }
-                    if ($application->candidate->university) {
-                        $attributes['university_id'] = $application->candidate->university->university_id;
-                    }
-                    if ($application->candidate->major) {
-                        $attributes['major'] = $application->candidate->major;
-                    }
-                    if ($application->jobOffer && $application->jobOffer->position) {
-                        $attributes['position'] = $application->jobOffer->position->name;
-                    }
-                    if ($application->jobOffer && $application->jobOffer->department_id) {
-                        $attributes['department_id'] = $application->jobOffer->department_id;
-                    }
-
-                    $intern->fill($attributes);
-                    $intern->save();
-
-                    // Lưu thông tin tài khoản
-                    InternAccount::create([
-                        'intern_id' => $intern->intern_id,
-                        'username' => $username,
-                        'email' => $application->candidate->email,
-                        'password_plain' => $password,
-                        'is_active' => false // Tài khoản chưa kích hoạt
-                    ]);
-
-                    // Cập nhật trạng thái của đơn ứng tuyển hiện tại
-                    $application->status = 'transferred';
-                    $application->save();
-
-                    // Xóa tất cả các đơn ứng tuyển khác của ứng viên này
-                    JobApplication::where('candidate_id', $application->candidate_id)
-                        ->where('id', '!=', $application->id)
-                        ->delete();
-
-                    return response()->json([
-                        'success' => true,
-                        'message' => 'Cập nhật kết quả phỏng vấn thành công và đã chuyển ứng viên sang thực tập sinh. Tài khoản: ' . $username . ', Mật khẩu: ' . $password
+                // Update the interview status to completed
+                $interview = $application->interviews->first();
+                if ($interview) {
+                    $interview->update([
+                        'status' => 'completed'
                     ]);
                 }
-            }
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Cập nhật kết quả phỏng vấn thành công'
-            ]);
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Đã đánh dấu ứng viên đỗ phỏng vấn',
+                    'redirect' => route('admin.interviews.calendar', ['tab' => 'completed'])
+                ]);
+            } else if ($request->result === 'rejected') {
+                // Nếu từ chối, cập nhật trạng thái và xóa lịch phỏng vấn
+                $application->update([
+                    'status' => 'rejected'
+                ]);
+
+                $interview = $application->interviews->first();
+                if ($interview) {
+                    $interview->delete();
+                }
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Đã từ chối ứng viên',
+                    'redirect' => route('admin.interviews.calendar')
+                ]);
+            } else {
+                // Nếu trượt phỏng vấn, cập nhật trạng thái và xóa lịch phỏng vấn
+                $application->update([
+                    'status' => 'rejected'
+                ]);
+
+                $interview = $application->interviews->first();
+                if ($interview) {
+                    $interview->delete();
+                }
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Đã đánh dấu ứng viên trượt phỏng vấn',
+                    'redirect' => route('admin.interviews.calendar')
+                ]);
+            }
 
         } catch (\Exception $e) {
             \Log::error('Error updating interview result: ' . $e->getMessage());
@@ -502,5 +478,161 @@ class InterviewScheduleController extends Controller
                 'message' => 'Có lỗi xảy ra: ' . $e->getMessage()
             ], 500);
         }
+    }
+
+    public function convertToIntern(JobApplication $application)
+    {
+        try {
+            DB::beginTransaction();
+
+            // Kiểm tra xem ứng viên đã là thực tập sinh chưa
+            $existingIntern = Intern::where('citizen_id', $application->candidate->identity_number)
+                ->orWhere('email', $application->candidate->email)
+                ->first();
+                
+            if ($existingIntern) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Đã có thực tập sinh này trong hệ thống.'
+                ], 422);
+            }
+
+            // Tạo username từ tên
+            $fullname = $application->candidate->fullname;
+            $nameParts = explode(' ', $fullname);
+            $lastName = $nameParts[0];
+            $firstName = end($nameParts);
+            
+            // Lấy 2 chữ đầu của họ và tên đệm
+            $lastNamePrefix = mb_substr($lastName, 0, 2, 'UTF-8');
+            
+            // Lấy chữ cái đầu của tên đệm
+            $middleNameInitials = '';
+            if (count($nameParts) > 2) {
+                for ($i = 1; $i < count($nameParts) - 1; $i++) {
+                    $middleNameInitials .= mb_substr($nameParts[$i], 0, 1, 'UTF-8');
+                }
+            }
+            
+            // Tạo username cơ bản
+            $baseUsername = strtolower($this->removeAccents($lastNamePrefix . $middleNameInitials . $firstName));
+            
+            // Kiểm tra và tạo username không trùng lặp
+            $username = $baseUsername;
+            $counter = 1;
+            while (Intern::where('username', $username)->exists()) {
+                $username = $baseUsername . $counter;
+                $counter++;
+            }
+            
+            // Tạo email theo định dạng
+            $email = $username . '@vtit.com';
+            
+            // Tạo mật khẩu ngẫu nhiên từ timestamp và random string
+            $password = time() . Str::random(10);
+
+            // Tạo thực tập sinh mới từ thông tin ứng viên
+            $intern = new Intern();
+            
+            // Chỉ đẩy những thông tin đã có
+            $attributes = [
+                'fullname' => $application->candidate->fullname,
+                'email' => $email,
+                'username' => $username,
+                'password' => Hash::make($password),
+                'citizen_id' => $application->candidate->identity_number ?? 'PENDING_' . time(),
+                'birthdate' => $application->candidate->dob
+            ];
+
+            // Thêm các trường nếu có dữ liệu
+            if ($application->candidate->phone_number) {
+                $attributes['phone'] = $application->candidate->phone_number;
+            }
+            if ($application->candidate->gender) {
+                // Chuyển đổi giới tính từ tiếng Anh sang tiếng Việt
+                $genderMap = [
+                    'male' => 'Nam',
+                    'female' => 'Nữ',
+                    'other' => 'Khác'
+                ];
+                $attributes['gender'] = $genderMap[strtolower($application->candidate->gender)] ?? 'Khác';
+            }
+            if ($application->candidate->address) {
+                $attributes['address'] = $application->candidate->address;
+            }
+            if ($application->candidate->university) {
+                $attributes['university_id'] = $application->candidate->university->university_id;
+            }
+            if ($application->candidate->major) {
+                $attributes['major'] = $application->candidate->major;
+            }
+            if ($application->jobOffer && $application->jobOffer->position) {
+                $attributes['position'] = $application->jobOffer->position->name;
+            }
+            if ($application->jobOffer && $application->jobOffer->department_id) {
+                $attributes['department_id'] = $application->jobOffer->department_id;
+            }
+
+            $intern->fill($attributes);
+            $intern->save();
+
+            // Lưu thông tin tài khoản
+            InternAccount::create([
+                'intern_id' => $intern->intern_id,
+                'username' => $username,
+                'email' => $email,
+                'password_plain' => $password,
+                'is_active' => false
+            ]);
+
+            // Cập nhật trạng thái của đơn ứng tuyển hiện tại
+            $application->status = 'transferred';
+            $application->save();
+
+            // Xóa tất cả các đơn ứng tuyển khác của ứng viên này
+            JobApplication::where('candidate_id', $application->candidate_id)
+                ->where('id', '!=', $application->id)
+                ->delete();
+
+            // Xóa cuộc phỏng vấn
+            $application->interviews()->delete();
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Đã chuyển đổi ứng viên thành thực tập sinh thành công. Tài khoản: ' . $username . ', Mật khẩu: ' . $password,
+                'redirect' => route('admin.interns.index')
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Hàm bỏ dấu tiếng Việt
+     */
+    private function removeAccents($str)
+    {
+        $str = preg_replace("/(à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ)/", 'a', $str);
+        $str = preg_replace("/(è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ)/", 'e', $str);
+        $str = preg_replace("/(ì|í|ị|ỉ|ĩ)/", 'i', $str);
+        $str = preg_replace("/(ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ)/", 'o', $str);
+        $str = preg_replace("/(ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ)/", 'u', $str);
+        $str = preg_replace("/(ỳ|ý|ỵ|ỷ|ỹ)/", 'y', $str);
+        $str = preg_replace("/(đ)/", 'd', $str);
+        $str = preg_replace("/(À|Á|Ạ|Ả|Ã|Â|Ầ|Ấ|Ậ|Ẩ|Ẫ|Ă|Ằ|Ắ|Ặ|Ẳ|Ẵ)/", 'A', $str);
+        $str = preg_replace("/(È|É|Ẹ|Ẻ|Ẽ|Ê|Ề|Ế|Ệ|Ể|Ễ)/", 'E', $str);
+        $str = preg_replace("/(Ì|Í|Ị|Ỉ|Ĩ)/", 'I', $str);
+        $str = preg_replace("/(Ò|Ó|Ọ|Ỏ|Õ|Ô|Ồ|Ố|Ộ|Ổ|Ỗ|Ơ|Ờ|Ớ|Ợ|Ở|Ỡ)/", 'O', $str);
+        $str = preg_replace("/(Ù|Ú|Ụ|Ủ|Ũ|Ư|Ừ|Ứ|Ự|Ử|Ữ)/", 'U', $str);
+        $str = preg_replace("/(Ỳ|Ý|Ỵ|Ỷ|Ỹ)/", 'Y', $str);
+        $str = preg_replace("/(Đ)/", 'D', $str);
+        return $str;
     }
 }

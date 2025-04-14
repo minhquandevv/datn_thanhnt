@@ -65,7 +65,7 @@ class InternController extends Controller
     {
         $universities = University::all();
         $departments = Department::all();
-        $mentors = Mentor::all();
+        $mentors = Mentors::all();
         return view('admin.interns.create', compact('universities', 'departments', 'mentors'));
     }
 
@@ -73,164 +73,62 @@ class InternController extends Controller
     {
         try {
             DB::beginTransaction();
-            
-            // Nếu có application_id, xử lý chuyển từ đơn ứng tuyển sang thực tập sinh
-            if ($request->has('application_id')) {
-                $application = JobApplication::with(['candidate', 'jobOffer.position', 'candidate.university'])
-                    ->findOrFail($request->application_id);
 
-                // Kiểm tra trạng thái đơn ứng tuyển
-                if ($application->status !== 'approved') {
-                    throw new \Exception('Chỉ có thể chuyển đơn ứng tuyển đã được duyệt sang thực tập sinh.');
-                }
-
-                // Kiểm tra xem ứng viên đã là thực tập sinh chưa
-                $existingIntern = Intern::where('email', $application->candidate->email)->first();
-                if ($existingIntern) {
-                    throw new \Exception('Ứng viên này đã là thực tập sinh.');
-                }
-
-                // Tạo username từ email
-                $username = explode('@', $application->candidate->email)[0];
-                
-                // Tạo mật khẩu ngẫu nhiên
-                $password = Str::random(10);
-
-                // Tạo thực tập sinh mới từ thông tin ứng viên
-                $intern = new Intern();
-                
-                // Chỉ đẩy những thông tin đã có
-                $attributes = [
-                    'fullname' => $application->candidate->fullname,
-                    'email' => $application->candidate->email,
-                    'username' => $username,
-                    'password' => Hash::make($password),
-                    'citizen_id' => $application->candidate->identity_number ?? 'PENDING_' . time(),
-                    'birthdate' => $application->candidate->dob
-                ];
-
-                // Thêm các trường nếu có dữ liệu
-                if ($application->candidate->phone_number) {
-                    $attributes['phone'] = $application->candidate->phone_number;
-                }
-                if ($application->candidate->gender) {
-                    // Chuyển đổi giới tính từ tiếng Anh sang tiếng Việt
-                    $genderMap = [
-                        'male' => 'Nam',
-                        'female' => 'Nữ',
-                        'other' => 'Khác'
-                    ];
-                    $attributes['gender'] = $genderMap[strtolower($application->candidate->gender)] ?? 'Khác';
-                }
-                if ($application->candidate->address) {
-                    $attributes['address'] = $application->candidate->address;
-                }
-                if ($application->candidate->university) {
-                    $attributes['university_id'] = $application->candidate->university->university_id;
-                }
-                if ($application->candidate->major) {
-                    $attributes['major'] = $application->candidate->major;
-                }
-                if ($application->jobOffer && $application->jobOffer->position) {
-                    $attributes['position'] = $application->jobOffer->position->name;
-                }
-                if ($application->jobOffer && $application->jobOffer->department_id) {
-                    $attributes['department_id'] = $application->jobOffer->department_id;
-                }
-
-                $intern->fill($attributes);
-                $intern->save();
-
-                // Lưu thông tin tài khoản
-                InternAccount::create([
-                    'intern_id' => $intern->intern_id,
-                    'username' => $username,
-                    'email' => $application->candidate->email,
-                    'password_plain' => $password,
-                    'is_active' => true
-                ]);
-
-                // Cập nhật trạng thái của đơn ứng tuyển hiện tại
-                $application->status = 'transferred';
-                $application->save();
-
-                // Xóa tất cả các đơn ứng tuyển khác của ứng viên này
-                JobApplication::where('candidate_id', $application->candidate_id)
-                    ->where('id', '!=', $application->id)
-                    ->delete();
-
-                DB::commit();
-
-                // Gửi email thông báo tài khoản cho thực tập sinh
-                // TODO: Implement email notification
-
-                return redirect()->route('admin.job-applications.index', ['status' => 'approved'])
-                               ->with('success', "Đã chuyển ứng viên sang thực tập sinh thành công!\nTài khoản: $username\nMật khẩu: $password");
-            }
-
-            // Xử lý thêm thực tập sinh thông thường
             $validated = $request->validate([
                 'fullname' => 'required|string|max:255',
                 'email' => 'required|email|unique:interns,email',
                 'phone' => 'required|string|max:20',
-                'birthdate' => 'nullable|date',
-                'gender' => 'nullable|string|in:Nam,Nữ,Khác',
-                'address' => 'nullable|string|max:255',
+                'citizen_id' => 'required|string|max:20|unique:interns,citizen_id',
+                'birthdate' => 'required|date',
+                'gender' => 'required|in:Nam,Nữ,Khác',
+                'address' => 'required|string|max:255',
                 'university_id' => 'required|exists:universities,university_id',
                 'major' => 'required|string|max:255',
-                'degree' => 'nullable|string|max:255',
-                'degree_image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-                'department_id' => 'required|exists:departments,department_id',
                 'position' => 'required|string|max:255',
-                'mentor_id' => 'required|exists:mentors,mentor_id',
-                'citizen_id' => 'nullable|string|max:20',
-                'citizen_id_image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-                'username' => 'required|string|max:255|unique:interns',
-                'password' => 'required|string|min:8',
+                'department_id' => 'required|exists:departments,department_id',
+                'start_date' => 'required|date',
+                'end_date' => 'required|date|after:start_date',
+                'mentor_id' => 'nullable|exists:employees,employee_id',
+                'notes' => 'nullable|string'
             ]);
 
+            // Tạo username từ email
+            $username = explode('@', $validated['email'])[0];
+            
+            // Tạo mật khẩu ngẫu nhiên
+            $password = Str::random(10);
+
+            // Tạo thực tập sinh mới
             $intern = new Intern();
             $intern->fill($validated);
-            $intern->password = Hash::make($validated['password']);
-
-            if ($request->hasFile('degree_image')) {
-                $degreeImage = $request->file('degree_image');
-                $degreeImageName = time() . '_' . $degreeImage->getClientOriginalName();
-                $degreeImage->move(public_path('uploads/documents'), $degreeImageName);
-                $intern->degree_image = $degreeImageName;
-            }
-
-            if ($request->hasFile('citizen_id_image')) {
-                $citizenIdImage = $request->file('citizen_id_image');
-                $citizenIdImageName = time() . '_' . $citizenIdImage->getClientOriginalName();
-                $citizenIdImage->move(public_path('uploads/documents'), $citizenIdImageName);
-                $intern->citizen_id_image = $citizenIdImageName;
-            }
-
+            $intern->password = Hash::make($password);
+            $intern->username = $username;
+            $intern->status = 'active';
             $intern->save();
+
+            // Lưu thông tin tài khoản
+            InternAccount::create([
+                'intern_id' => $intern->intern_id,
+                'username' => $username,
+                'email' => $validated['email'],
+                'password_plain' => $password,
+                'is_active' => true
+            ]);
 
             DB::commit();
 
-            if ($request->ajax()) {
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Thêm thực tập sinh thành công!'
-                ]);
-            }
+            return response()->json([
+                'success' => true,
+                'message' => 'Thêm thực tập sinh thành công',
+                'intern' => $intern
+            ]);
 
-            return redirect()->route('admin.interns.index')
-                           ->with('success', 'Thêm thực tập sinh thành công!');
         } catch (\Exception $e) {
             DB::rollBack();
-            
-            if ($request->ajax()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Có lỗi xảy ra: ' . $e->getMessage()
-                ], 500);
-            }
-
-            return back()->withErrors(['error' => 'Có lỗi xảy ra: ' . $e->getMessage()]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra: ' . $e->getMessage()
+            ], 500);
         }
     }
 
