@@ -400,4 +400,23 @@ class CandidateController extends Controller
 
         return view('candidate.applications.show', compact('application'));
     }
+
+    public function updateUniversity(Request $request)
+    {
+        try {
+            $candidate = Auth::guard('candidate')->user();
+            $candidate->university_id = $request->university_id;
+            $candidate->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Đã cập nhật thông tin trường học'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra khi cập nhật thông tin trường học'
+            ], 500);
+        }
+    }
 } 

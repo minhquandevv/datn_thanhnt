@@ -58,47 +58,70 @@
                                 <td>
                                     @switch($application->status)
                                         @case('pending')
-                                            <span class="badge bg-warning">Chờ tiếp nhận</span>
+                                            <span class="badge bg-warning">Chờ duyệt</span>
+                                            @break
+                                        @case('processing')
+                                            <span class="badge bg-info">Đang xử lý</span>
                                             @break
                                         @case('approved')
                                             <span class="badge bg-success">Đã duyệt</span>
                                             @break
                                         @case('rejected')
-                                            <span class="badge bg-danger">Từ chối</span>
+                                            <span class="badge bg-danger">Đã từ chối</span>
                                             @break
+                                        @case('submitted')
+                                            <span class="badge bg-primary">Đã nộp</span>
+                                            @break
+                                        @case('pending_review')
+                                            <span class="badge bg-warning">Chờ xem xét</span>
+                                            @break
+                                        @case('interview_scheduled')
+                                            <span class="badge bg-info">Đã lên lịch phỏng vấn</span>
+                                            @break
+                                        @case('result_pending')
+                                            <span class="badge bg-secondary">Chờ kết quả</span>
+                                            @break
+                                        @case('transferred')
+                                            <span class="badge bg-success">Đã hoàn thành</span>
+                                            @break
+                                        @default
+                                            <span class="badge bg-secondary">{{ ucfirst($application->status) }}</span>
                                     @endswitch
                                 </td>
                                 <td class="text-center">
                                     <div class="btn-group">
-                                        @if($application->status != 'processing')
-                                            <a href="{{ asset('uploads/' . $application->cv_path) }}" 
-                                               class="btn btn-sm btn-outline-primary" 
-                                               target="_blank"
-                                               title="Xem CV">
-                                                <i class="bi bi-eye"></i>
-                                            </a>
-                                            
+                                        <a href="{{ asset('uploads/' . $application->cv_path) }}" 
+                                           class="btn btn-sm btn-outline-primary" 
+                                           target="_blank"
+                                           title="Xem CV">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        
+                                        @if($application->status == 'pending')
                                             <button type="button" 
                                                     class="btn btn-sm btn-outline-success"
-                                                    onclick="document.getElementById('updateCvDialog{{ $application->id }}').showModal()"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#updateCvDialog{{ $application->id }}"
                                                     title="Đổi CV">
                                                 <i class="bi bi-arrow-repeat"></i>
                                             </button>
 
                                             <button type="button" 
                                                     class="btn btn-sm btn-outline-danger"
-                                                    onclick="document.getElementById('cancelDialog{{ $application->id }}').showModal()"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#cancelDialog{{ $application->id }}"
                                                     title="Hủy ứng tuyển">
                                                 <i class="bi bi-x-circle"></i>
                                             </button>
-                                        @else
-                                            <button type="button" 
-                                                    class="btn btn-sm btn-outline-info"
-                                                    onclick="document.getElementById('applicationDialog{{ $application->id }}').showModal()"
-                                                    title="Xem chi tiết">
-                                                <i class="bi bi-info-circle"></i>
-                                            </button>
                                         @endif
+
+                                        <button type="button" 
+                                                class="btn btn-sm btn-outline-info"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#applicationDialog{{ $application->id }}"
+                                                title="Xem chi tiết">
+                                            <i class="bi bi-info-circle"></i>
+                                        </button>
                                     </div>
 
                                     <!-- Dialog Đổi CV -->
@@ -196,7 +219,8 @@
                                 <td>
                                     <button type="button" 
                                         class="btn btn-sm btn-outline-primary"
-                                        onclick="document.getElementById('applicationDialog{{ $application->id }}').showModal()"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#applicationDialog{{ $application->id }}"
                                         title="Xem chi tiết">
                                         <i class="bi bi-eye"></i>
                                     </button>
@@ -225,218 +249,205 @@
 
 <!-- Dialog Chi Tiết Đơn Ứng Tuyển -->
 @foreach($applications as $application)
-<dialog id="applicationDialog{{ $application->id }}" class="dialog-container dialog-lg">
-    <div class="dialog-content">
-        <div class="dialog-header">
-            <h5 class="dialog-title">
-                <i class="bi bi-file-earmark-text text-primary me-2"></i>Chi tiết đơn ứng tuyển
-            </h5>
-            <button type="button" class="dialog-close" onclick="this.closest('dialog').close()">×</button>
-        </div>
-        <div class="dialog-body">
-            <div class="row g-4">
-                <!-- Thông tin vị trí -->
-                <div class="col-md-6">
-                    <div class="card border-0 bg-light h-100">
-                        <div class="card-body">
-                            <h6 class="card-title mb-4">
-                                <i class="bi bi-briefcase text-primary me-2"></i>Thông tin vị trí
-                            </h6>
-                            <div class="d-flex flex-column gap-3">
-                                <div class="d-flex align-items-start">
-                                    <i class="bi bi-person-badge text-primary me-2 mt-1"></i>
-                                    <div>
-                                        <div class="fw-medium">Vị trí:</div>
-                                        @if($application->jobOffer)
-                                            <div>{{ $application->jobOffer->job_name }}</div>
-                                            @if($application->jobOffer->job_position)
-                                                <small class="text-muted">{{ $application->jobOffer->job_position }}</small>
-                                            @endif
-                                        @else
-                                            <span class="text-muted">Vị trí không tồn tại</span>
-                                        @endif
-                                    </div>
-                                </div>
-                                <div class="d-flex align-items-start">
-                                    <i class="bi bi-building text-primary me-2 mt-1"></i>
-                                    <div>
-                                        <div class="fw-medium">Công ty:</div>
-                                        @if($application->jobOffer && $application->jobOffer->department)
-                                            <div>{{ $application->jobOffer->department->name }}</div>
-                                        @else
-                                            <span class="text-muted">Phòng ban chưa phân công</span>
-                                        @endif
-                                    </div>
-                                </div>
-                                <div class="d-flex align-items-start">
-                                    <i class="bi bi-cash-stack text-primary me-2 mt-1"></i>
-                                    <div>
-                                        <div class="fw-medium">Mức lương:</div>
-                                        @if($application->jobOffer)
-                                            <div>{{ number_format($application->jobOffer->job_salary) }} VNĐ</div>
-                                        @else
-                                            <span class="text-muted">Không có thông tin</span>
-                                        @endif
-                                    </div>
-                                </div>
-                                <div class="d-flex align-items-start">
-                                    <i class="bi bi-geo-alt text-primary me-2 mt-1"></i>
-                                    <div>
-                                        <div class="fw-medium">Địa điểm:</div>
-                                        @if($application->jobOffer && $application->jobOffer->department)
-                                            <div>{{ $application->jobOffer->department->location }}</div>
-                                        @else
-                                            <span class="text-muted">Không có thông tin</span>
-                                        @endif
-                                    </div>
-                                </div>
+<div class="modal fade" id="applicationDialog{{ $application->id }}" tabindex="-1" aria-labelledby="applicationDialogLabel{{ $application->id }}" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-light">
+                <h5 class="modal-title" id="applicationDialogLabel{{ $application->id }}">
+                    <i class="bi bi-file-earmark-text text-primary me-2"></i>Chi tiết đơn ứng tuyển
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row g-4">
+                    <!-- Thông tin vị trí -->
+                    <div class="col-md-6">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-header bg-white py-3">
+                                <h6 class="card-title mb-0">
+                                    <i class="bi bi-briefcase text-primary me-2"></i>Thông tin vị trí
+                                </h6>
                             </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Thông tin ứng tuyển -->
-                <div class="col-md-6">
-                    <div class="card border-0 bg-light h-100">
-                        <div class="card-body">
-                            <h6 class="card-title mb-4">
-                                <i class="bi bi-info-circle text-primary me-2"></i>Thông tin ứng tuyển
-                            </h6>
-                            <div class="d-flex flex-column gap-3">
-                                <div class="d-flex align-items-start">
-                                    <i class="bi bi-calendar-check text-primary me-2 mt-1"></i>
-                                    <div>
-                                        <div class="fw-medium">Ngày ứng tuyển:</div>
-                                        <div>{{ \Carbon\Carbon::parse($application->applied_at)->format('d/m/Y H:i') }}</div>
-                                    </div>
-                                </div>
-                                <div class="d-flex align-items-start">
-                                    <i class="bi bi-calendar2-check text-primary me-2 mt-1"></i>
-                                    <div>
-                                        <div class="fw-medium">Ngày xem xét:</div>
+                            <div class="card-body">
+                                <div class="d-flex flex-column gap-3">
+                                    <div class="d-flex align-items-start">
+                                        <i class="bi bi-person-badge text-primary me-2 mt-1"></i>
                                         <div>
-                                            @if($application->reviewed_at)
-                                                {{ \Carbon\Carbon::parse($application->reviewed_at)->format('d/m/Y H:i') }}
+                                            <div class="fw-medium">Vị trí:</div>
+                                            @if($application->jobOffer)
+                                                <div class="text-dark">{{ $application->jobOffer->job_name }}</div>
+                                                @if($application->jobOffer->job_position)
+                                                    <small class="text-muted">{{ $application->jobOffer->job_position }}</small>
+                                                @endif
                                             @else
-                                                <span class="text-muted">Chưa xem xét</span>
+                                                <span class="text-muted">Vị trí không tồn tại</span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-start">
+                                        <i class="bi bi-building text-primary me-2 mt-1"></i>
+                                        <div>
+                                            <div class="fw-medium">Phòng ban:</div>
+                                            @if($application->jobOffer && $application->jobOffer->department)
+                                                <div class="text-dark">{{ $application->jobOffer->department->name }}</div>
+                                            @else
+                                                <span class="text-muted">Phòng ban chưa phân công</span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-start">
+                                        <i class="bi bi-cash-stack text-primary me-2 mt-1"></i>
+                                        <div>
+                                            <div class="fw-medium">Mức lương:</div>
+                                            @if($application->jobOffer)
+                                                <div class="text-dark">Thỏa thuận</div>
+                                            @else
+                                                <span class="text-muted">Không có thông tin</span>
                                             @endif
                                         </div>
                                     </div>
                                 </div>
-                                <div class="d-flex align-items-start">
-                                    <i class="bi bi-check-circle text-primary me-2 mt-1"></i>
-                                    <div>
-                                        <div class="fw-medium">Trạng thái:</div>
-                                        @php
-                                        $statusMap = [
-                                            'pending' => [
-                                                'icon' => 'hourglass-split',
-                                                'color' => 'warning',
-                                                'text' => 'Chờ xử lý'
-                                            ],
-                                            'submitted' => [
-                                                'icon' => 'send',
-                                                'color' => 'info',
-                                                'text' => 'Đã nộp'
-                                            ],
-                                            'pending_review' => [
-                                                'icon' => 'hourglass-split',
-                                                'color' => 'warning',
-                                                'text' => 'Chờ tiếp nhận'
-                                            ],
-                                            'interview_scheduled' => [
-                                                'icon' => 'calendar-check',
-                                                'color' => 'primary',
-                                                'text' => 'Đã lên lịch PV'
-                                            ],
-                                            'result_pending' => [
-                                                'icon' => 'hourglass',
-                                                'color' => 'secondary',
-                                                'text' => 'Chờ kết quả'
-                                            ],
-                                            'approved' => [
-                                                'icon' => 'check-circle-fill',
-                                                'color' => 'success',
-                                                'text' => 'Đã duyệt'
-                                            ],
-                                            'rejected' => [
-                                                'icon' => 'x-circle-fill',
-                                                'color' => 'danger',
-                                                'text' => 'Từ chối'
-                                            ]
-                                        ];
+                            </div>
+                        </div>
+                    </div>
 
-                                        $status = $statusMap[$application->status] ?? $statusMap['pending'];
-                                    @endphp
-                                    <span class="badge bg-{{ $status['color'] }} d-inline-flex align-items-center">
-                                        <i class="bi bi-{{ $status['icon'] }} me-1"></i>
-                                        {{ $status['text'] }}
-                                    </span>
+                    <!-- Thông tin ứng tuyển -->
+                    <div class="col-md-6">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-header bg-white py-3">
+                                <h6 class="card-title mb-0">
+                                    <i class="bi bi-info-circle text-primary me-2"></i>Thông tin ứng tuyển
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex flex-column gap-3">
+                                    <div class="d-flex align-items-start">
+                                        <i class="bi bi-calendar-check text-primary me-2 mt-1"></i>
+                                        <div>
+                                            <div class="fw-medium">Ngày ứng tuyển:</div>
+                                            <div class="text-dark">{{ $application->created_at->format('d/m/Y H:i') }}</div>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-start">
+                                        <i class="bi bi-calendar2-check text-primary me-2 mt-1"></i>
+                                        <div>
+                                            <div class="fw-medium">Ngày tiếp nhận:</div>
+                                            <div>
+                                                @if($application->reviewed_at)
+                                                    <span class="text-dark">{{ \Carbon\Carbon::parse($application->reviewed_at)->format('d/m/Y H:i') }}</span>
+                                                @else
+                                                    <span class="text-muted">Chưa tiếp nhận</span>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-start">
+                                        <i class="bi bi-check-circle text-primary me-2 mt-1"></i>
+                                        <div>
+                                            <div class="fw-medium">Trạng thái:</div>
+                                            @switch($application->status)
+                                                @case('pending')
+                                                    <span class="badge bg-warning">Chờ duyệt</span>
+                                                    @break
+                                                @case('processing')
+                                                    <span class="badge bg-info">Đang xử lý</span>
+                                                    @break
+                                                @case('approved')
+                                                    <span class="badge bg-success">Đã duyệt</span>
+                                                    @break
+                                                @case('rejected')
+                                                    <span class="badge bg-danger">Đã từ chối</span>
+                                                    @break
+                                                @case('submitted')
+                                                    <span class="badge bg-primary">Đã nộp</span>
+                                                    @break
+                                                @case('pending_review')
+                                                    <span class="badge bg-warning">Chờ xem xét</span>
+                                                    @break
+                                                @case('interview_scheduled')
+                                                    <span class="badge bg-info">Đã lên lịch phỏng vấn</span>
+                                                    @break
+                                                @case('result_pending')
+                                                    <span class="badge bg-secondary">Chờ kết quả</span>
+                                                    @break
+                                                @case('transferred')
+                                                    <span class="badge bg-success">Đã hoàn thành</span>
+                                                    @break
+                                                @default
+                                                    <span class="badge bg-secondary">{{ ucfirst($application->status) }}</span>
+                                            @endswitch
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Thư xin việc -->
-                <div class="col-12">
-                    <div class="card border-0 bg-light">
-                        <div class="card-body">
-                            <h6 class="card-title mb-3">
-                                <i class="bi bi-envelope text-primary me-2"></i>Thư xin việc
-                            </h6>
-                            <div class="border rounded p-3 bg-white">
-                                {{ $application->cover_letter }}
+                    <!-- Thư xin việc -->
+                    <div class="col-12">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-white py-3">
+                                <h6 class="card-title mb-0">
+                                    <i class="bi bi-envelope text-primary me-2"></i>Thư xin việc
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="border rounded p-3 bg-light">
+                                    {{ $application->cover_letter }}
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- CV -->
-                <div class="col-12">
-                    <div class="card border-0 bg-light">
-                        <div class="card-body">
-                            <h6 class="card-title mb-3">
-                                <i class="bi bi-file-earmark-pdf text-primary me-2"></i>CV đã nộp
-                            </h6>
-                            @if($application->cv_path)
-                                <a href="{{ asset('uploads/cv/' . basename($application->cv_path)) }}" 
-                                   class="btn btn-primary"
-                                   target="_blank">
-                                    <i class="bi bi-file-earmark-pdf-fill me-2"></i>Xem CV
-                                </a>
-                            @else
-                                <p class="text-muted mb-0">
-                                    <i class="bi bi-exclamation-circle me-2"></i>Không có file CV
-                                </p>
-                            @endif
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Phản hồi -->
-                @if($application->feedback)
-                <div class="col-12">
-                    <div class="card border-0 bg-light">
-                        <div class="card-body">
-                            <h6 class="card-title mb-3">
-                                <i class="bi bi-chat-left-quote text-primary me-2"></i>Phản hồi từ nhà tuyển dụng
-                            </h6>
-                            <div class="border rounded p-3 bg-white">
-                                {{ $application->feedback }}
+                    <!-- CV -->
+                    <div class="col-12">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-white py-3">
+                                <h6 class="card-title mb-0">
+                                    <i class="bi bi-file-earmark-pdf text-primary me-2"></i>CV đã nộp
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                @if($application->cv_path)
+                                    <a href="{{ asset('uploads/cv/' . basename($application->cv_path)) }}" 
+                                       class="btn btn-primary"
+                                       target="_blank">
+                                        <i class="bi bi-file-earmark-pdf-fill me-2"></i>Xem CV
+                                    </a>
+                                @else
+                                    <p class="text-muted mb-0">
+                                        <i class="bi bi-exclamation-circle me-2"></i>Không có file CV
+                                    </p>
+                                @endif
                             </div>
                         </div>
                     </div>
+
+                    <!-- Phản hồi -->
+                    @if($application->feedback)
+                    <div class="col-12">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-white py-3">
+                                <h6 class="card-title mb-0">
+                                    <i class="bi bi-chat-left-quote text-primary me-2"></i>Phản hồi từ nhà tuyển dụng
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="border rounded p-3 bg-light">
+                                    {{ $application->feedback }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
                 </div>
-                @endif
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
             </div>
         </div>
-        <div class="dialog-footer">
-            <button type="button" class="btn btn-secondary" onclick="this.closest('dialog').close()">Đóng</button>
-        </div>
     </div>
-</dialog>
+</div>
 @endforeach
 
 @push('styles')
@@ -448,76 +459,24 @@
     transform: translateY(-2px);
     box-shadow: 0 0.5rem 1rem rgba(0,0,0,.15) !important;
 }
-.table th {
-    font-weight: 600;
-    color: #495057;
-    border-bottom-width: 1px;
+.modal-content {
+    border: none;
+    border-radius: 1rem;
 }
-.table td {
-    vertical-align: middle;
+.modal-header {
+    border-bottom: 1px solid #dee2e6;
+    border-radius: 1rem 1rem 0 0;
+}
+.modal-footer {
+    border-top: 1px solid #dee2e6;
+    border-radius: 0 0 1rem 1rem;
+}
+.card-header {
+    border-bottom: 1px solid #dee2e6;
 }
 .badge {
     padding: 0.5em 0.75em;
     font-weight: 500;
-}
-
-/* Dialog styles */
-.dialog-container {
-    padding: 0;
-    border: none;
-    border-radius: 1rem;
-    box-shadow: 0 0.5rem 1rem rgba(0,0,0,.15);
-    max-width: 500px;
-    width: 100%;
-}
-
-.dialog-lg {
-    max-width: 800px;
-}
-
-.dialog-container::backdrop {
-    background-color: rgba(0, 0, 0, 0.5);
-}
-
-.dialog-content {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-}
-
-.dialog-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem 1.5rem;
-    border-bottom: 1px solid #dee2e6;
-}
-
-.dialog-title {
-    margin-bottom: 0;
-    font-weight: 500;
-}
-
-.dialog-close {
-    background: transparent;
-    border: 0;
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #6c757d;
-    cursor: pointer;
-}
-
-.dialog-body {
-    padding: 1.5rem;
-    flex: 1 1 auto;
-}
-
-.dialog-footer {
-    display: flex;
-    justify-content: flex-end;
-    padding: 1rem 1.5rem;
-    border-top: 1px solid #dee2e6;
-    gap: 0.5rem;
 }
 </style>
 @endpush
@@ -525,33 +484,6 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Dialog polyfill if needed
-    if (typeof HTMLDialogElement !== 'function') {
-        // Thêm polyfill cho dialog nếu trình duyệt không hỗ trợ
-        console.warn('Dialog element not supported by this browser. Consider adding a polyfill.');
-    }
-    
-    // Xử lý sự kiện đóng dialog khi click backdrop
-    const dialogs = document.querySelectorAll('dialog');
-    dialogs.forEach(dialog => {
-        dialog.addEventListener('click', function(event) {
-            const rect = dialog.getBoundingClientRect();
-            const isInDialog = (rect.top <= event.clientY && event.clientY <= rect.top + rect.height &&
-                rect.left <= event.clientX && event.clientX <= rect.left + rect.width);
-            if (!isInDialog) {
-                dialog.close();
-            }
-        });
-    });
-    
-    // Vô hiệu hóa sự kiện click trên nội dung dialog
-    const dialogContents = document.querySelectorAll('.dialog-content');
-    dialogContents.forEach(content => {
-        content.addEventListener('click', function(event) {
-            event.stopPropagation();
-        });
-    });
-    
     // Initialize tooltips
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[title]'))
     var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {

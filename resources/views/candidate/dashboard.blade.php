@@ -140,51 +140,57 @@
                                             </div>
                                         </td>
                                         <td>
-                                            @php
-                                                $statusMap = [
-                                                    'pending' => [
-                                                        'icon' => 'hourglass-split',
-                                                        'color' => 'warning',
-                                                        'text' => 'Chờ xử lý'
-                                                    ],
-                                                    'submitted' => [
-                                                        'icon' => 'send',
-                                                        'color' => 'info',
-                                                        'text' => 'Đã nộp'
-                                                    ],
-                                                    'pending_review' => [
-                                                        'icon' => 'hourglass-split',
-                                                        'color' => 'warning',
-                                                        'text' => 'Chờ tiếp nhận'
-                                                    ],
-                                                    'interview_scheduled' => [
-                                                        'icon' => 'calendar-check',
-                                                        'color' => 'primary',
-                                                        'text' => 'Đã lên lịch PV'
-                                                    ],
-                                                    'result_pending' => [
-                                                        'icon' => 'hourglass',
-                                                        'color' => 'secondary',
-                                                        'text' => 'Chờ kết quả'
-                                                    ],
-                                                    'approved' => [
-                                                        'icon' => 'check-circle-fill',
-                                                        'color' => 'success',
-                                                        'text' => 'Đã duyệt'
-                                                    ],
-                                                    'rejected' => [
-                                                        'icon' => 'x-circle-fill',
-                                                        'color' => 'danger',
-                                                        'text' => 'Từ chối'
-                                                    ]
-                                                ];
-
-                                                $status = $statusMap[$application->status] ?? $statusMap['pending'];
-                                            @endphp
-                                            <span class="badge bg-{{ $status['color'] }} d-inline-flex align-items-center">
-                                                <i class="bi bi-{{ $status['icon'] }} me-1"></i>
-                                                {{ $status['text'] }}
-                                            </span>
+                                            @switch($application->status)
+                                                @case('pending')
+                                                    <span class="badge bg-warning">
+                                                        <i class="bi bi-hourglass-split me-1"></i>Chờ duyệt
+                                                    </span>
+                                                    @break
+                                                @case('processing')
+                                                    <span class="badge bg-info">
+                                                        <i class="bi bi-gear me-1"></i>Đang xử lý
+                                                    </span>
+                                                    @break
+                                                @case('approved')
+                                                    <span class="badge bg-success">
+                                                        <i class="bi bi-check-circle me-1"></i>Đã duyệt
+                                                    </span>
+                                                    @break
+                                                @case('rejected')
+                                                    <span class="badge bg-danger">
+                                                        <i class="bi bi-x-circle me-1"></i>Đã từ chối
+                                                    </span>
+                                                    @break
+                                                @case('submitted')
+                                                    <span class="badge bg-primary">
+                                                        <i class="bi bi-send me-1"></i>Đã nộp
+                                                    </span>
+                                                    @break
+                                                @case('pending_review')
+                                                    <span class="badge bg-warning">
+                                                        <i class="bi bi-hourglass-split me-1"></i>Chờ xem xét
+                                                    </span>
+                                                    @break
+                                                @case('interview_scheduled')
+                                                    <span class="badge bg-info">
+                                                        <i class="bi bi-calendar-check me-1"></i>Đã lên lịch phỏng vấn
+                                                    </span>
+                                                    @break
+                                                @case('result_pending')
+                                                    <span class="badge bg-secondary">
+                                                        <i class="bi bi-hourglass me-1"></i>Chờ kết quả
+                                                    </span>
+                                                    @break
+                                                @case('transferred')
+                                                    <span class="badge bg-success">
+                                                        <i class="bi bi-check-circle me-1"></i>Đã hoàn thành
+                                                    </span>
+                                                    @break
+                                                @default
+                                                    <span class="badge bg-secondary">
+                                                        <i class="bi bi-question-circle me-1"></i>Không xác định
+                                                    </span>
+                                            @endswitch
                                         </td>
                                         <td class="text-center">
                                             <a href="{{ route('candidate.applications.show', $application->id) }}" 

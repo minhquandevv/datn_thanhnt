@@ -90,6 +90,9 @@ Route::middleware(['auth:candidate'])->group(function () {
     
     // Desires routes
     Route::put('/candidate/desires', [CandidateController::class, 'updateDesires'])->name('candidate.desires.update');
+
+    // University routes
+    Route::post('/candidate/update-university', [CandidateController::class, 'updateUniversity'])->name('candidate.update-university');
 });
 
 //Admin routes

@@ -164,7 +164,7 @@
                                             <div class="text-danger small mt-1">{{ $message }}</div>
                                         @enderror
                                     </div>
-                                    <div class="col-md-12">
+                                    <div class="col-md-6">
                                         <label class="form-label">Địa chỉ</label>
                                         <div class="input-group">
                                             <span class="input-group-text bg-light">
@@ -175,44 +175,6 @@
                                         @error('address')
                                             <div class="text-danger small mt-1">{{ $message }}</div>
                                         @enderror
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label">Kinh nghiệm (năm)</label>
-                                        <div class="input-group">
-                                            <span class="input-group-text bg-light">
-                                                <i class="bi bi-clock text-primary"></i>
-                                            </span>
-                                            <input type="number" class="form-control" name="experience_year" value="{{ old('experience_year', $candidate->experience_year) }}">
-                                        </div>
-                                        @error('experience_year')
-                                            <div class="text-danger small mt-1">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label">Ảnh CCCD/CMND</label>
-                                        <div class="input-group">
-                                            <span class="input-group-text bg-light">
-                                                <i class="bi bi-card-image text-primary"></i>
-                                            </span>
-                                            <input type="file" class="form-control" name="identity_image" accept="image/*">
-                                        </div>
-                                        @if($candidate->identity_image)
-                                            <div class="mt-2">
-                                                <img src="{{ asset('uploads/' . $candidate->identity_image) }}" 
-                                                     alt="Identity Image" 
-                                                     class="img-thumbnail"
-                                                     style="max-height: 100px;">
-                                            </div>
-                                        @endif
-                                        @error('identity_image')
-                                            <div class="text-danger small mt-1">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="form-check mt-4">
-                                            <input type="checkbox" class="form-check-input" name="finding_job" value="1" {{ old('finding_job', $candidate->finding_job) ? 'checked' : '' }}>
-                                            <label class="form-check-label">Đang tìm việc</label>
-                                        </div>
                                     </div>
                                 </div>
                             </div>

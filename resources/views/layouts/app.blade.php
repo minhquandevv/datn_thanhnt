@@ -452,6 +452,8 @@ footer ul li a:hover {
         });
     });
     </script>
+
+    @yield('scripts')
 </body>
 <footer class="bg-white border-top mt-5 pt-4 pb-2">
     <div class="container">
@@ -493,4 +495,5 @@ footer ul li a:hover {
         <i class="bi bi-arrow-up-short fs-4"></i>
     </button>
 </footer>
+
 </html>

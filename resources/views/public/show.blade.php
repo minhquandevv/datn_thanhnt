@@ -351,32 +351,27 @@
 
             <h4 class="mt-4 text-danger fw-bold">YÊU CẦU</h4>
             <ul class="list-group list-group-numbered">
-                @foreach (explode("\n", $jobOffer->job_requirement) as $requirement)
-                    <li class="list-group-item bg-light"><i
-                            class="bi bi-exclamation-circle text-warning me-2"></i>{{ $requirement }}</li>
+                @foreach (explode("\n", $jobOffer->job_requirement) as $key => $requirement)
+                    <li class="list-group-item bg-light">{{ $requirement }}</li>
                 @endforeach
             </ul>
 
             <h4 class="mt-4 text-danger fw-bold">QUYỀN LỢI</h4>
             <ul class="list-group">
                 @foreach ($jobOffer->benefits as $benefit)
-                    <li class="list-group-item bg-light"><i class="bi bi-gift text-primary me-2"></i>{{ $benefit->title }}
-                        - {{ $benefit->description }}</li>
+                    <li class="list-group-item bg-light"><i class="bi bi-gift text-primary me-2"></i>{{ $benefit->title }}</li>
                 @endforeach
             </ul>
-
-            <h4 class="mt-4 text-danger fw-bold">KỸ NĂNG YÊU CẦU</h4>
-            <ul class="list-inline">
-                @foreach ($jobOffer->skills as $skill)
-                    <li class="list-inline-item badge bg-secondary p-2 shadow-sm">{{ $skill->name }}</li>
-                @endforeach
-            </ul>
-
-
             <div class="mt-4">
                 <h5 class="text-danger">Chia sẻ tin này</h5>
-                <a href="#" class="btn btn-outline-primary me-2 shadow-sm"><i class="bi bi-link"></i> Copy link</a>
-                <a href="#" class="btn btn-outline-primary shadow-sm"><i class="bi bi-facebook"></i> Facebook</a>
+                <button id="copyLinkBtn" class="btn btn-outline-primary me-2 shadow-sm">
+                    <i class="bi bi-link me-2"></i>Copy link
+                </button>
+                <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(Request::url()) }}" 
+                   target="_blank" 
+                   class="btn btn-outline-primary shadow-sm">
+                    <i class="bi bi-facebook me-2"></i>Facebook
+                </a>
             </div>
         </div>
     </div>
@@ -473,3 +468,74 @@
         </div>
     </div>
 @endsection
+
+@section('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const copyLinkBtn = document.getElementById('copyLinkBtn');
+    const universitySelect = document.getElementById('university_id');
+    
+    // Xử lý copy link
+    copyLinkBtn.addEventListener('click', function() {
+        const url = window.location.href;
+        navigator.clipboard.writeText(url).then(() => {
+            const originalText = copyLinkBtn.innerHTML;
+            copyLinkBtn.innerHTML = '<i class="bi bi-check2 me-2"></i>Đã copy';
+            copyLinkBtn.classList.add('btn-success');
+            copyLinkBtn.classList.remove('btn-outline-primary');
+            
+            setTimeout(() => {
+                copyLinkBtn.innerHTML = originalText;
+                copyLinkBtn.classList.remove('btn-success');
+                copyLinkBtn.classList.add('btn-outline-primary');
+            }, 2000);
+        }).catch(err => {
+            console.error('Failed to copy: ', err);
+        });
+    });
+
+    // Xử lý cập nhật trường học
+    universitySelect.addEventListener('change', function() {
+        const universityId = this.value;
+        if (universityId) {
+            // Gửi request cập nhật trường học
+            fetch('{{ route("candidate.update-university") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({
+                    university_id: universityId
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Hiển thị thông báo thành công
+                    const toast = new bootstrap.Toast(document.getElementById('updateToast'));
+                    toast.show();
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    });
+});
+</script>
+@endsection
+
+<!-- Thêm toast thông báo -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <div id="updateToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <i class="bi bi-check-circle-fill text-success me-2"></i>
+            <strong class="me-auto">Thành công</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+            Đã cập nhật thông tin trường học vào hồ sơ của bạn
+        </div>
+    </div>
+</div>

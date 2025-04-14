@@ -20,57 +20,65 @@
         <!-- Left Column -->
         <div class="col-lg-8">
             <!-- Job Information Card -->
-            <div class="card border-0 shadow-sm mb-4">
+            <div class="card border-0 shadow-sm mb-4 hover-shadow">
                 <div class="card-body p-4">
                     <div class="d-flex align-items-center mb-4">
                         <div class="flex-shrink-0">
                             @if($application->jobOffer && $application->jobOffer->department)
-                                <div class="rounded bg-light d-flex align-items-center justify-content-center"
-                                     style="width: 64px; height: 64px;">
-                                    <i class="bi bi-building text-primary" style="font-size: 2rem;"></i>
+                                <div class="rounded-circle bg-light d-flex align-items-center justify-content-center"
+                                     style="width: 80px; height: 80px;">
+                                    <i class="bi bi-building text-primary" style="font-size: 2.5rem;"></i>
                                 </div>
                             @else
-                                <div class="rounded bg-light d-flex align-items-center justify-content-center"
-                                     style="width: 64px; height: 64px;">
-                                    <i class="bi bi-building text-muted" style="font-size: 2rem;"></i>
+                                <div class="rounded-circle bg-light d-flex align-items-center justify-content-center"
+                                     style="width: 80px; height: 80px;">
+                                    <i class="bi bi-building text-muted" style="font-size: 2.5rem;"></i>
                                 </div>
                             @endif
                         </div>
                         <div class="flex-grow-1 ms-3">
-                            <h5 class="card-title mb-1">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h5 class="card-title mb-1 text-dark">
+                                        @if($application->jobOffer)
+                                            {{ $application->jobOffer->job_name }}
+                                        @else
+                                            <span class="text-muted">Vị trí không tồn tại</span>
+                                        @endif
+                                    </h5>
+                                    <p class="text-muted mb-0">
+                                        @if($application->jobOffer && $application->jobOffer->department)
+                                            <i class="bi bi-building me-1"></i>{{ $application->jobOffer->department->name }}
+                                        @else
+                                            <i class="bi bi-building me-1"></i>Phòng ban chưa phân công
+                                        @endif
+                                    </p>
+                                </div>
                                 @if($application->jobOffer)
-                                    {{ $application->jobOffer->job_name }}
-                                @else
-                                    <span class="text-muted">Vị trí không tồn tại</span>
+                                    @if($application->jobOffer->job_quantity > 0 && \Carbon\Carbon::parse($application->jobOffer->expiration_date)->isFuture())
+                                        <span class="badge bg-success">
+                                            <i class="bi bi-check-circle me-1"></i>Đang tuyển
+                                        </span>
+                                    @elseif($application->jobOffer->job_quantity <= 0)
+                                        <span class="badge bg-secondary">
+                                            <i class="bi bi-people me-1"></i>Đã đủ
+                                        </span>
+                                    @else
+                                        <span class="badge bg-warning">
+                                            <i class="bi bi-clock me-1"></i>Hết hạn
+                                        </span>
+                                    @endif
                                 @endif
-                            </h5>
-                            <p class="text-muted mb-0">
-                                @if($application->jobOffer && $application->jobOffer->department)
-                                    {{ $application->jobOffer->department->name }}
-                                @else
-                                    Phòng ban chưa phân công
-                                @endif
-                            </p>
+                            </div>
                         </div>
                     </div>
 
                     <div class="row g-4">
                         <div class="col-md-6">
                             <div class="d-flex align-items-center mb-3">
-                                <i class="bi bi-person-badge text-primary me-2"></i>
-                                <div>
-                                    <div class="text-muted small">Vị trí</div>
-                                    <div class="fw-medium">
-                                        @if($application->jobOffer && $application->jobOffer->job_position)
-                                            {{ $application->jobOffer->job_position }}
-                                        @else
-                                            <span class="text-muted">Chưa cập nhật</span>
-                                        @endif
-                                    </div>
+                                <div class="icon-box bg-light rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                    <i class="bi bi-cash-stack text-primary"></i>
                                 </div>
-                            </div>
-                            <div class="d-flex align-items-center mb-3">
-                                <i class="bi bi-cash-stack text-primary me-2"></i>
                                 <div>
                                     <div class="text-muted small">Mức lương</div>
                                     <div class="fw-medium">
@@ -82,10 +90,10 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-md-6">
                             <div class="d-flex align-items-center mb-3">
-                                <i class="bi bi-geo-alt text-primary me-2"></i>
+                                <div class="icon-box bg-light rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                    <i class="bi bi-geo-alt text-primary"></i>
+                                </div>
                                 <div>
                                     <div class="text-muted small">Địa điểm</div>
                                     <div class="fw-medium">
@@ -97,13 +105,32 @@
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                        <div class="col-md-6">
                             <div class="d-flex align-items-center mb-3">
-                                <i class="bi bi-calendar-event text-primary me-2"></i>
+                                <div class="icon-box bg-light rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                    <i class="bi bi-calendar-event text-primary"></i>
+                                </div>
                                 <div>
                                     <div class="text-muted small">Hạn nộp</div>
                                     <div class="fw-medium">
                                         @if($application->jobOffer)
                                             {{ \Carbon\Carbon::parse($application->jobOffer->expiration_date)->format('d/m/Y') }}
+                                        @else
+                                            <span class="text-muted">Chưa cập nhật</span>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="icon-box bg-light rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                    <i class="bi bi-people text-primary"></i>
+                                </div>
+                                <div>
+                                    <div class="text-muted small">Số lượng</div>
+                                    <div class="fw-medium">
+                                        @if($application->jobOffer)
+                                            {{ $application->jobOffer->job_quantity }} vị trí
                                         @else
                                             <span class="text-muted">Chưa cập nhật</span>
                                         @endif
@@ -173,51 +200,57 @@
                             <i class="bi bi-check-circle text-primary me-2 mt-1"></i>
                             <div>
                                 <div class="text-muted small">Trạng thái</div>
-                                @php
-                                    $statusMap = [
-                                        'pending' => [
-                                            'icon' => 'hourglass-split',
-                                            'color' => 'warning',
-                                            'text' => 'Chờ xử lý'
-                                        ],
-                                        'submitted' => [
-                                            'icon' => 'send',
-                                            'color' => 'info',
-                                            'text' => 'Đã nộp'
-                                        ],
-                                        'pending_review' => [
-                                            'icon' => 'hourglass-split',
-                                            'color' => 'warning',
-                                            'text' => 'Chờ tiếp nhận'
-                                        ],
-                                        'interview_scheduled' => [
-                                            'icon' => 'calendar-check',
-                                            'color' => 'primary',
-                                            'text' => 'Đã lên lịch PV'
-                                        ],
-                                        'result_pending' => [
-                                            'icon' => 'hourglass',
-                                            'color' => 'secondary',
-                                            'text' => 'Chờ kết quả'
-                                        ],
-                                        'approved' => [
-                                            'icon' => 'check-circle-fill',
-                                            'color' => 'success',
-                                            'text' => 'Đã duyệt'
-                                        ],
-                                        'rejected' => [
-                                            'icon' => 'x-circle-fill',
-                                            'color' => 'danger',
-                                            'text' => 'Từ chối'
-                                        ]
-                                    ];
-
-                                    $status = $statusMap[$application->status] ?? $statusMap['pending'];
-                                @endphp
-                                <span class="badge bg-{{ $status['color'] }} d-inline-flex align-items-center">
-                                    <i class="bi bi-{{ $status['icon'] }} me-1"></i>
-                                    {{ $status['text'] }}
-                                </span>
+                                @switch($application->status)
+                                    @case('pending')
+                                        <span class="badge bg-warning">
+                                            <i class="bi bi-hourglass-split me-1"></i>Chờ duyệt
+                                        </span>
+                                        @break
+                                    @case('processing')
+                                        <span class="badge bg-info">
+                                            <i class="bi bi-gear me-1"></i>Đang xử lý
+                                        </span>
+                                        @break
+                                    @case('approved')
+                                        <span class="badge bg-success">
+                                            <i class="bi bi-check-circle me-1"></i>Đã duyệt
+                                        </span>
+                                        @break
+                                    @case('rejected')
+                                        <span class="badge bg-danger">
+                                            <i class="bi bi-x-circle me-1"></i>Đã từ chối
+                                        </span>
+                                        @break
+                                    @case('submitted')
+                                        <span class="badge bg-primary">
+                                            <i class="bi bi-send me-1"></i>Đã nộp
+                                        </span>
+                                        @break
+                                    @case('pending_review')
+                                        <span class="badge bg-warning">
+                                            <i class="bi bi-hourglass-split me-1"></i>Chờ xem xét
+                                        </span>
+                                        @break
+                                    @case('interview_scheduled')
+                                        <span class="badge bg-info">
+                                            <i class="bi bi-calendar-check me-1"></i>Đã lên lịch phỏng vấn
+                                        </span>
+                                        @break
+                                    @case('result_pending')
+                                        <span class="badge bg-secondary">
+                                            <i class="bi bi-hourglass me-1"></i>Chờ kết quả
+                                        </span>
+                                        @break
+                                    @case('transferred')
+                                        <span class="badge bg-success">
+                                            <i class="bi bi-check-circle me-1"></i>Đã hoàn thành
+                                        </span>
+                                        @break
+                                    @default
+                                        <span class="badge bg-secondary">
+                                            <i class="bi bi-question-circle me-1"></i>Không xác định
+                                        </span>
+                                @endswitch
                             </div>
                         </div>
                     </div>
@@ -286,6 +319,41 @@
 .badge {
     padding: 0.5em 0.75em;
     font-weight: 500;
+}
+.icon-box {
+    transition: all 0.3s ease;
+}
+.card:hover .icon-box {
+    background: rgba(13, 110, 253, 0.1);
+    transform: scale(1.05);
+}
+.hover-shadow {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    border: 1px solid rgba(13, 110, 253, 0.1);
+    background: white;
+}
+.hover-shadow:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 24px rgba(13, 110, 253, 0.15);
+    border-color: #0d6efd;
+}
+.card-title {
+    transition: all 0.3s ease;
+    position: relative;
+}
+.hover-shadow:hover .card-title {
+    color: #0d6efd !important;
+}
+.hover-shadow:hover .card-title::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 40px;
+    height: 2px;
+    background: linear-gradient(135deg, #0d6efd, #0dcaf0);
+    border-radius: 1px;
 }
 </style>
 @endpush
