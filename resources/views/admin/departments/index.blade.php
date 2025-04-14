@@ -100,7 +100,6 @@
                     <thead class="bg-light">
                         <tr>
                             <th class="px-2 py-1 text-center" style="width: 150px">Thao tác</th>
-                            <th class="px-2 py-1 text-center" style="width: 40px">ID</th>
                             <th class="px-2 py-1">Tên phòng ban</th>
                             <th class="px-2 py-1">Địa chỉ</th>
 
@@ -124,11 +123,7 @@
                                         </button>
                                     </div>
                                 </td>
-                                <td class="px-2 text-center">
-                                    <div class="avatar-circle bg-danger bg-opacity-10 text-danger mx-auto">
-                                        {{ $department->department_id }}
-                                    </div>
-                                </td>
+
                                 <td class="px-2">
                                     <div class="d-flex align-items-center">
                                         <div class="avatar-circle me-2 bg-danger bg-opacity-10">

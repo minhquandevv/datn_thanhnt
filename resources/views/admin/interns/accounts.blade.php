@@ -109,10 +109,10 @@
                                                  width="32" height="32" 
                                                  alt="Avatar">
                                         @else
-                                            <div class="rounded-circle bg-danger bg-opacity-10 text-danger me-2 d-flex align-items-center justify-content-center" 
-                                                 style="width: 32px; height: 32px;">
-                                                {{ substr($account->intern->fullname, 0, 1) }}
-                                            </div>
+                                        <img src="{{ asset('avatars/default.png') }}" 
+                                        class="rounded-circle me-2" 
+                                        width="32" height="32" 
+                                        alt="Avatar">
                                         @endif
                                         {{ $account->intern->fullname }}
                                     </div>

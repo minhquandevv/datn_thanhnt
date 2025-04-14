@@ -140,7 +140,7 @@
                     <thead class="bg-light">
                         <tr>
                             <th class="px-2 py-1 text-center" style="width: 150px">Thao tác</th>
-                            <th class="px-2 py-1 text-center" style="width: 40px">ID</th>
+
                             <th class="px-2 py-1">Thông tin cá nhân</th>
                             <th class="px-2 py-1">Thông tin học tập</th>
                             <th class="px-2 py-1">Thông tin công việc</th>
@@ -171,22 +171,17 @@
                                             </button>
                                         </div>
                                     </td>
-                                    <td class="px-2 text-center">
-                                        <div class="avatar-circle bg-danger bg-opacity-10 text-danger mx-auto">{{ $intern->intern_id }}
-                                            
-                                        </div>
-                                    </td>
                                     <td class="px-2">
                                         <div class="d-flex align-items-center">
-                                            <div class="avatar-circle me-2 bg-danger bg-opacity-10">
+                                            <div class="avatar-circle me-2 ">
                                                 @if($intern->avatar)
                                                     <img src="{{ asset('uploads/' . $intern->avatar) }}" 
                                                          alt="Avatar"
                                                          class="rounded-circle">
                                                 @else
-                                                    <span class="avatar-text text-danger">
-                                                        {{ substr($intern->fullname, 0, 1) }}
-                                                    </span>
+                                                <img src="{{ asset('avatars/default.png') }}" 
+                                                alt="Avatar"
+                                                class="rounded-circle">
                                                 @endif
                                             </div>
                                             <div>

@@ -427,9 +427,7 @@
                                             @if($candidate->url_avatar)
                                                 <img src="{{ asset('uploads/' . $candidate->url_avatar) }}" alt="Avatar" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">
                                             @else
-                                                <div class="avatar-circle bg-danger bg-opacity-10 text-danger mx-auto">
-                                                    {{ substr($candidate->fullname, 0, 1) }}
-                                                </div>
+                                            <img src="{{ asset('avatars/default.png') }}" alt="Avatar" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">
                                             @endif
                                         </td>
                                         <td>
