@@ -875,28 +875,59 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Hàm cập nhật thời gian qua AJAX
     function updateEventTime(event, info) {
+        // Chuyển đổi thời gian sang múi giờ Việt Nam
+        const startTime = new Date(event.start);
+        const endTime = new Date(event.end);
+        
+        // Format thời gian theo định dạng YYYY-MM-DD HH:mm:ss
+        const formattedStartTime = startTime.toISOString().slice(0, 19).replace('T', ' ');
+        const formattedEndTime = endTime.toISOString().slice(0, 19).replace('T', ' ');
+        
+        // Hiển thị loading state
+        const loadingModal = new bootstrap.Modal(document.getElementById('notificationModal'));
+        const loadingMessage = document.getElementById('notificationMessage');
+        loadingMessage.textContent = 'Đang cập nhật thời gian phỏng vấn...';
+        loadingModal.show();
+        
         fetch(`/admin/interviews/${event.id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
             },
             body: JSON.stringify({
-                start_time: event.start.toISOString(),
-                end_time: event.end.toISOString()
+                start_time: formattedStartTime,
+                end_time: formattedEndTime,
+                _method: 'PUT'
             })
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(data => {
+                    throw new Error(data.message || 'Không thể cập nhật lịch phỏng vấn');
+                });
+            }
+            return response.json();
+        })
         .then(data => {
             if (data.success) {
-                toastr.success(data.message);
+                // Hiển thị thông báo thành công
+                loadingMessage.textContent = data.message;
+                // Tự động đóng modal sau 2 giây
+                setTimeout(() => {
+                    loadingModal.hide();
+                }, 2000);
             } else {
-                toastr.error('Không thể cập nhật lịch phỏng vấn');
-                info.revert();
+                throw new Error(data.message || 'Không thể cập nhật lịch phỏng vấn');
             }
         })
         .catch(error => {
-            toastr.error('Không thể cập nhật lịch phỏng vấn');
+            console.error('Error:', error);
+            // Hiển thị thông báo lỗi
+            loadingMessage.textContent = error.message || 'Không thể cập nhật lịch phỏng vấn';
+            // Khôi phục lại vị trí cũ của sự kiện
             info.revert();
         });
     }
