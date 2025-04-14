@@ -836,7 +836,23 @@ document.addEventListener('DOMContentLoaded', function () {
                                 jobQuantityInput.value = pos.quantity;
                                 jobRequirementInput.value = pos.requirements;
                                 jobDescriptionInput.value = pos.description || '';
-                                document.getElementById('department_id_hidden_' + jobId).value = pos.department_id;
+                                
+                                // Fix: Get the job ID from planSelect
+                                if (planSelect && planSelect.dataset && planSelect.dataset.jobId) {
+                                    const jobId = planSelect.dataset.jobId;
+                                    const deptHidden = document.getElementById(`department_id_hidden_${jobId}`);
+                                    if (deptHidden && pos.department_id) {
+                                        deptHidden.value = pos.department_id;
+                                    }
+                                    
+                                    // Update department dropdown
+                                    const deptSelect = modal.querySelector('select[name="department_id"]');
+                                    if (deptSelect && pos.department_id) {
+                                        Array.from(deptSelect.options).forEach(opt => {
+                                            opt.selected = (opt.value == pos.department_id);
+                                        });
+                                    }
+                                }
                             }
                             positionSelect.appendChild(option);
                         }
@@ -866,6 +882,27 @@ document.addEventListener('DOMContentLoaded', function () {
                     jobQuantityInput.value = option.dataset.quantity;
                     jobRequirementInput.value = option.dataset.requirements;
                     jobDescriptionInput.value = option.dataset.description || '';
+                    
+                    // Cập nhật phòng ban theo vị trí
+                    const departmentId = option.dataset.departmentId;
+                    if (departmentId) {
+                        // Lấy jobId từ planSelect data attribute
+                        const jobId = planSelect.dataset.jobId;
+                        const departmentHiddenInput = document.getElementById(`department_id_hidden_${jobId}`);
+                        const departmentSelect = modal.querySelector('select[name="department_id"]');
+                        
+                        // Cập nhật trường ẩn department_id
+                        if (departmentHiddenInput) {
+                            departmentHiddenInput.value = departmentId;
+                        }
+                        
+                        // Cập nhật dropdown hiển thị
+                        if (departmentSelect) {
+                            Array.from(departmentSelect.options).forEach(opt => {
+                                opt.selected = (opt.value == departmentId);
+                            });
+                        }
+                    }
                 }
             });
         });
