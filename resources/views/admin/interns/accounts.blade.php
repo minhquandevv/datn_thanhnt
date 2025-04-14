@@ -20,17 +20,35 @@
     <!-- Stats Cards -->
     <div class="row g-2 mb-2">
         <div class="col-sm-6 col-md-3">
-            <div class="card border-0 shadow-sm bg-gradient-danger text-white h-100">
+            <div class="card border-0 shadow-sm h-100">
                 <div class="card-body p-2">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h6 class="card-subtitle mb-0 opacity-75 small text-danger">Tổng số tài khoản</h6>
+                            <h6 class="card-subtitle mb-0 opacity-75 small">Tổng số tài khoản</h6>
                             <h4 class="card-title mb-0 fw-bold text-danger">
                                 {{ isset($totalAccounts) ? $totalAccounts : 0 }}
                             </h4>
                         </div>
-                        <div class="icon-box rounded-circle bg-white bg-opacity-25 p-1">
+                        <div class="icon-box rounded-circle bg-danger bg-opacity-10 p-1">
                             <i class="bi bi-person-badge text-danger"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-sm-6 col-md-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body p-2">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-subtitle mb-0 opacity-75 small">Chưa kích hoạt</h6>
+                            <h4 class="card-title mb-0 fw-bold text-danger">
+                                {{ isset($inactiveAccounts) ? $inactiveAccounts : 0 }}
+                            </h4>
+                        </div>
+                        <div class="icon-box rounded-circle bg-danger bg-opacity-10 p-1">
+                            <i class="bi bi-person-x text-danger"></i>
                         </div>
                     </div>
                 </div>
@@ -48,6 +66,18 @@
                             <i class="bi bi-search text-danger"></i>
                         </span>
                         <input type="text" class="form-control border-0 bg-light" id="searchInput" placeholder="Tìm kiếm...">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="d-flex justify-content-end">
+                        <form action="{{ route('admin.interns.accounts') }}" method="GET" class="d-flex align-items-center">
+                            <label for="statusFilter" class="me-2 mb-0 small">Trạng thái:</label>
+                            <select id="statusFilter" name="status" class="form-select form-select-sm border-0 bg-light" onchange="this.form.submit()">
+                                <option value="">Tất cả</option>
+                                <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Đã kích hoạt</option>
+                                <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>Chưa kích hoạt</option>
+                            </select>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -141,6 +171,11 @@
                     </tbody>
                 </table>
             </div>
+            @if($accounts->hasPages())
+                <div class="d-flex justify-content-center py-3">
+                    {{ $accounts->appends(request()->query())->links() }}
+                </div>
+            @endif
         </div>
     </div>
 </div>
@@ -231,4 +266,4 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
-@endpush 
+@endpush

@@ -349,18 +349,32 @@ class InternController extends Controller
         return response()->download($tempFile, 'intern_template.xlsx')->deleteFileAfterSend(true);
     }
 
-    public function accounts()
+    public function accounts(Request $request)
     {
-        $accounts = InternAccount::with('intern')->get();
+        // Base query with relationship
+        $query = InternAccount::with('intern');
+        
+        // Apply status filter if provided
+        if ($request->filled('status')) {
+            $isActive = $request->status === 'active';
+            $query->where('is_active', $isActive);
+        }
+        
+        // Get accounts with pagination
+        $accounts = $query->paginate(10);
+        
+        // Statistics for cards
+        $totalAccounts = InternAccount::count();
+        $inactiveAccounts = InternAccount::where('is_active', false)->count();
         
         // Debug information
         \Log::info('Intern accounts count: ' . $accounts->count());
-        \Log::info('Intern accounts data: ' . $accounts->toJson());
         
-        // Truyền dữ liệu trực tiếp
         return view('admin.interns.accounts', [
             'accounts' => $accounts,
-            'totalAccounts' => $accounts->count()
+            'totalAccounts' => $totalAccounts,
+            'inactiveAccounts' => $inactiveAccounts,
+            'status' => $request->status
         ]);
     }
 

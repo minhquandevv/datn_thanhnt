@@ -695,7 +695,7 @@
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('admin.job-applications.*') ? 'active' : '' }}" href="{{ route('admin.job-applications.index') }}">
                                 <i class="bi bi-file-earmark-text"></i>
-                                <span>Quản lý đơn ứng tuyển</span>
+                                <span>Đơn ứng tuyển</span>
                             </a>
                         </li>
                         <li class="nav-item">
