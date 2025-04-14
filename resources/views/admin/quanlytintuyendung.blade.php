@@ -345,19 +345,17 @@ function toggleBenefit(checkboxId, containerId) {
     const container = document.getElementById(containerId);
     
     if (checkbox && container) {
-        // Uncheck the checkbox to ensure it's not submitted
-        if (checkbox.checked) {
-            checkbox.checked = false;
-        }
+
+        checkbox.checked = false;
         
-        // Animate the removal with a fade-out effect
         container.style.transition = 'opacity 0.3s ease';
         container.style.opacity = '0';
         
-        // Remove the container after animation completes
         setTimeout(() => {
             container.style.display = 'none';
         }, 300);
+        
+        console.log(`Benefit ${checkboxId} has been marked for removal`);
     }
 }
 </script>
@@ -836,10 +834,9 @@ function toggleBenefit(checkboxId, containerId) {
     const container = document.getElementById(containerId);
     
     if (checkbox && container) {
-        // Uncheck the checkbox to ensure it's not submitted
-        if (checkbox.checked) {
-            checkbox.checked = false;
-        }
+        // Uncheck the checkbox to ensure it's not submitted with the form
+        // This is the key step that removes the benefit when form is submitted
+        checkbox.checked = false;
         
         // Animate the removal with a fade-out effect
         container.style.transition = 'opacity 0.3s ease';
@@ -849,6 +846,8 @@ function toggleBenefit(checkboxId, containerId) {
         setTimeout(() => {
             container.style.display = 'none';
         }, 300);
+        
+        console.log(`Benefit ${checkboxId} has been marked for removal`);
     }
 }
 

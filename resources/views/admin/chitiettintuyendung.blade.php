@@ -73,6 +73,19 @@
                                     {{ $jobOffer->job_requirement }}
                                 </div>
                             </div>
+
+                            <div class= "mb-4">
+                                <h6 class="text-muted mb-2">Phúc lợi:</h6>
+                                <div class="d-flex flex-wrap gap-2">
+                                    @forelse($jobOffer->benefits as $benefit)
+                                        <span class="badge bg-danger bg-opacity-10 text-danger">
+                                            {{ $benefit->title }}
+                                        </span>
+                                    @empty
+                                        <p class="text-muted fst-italic">Không có phúc lợi</p>
+                                    @endforelse
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -88,9 +101,9 @@
                                 <label class="form-label text-muted">
                                     <i class="bi bi-building text-danger me-2"></i>Kế hoạch
                                 </label>
-                                <select class="form-select recruitment-plan-select" name="recruitment_plan_id" data-job-id="{{ $jobOffer->id }}" required readonly>
+                                <select class="form-select recruitment-plan-select" name="recruitment_plan_id" data-job-id="{{ $jobOffer->id }}" required disabled>
                                     @foreach($recruitmentPlans as $plan)
-                                        <option value="{{ $plan->plan_id }}" {{ $jobOffer->recruitment_plan_id == $plan->plan_id ? 'selected' : '' }} readonly>
+                                        <option value="{{ $plan->plan_id }}" {{ $jobOffer->recruitment_plan_id == $plan->plan_id ? 'selected' : '' }} disabled>
                                             {{ $plan->name }}
                                         </option>
                                     @endforeach
@@ -325,4 +338,4 @@ textarea.form-control {
 }
 </style>
 @endpush
-@endsection 
+@endsection

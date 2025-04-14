@@ -147,6 +147,13 @@ class JobOfferController extends Controller
     {
         $jobOffer = JobOffer::findOrFail($id);
 
+        // Add request data logging to help troubleshoot
+        \Log::info('JobOffer Update - Request data:', [
+            'job_id' => $id,
+            'job_benefits' => $request->input('job_benefits', []),
+            'new_job_benefits' => $request->input('new_job_benefits', [])
+        ]);
+
         $data = $request->validate([
             'job_name' => 'nullable|string|max:255',
             'department_id' => 'nullable|exists:departments,department_id',
@@ -169,8 +176,36 @@ class JobOfferController extends Controller
 
         $jobOffer->update(Arr::except($data, ['job_benefits', 'new_job_benefits']));
 
-        $jobOffer->benefits()->sync($request->input('job_benefits', []));
+        // Get current benefits for comparison and logging
+        $currentBenefitIds = $jobOffer->benefits->pluck('id')->toArray();
+        
+        // Get submitted benefits (will be empty array if all were removed)
+        $submittedBenefitIds = $request->input('job_benefits', []);
+        
+        // Calculate removed benefits for logging
+        $removedBenefitIds = array_diff($currentBenefitIds, $submittedBenefitIds);
+        
+        // Log all benefit changes for debugging
+        \Log::info("Job Offer ID: {$jobOffer->id} - Benefit changes", [
+            'current_benefits' => $currentBenefitIds,
+            'submitted_benefits' => $submittedBenefitIds,
+            'removed_benefits' => $removedBenefitIds
+        ]);
+        
+        // Force detach any benefits that were removed
+        if (!empty($removedBenefitIds)) {
+            foreach ($removedBenefitIds as $benefitId) {
+                $jobOffer->benefits()->detach($benefitId);
+            }
+            \Log::info("Job Offer ID: {$jobOffer->id} - Manually detached benefits: " . implode(', ', $removedBenefitIds));
+        }
+        
+        // Sync the remaining checked benefits
+        if (!empty($submittedBenefitIds)) {
+            $jobOffer->benefits()->syncWithoutDetaching($submittedBenefitIds);
+        }
 
+        // Add any newly entered benefits
         if ($request->filled('new_job_benefits')) {
             foreach ($request->new_job_benefits as $title) {
                 $benefit = JobBenefit::firstOrCreate(['title' => $title]);
