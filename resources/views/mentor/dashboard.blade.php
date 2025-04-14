@@ -2,22 +2,7 @@
 
 @section('content')
 <div class="container-fluid">
-    <div class="row">
-        <div class="col-md-3">
-            <div class="card bg-success text-white mb-4">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h5 class="card-title">Công việc đã hoàn thành</h5>
-                            <p class="card-text mb-0">
-                                <strong>{{ $taskCompleted }}</strong> công việc
-                            </p>
-                        </div>
-                        <i class="bi bi-people-fill fs-1"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div class="row mb-4">
         <div class="col-md-3">
             <div class="card bg-primary text-white mb-4">
                 <div class="card-body">
@@ -29,6 +14,21 @@
                             </p>
                         </div>
                         <i class="bi bi-list-task fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="card-title">Công việc đã hoàn thành</h5>
+                            <p class="card-text mb-0">
+                                <strong>{{ $taskCompleted }}</strong> công việc
+                            </p>
+                        </div>
+                        <i class="bi bi-check-circle fs-1"></i>
                     </div>
                 </div>
             </div>
@@ -151,10 +151,16 @@
 </div>
 
 <style>
+    .col-md-2-4 {
+        flex: 0 0 20%;
+        max-width: 20%;
+        padding-right: 15px;
+        padding-left: 15px;
+    }
+    
     .card {
-        border: none;
-        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-        transition: transform 0.2s ease-in-out;
+        height: 100%;
+        transition: transform 0.2s;
     }
     
     .card:hover {
@@ -162,26 +168,20 @@
     }
     
     .card-body {
-        padding: 1.5rem;
+        padding: 1.25rem;
     }
     
     .card-title {
-        font-size: 1.1rem;
+        font-size: 0.9rem;
         margin-bottom: 0.5rem;
     }
     
     .card-text {
-        font-size: 1.5rem;
+        font-size: 1.25rem;
     }
     
-    .table th {
-        font-weight: 600;
-        color: #495057;
-    }
-    
-    .badge {
-        padding: 0.5em 0.75em;
-        font-weight: 500;
+    .fs-1 {
+        font-size: 2rem;
     }
 </style>
 @endsection 

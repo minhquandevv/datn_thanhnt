@@ -10,35 +10,78 @@
     </div>
 
     <div class="row">
-        <div class="col-md-3">
+        <div class="col-md-2-4">
             <div class="card bg-primary text-white mb-4">
                 <div class="card-body">
-                    <h5 class="card-title">Tổng số công việc</h5>
-                    <h2 class="mb-0">{{ $allTasks->count() }}</h2>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="card-title">Tổng công việc</h5>
+                            <p class="card-text mb-0">
+                                <strong>{{ $allTasks->count() }}</strong> công việc
+                            </p>
+                        </div>
+                        <i class="bi bi-list-task fs-1"></i>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2-4">
             <div class="card bg-success text-white mb-4">
                 <div class="card-body">
-                    <h5 class="card-title">Đã hoàn thành</h5>
-                    <h2 class="mb-0">{{ $allTasks->where('status', 'Hoàn thành')->count() }}</h2>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="card-title">Công việc đã hoàn thành</h5>
+                            <p class="card-text mb-0">
+                                <strong>{{ $allTasks->where('status', 'Hoàn thành')->count() }}</strong> công việc
+                            </p>
+                        </div>
+                        <i class="bi bi-check-circle fs-1"></i>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2-4">
             <div class="card bg-warning text-white mb-4">
                 <div class="card-body">
-                    <h5 class="card-title">Đang thực hiện</h5>
-                    <h2 class="mb-0">{{ $allTasks->where('status', 'Đang thực hiện')->count() }}</h2>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="card-title">Đang thực hiện</h5>
+                            <p class="card-text mb-0">
+                                <strong>{{ $allTasks->where('status', 'Đang thực hiện')->count() }}</strong> công việc
+                            </p>
+                        </div>
+                        <i class="bi bi-clock-history fs-1"></i>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2-4">
+            <div class="card bg-info text-white mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="card-title">Chưa bắt đầu</h5>
+                            <p class="card-text mb-0">
+                                <strong>{{ $allTasks->where('status', 'Chưa bắt đầu')->count() }}</strong> công việc
+                            </p>
+                        </div>
+                        <i class="bi bi-hourglass-split fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2-4">
             <div class="card bg-danger text-white mb-4">
                 <div class="card-body">
-                    <h5 class="card-title">Chưa bắt đầu</h5>
-                    <h2 class="mb-0">{{ $allTasks->where('status', 'Chưa bắt đầu')->count() }}</h2>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="card-title">Trễ hạn</h5>
+                            <p class="card-text mb-0">
+                                <strong>{{ $allTasks->where('status', 'Trễ hạn')->count() }}</strong> công việc
+                            </p>
+                        </div>
+                        <i class="bi bi-exclamation-triangle fs-1"></i>
+                    </div>
                 </div>
             </div>
         </div>
@@ -356,5 +399,40 @@ document.addEventListener('DOMContentLoaded', () => {
 @endif
 });
 </script>
+
+<style>
+    .col-md-2-4 {
+        flex: 0 0 20%;
+        max-width: 20%;
+        padding-right: 15px;
+        padding-left: 15px;
+    }
+    
+    .card {
+        height: 100%;
+        transition: transform 0.2s;
+    }
+    
+    .card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .card-body {
+        padding: 1.25rem;
+    }
+    
+    .card-title {
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .card-text {
+        font-size: 1.25rem;
+    }
+    
+    .fs-1 {
+        font-size: 2rem;
+    }
+</style>
 @endsection 
 
