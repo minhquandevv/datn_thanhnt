@@ -82,7 +82,7 @@
                 <div class="card-header bg-white border-0 py-3">
                     <h5 class="card-title text-danger mb-0">
                         <i class="bi bi-pie-chart-fill me-2"></i>
-                        Phân bố đánh giá
+                        Đánh giá chung
                     </h5>
                 </div>
                 <div class="card-body">
