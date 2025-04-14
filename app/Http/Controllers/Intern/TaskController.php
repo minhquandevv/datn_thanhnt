@@ -88,10 +88,15 @@ class TaskController extends Controller
         // Validate request
         $request->validate([
             'submit_type' => 'required|in:file,link',
-            'result_file' => 'required_if:submit_type,file|file|mimes:pdf,doc,docx,xls,xlsx,txt,zip,rar|max:10240',
-            'result_link' => 'required_if:submit_type,link|url|max:255',
+            'result_file' => 'nullable|file|max:10240', // Simplified validation
+            'result_link' => 'nullable|url|max:255',
             'result_description' => 'nullable|string|max:1000',
         ]);
+
+        // Kiểm tra quyền truy cập
+        if ($task->intern_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
 
         // Check if task is in progress
         if ($task->status !== 'Đang thực hiện') {
@@ -99,47 +104,65 @@ class TaskController extends Controller
         }
 
         $attachmentResult = null;
-        $workDone = $request->result_description ?? '';
+        $workDone = $request->result_description ?? 'Nộp kết quả công việc';
 
-        // Thêm xuống dòng sau mỗi dấu chấm
-        $workDone = preg_replace('/\.\s*/', ".\n", $workDone);
-
-        if ($request->submit_type === 'file') {
-            // Store the file in public/uploads/document directory
-            $file = $request->file('result_file');
-            $originalFilename = $file->getClientOriginalName();
-            
-            // Create directory if it doesn't exist
-            $uploadPath = public_path('uploads/document');
-            if (!file_exists($uploadPath)) {
-                mkdir($uploadPath, 0755, true);
+        try {
+            // Process based on submission type
+            if ($request->submit_type === 'file' && $request->hasFile('result_file')) {
+                $file = $request->file('result_file');
+                
+                // Check file validity
+                if (!$file->isValid()) {
+                    return back()->with('error', 'File không hợp lệ. Vui lòng thử lại.');
+                }
+                
+                // Create directory path
+                $uploadDir = 'uploads/document';
+                $path = public_path($uploadDir);
+                
+                if (!file_exists($path)) {
+                    mkdir($path, 0777, true);
+                }
+                
+                // Get original filename
+                $filename = time() . '_' . $file->getClientOriginalName();
+                
+                // Store file directly
+                $file->move($path, $filename);
+                
+                // Set file path for database
+                $attachmentResult = $uploadDir . '/' . $filename;
+                $workDone .= "\n\nFile đính kèm: " . $file->getClientOriginalName();
+            } 
+            elseif ($request->submit_type === 'link' && !empty($request->result_link)) {
+                $attachmentResult = $request->result_link;
+                $workDone .= "\n\nLink kết quả: " . $request->result_link;
+            }
+            else {
+                return back()->with('error', 'Vui lòng cung cấp file hoặc link kết quả.');
             }
             
-            // Move file to uploads/document directory
-            $file->move($uploadPath, $originalFilename);
-            $attachmentResult = 'uploads/document/' . $originalFilename;
-            $workDone .= "\n\nFile đính kèm: " . $originalFilename;
-        } else {
-            // Store the link
-            $attachmentResult = $request->result_link;
-            $workDone .= "\n\nLink kết quả: " . $request->result_link;
+            // Create report with result
+            $report = new TaskReports();
+            $report->task_id = $task->task_id;
+            $report->report_date = now();
+            $report->work_done = $workDone;
+            $report->next_day_plan = 'Đã hoàn thành công việc';
+            $report->attachment_result = $attachmentResult;
+            $report->save();
+            
+            // Update task status
+            $task->status = 'Hoàn thành';
+            $task->save();
+            
+            return back()->with('success', 'Đã nộp kết quả thành công.');
+        } 
+        catch (\Exception $e) {
+            // Log detailed error
+            \Log::error('Task result submission error: ' . $e->getMessage());
+            
+            return back()->with('error', 'Không thể nộp kết quả: ' . $e->getMessage());
         }
-
-        // Create a new task report with the result
-        TaskReports::create([
-            'task_id' => $task->task_id,
-            'report_date' => now(),
-            'work_done' => $workDone,
-            'next_day_plan' => 'Đã hoàn thành công việc',
-            'attachment_result' => $attachmentResult,
-        ]);
-        
-        // Update task status
-        $task->update([
-            'status' => 'Hoàn thành',
-        ]);
-
-        return back()->with('success', 'Đã nộp kết quả thành công.');
     }
 
     public function deleteResult(Task $task)
@@ -154,22 +177,20 @@ class TaskController extends Controller
             return back()->with('error', 'Không tìm thấy kết quả để xóa.');
         }
 
-        // Delete the file from uploads/document directory
+        // Delete the physical file from uploads/document directory if it exists
         $filePath = public_path($report->attachment_result);
         if (file_exists($filePath)) {
             unlink($filePath);
         }
 
-        // Update the report
-        $report->update([
-            'attachment_result' => null
-        ]);
+        // Delete the report record completely instead of just updating it
+        $report->delete();
 
         // Update task status back to in progress
         $task->update([
             'status' => 'Đang thực hiện',
         ]);
 
-        return back()->with('success', 'Đã xóa kết quả thành công.');
+        return back()->with('success', 'Đã xóa kết quả và báo cáo thành công.');
     }
-} 
+}

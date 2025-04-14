@@ -367,6 +367,15 @@
                             </small>
                         </div>
                     </div>
+                    
+                    <div class="mb-3">
+                        <label for="result_description" class="form-label">
+                            <i class="bi bi-text-paragraph text-primary me-2"></i>
+                            Mô tả kết quả (không bắt buộc)
+                        </label>
+                        <textarea class="form-control" id="result_description" name="result_description" rows="3" 
+                            placeholder="Mô tả ngắn gọn về kết quả công việc của bạn..."></textarea>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
@@ -594,20 +603,18 @@ document.addEventListener('DOMContentLoaded', function() {
     const linkInputGroup = document.getElementById('linkInputGroup');
     const resultFile = document.getElementById('result_file');
     const resultLink = document.getElementById('result_link');
+    const submitForm = document.querySelector('#submitResultModal form');
 
     function toggleInputGroups() {
         if (fileTypeRadio.checked) {
             fileInputGroup.style.display = 'block';
             linkInputGroup.style.display = 'none';
-            resultFile.required = true;
+            resultLink.value = '';
             resultLink.required = false;
-            resultLink.value = ''; // Clear link value when switching to file
         } else {
             fileInputGroup.style.display = 'none';
             linkInputGroup.style.display = 'block';
-            resultFile.required = false;
-            resultLink.required = true;
-            resultFile.value = ''; // Clear file value when switching to link
+            resultFile.value = '';
         }
     }
 
@@ -618,27 +625,59 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize on page load
     toggleInputGroups();
 
-    // Add form validation
-    const form = document.querySelector('#submitResultModal form');
-    form.addEventListener('submit', function(e) {
-        if (fileTypeRadio.checked && !resultFile.value) {
+    // Handle form submission
+    submitForm.addEventListener('submit', function(e) {
+        // Remove any previous validation message
+        let errorMessages = document.querySelectorAll('.validation-error');
+        errorMessages.forEach(msg => msg.remove());
+        
+        let isValid = true;
+        
+        if (fileTypeRadio.checked && !resultFile.files.length) {
             e.preventDefault();
-            alert('Vui lòng chọn file kết quả');
-        } else if (linkTypeRadio.checked && !resultLink.value) {
+            isValid = false;
+            showError(resultFile, 'Vui lòng chọn file kết quả');
+        } else if (linkTypeRadio.checked && !resultLink.value.trim()) {
             e.preventDefault();
-            alert('Vui lòng nhập link kết quả');
+            isValid = false;
+            showError(resultLink, 'Vui lòng nhập link kết quả');
+        }
+        
+        if (isValid) {
+            // Disable submit button to prevent double submission
+            const submitButton = this.querySelector('button[type="submit"]');
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<i class="bi bi-hourglass"></i> Đang xử lý...';
         }
     });
+    
+    function showError(element, message) {
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'text-danger validation-error mt-1';
+        errorDiv.innerHTML = `<i class="bi bi-exclamation-circle"></i> ${message}`;
+        element.parentNode.appendChild(errorDiv);
+        element.focus();
+    }
 
     // Reset form when modal is closed
     const modal = document.getElementById('submitResultModal');
     modal.addEventListener('hidden.bs.modal', function () {
         fileTypeRadio.checked = true;
+        linkTypeRadio.checked = false;
         resultFile.value = '';
         resultLink.value = '';
+        document.getElementById('result_description').value = '';
+        
+        const submitButton = submitForm.querySelector('button[type="submit"]');
+        submitButton.disabled = false;
+        submitButton.innerHTML = 'Nộp kết quả';
+        
+        // Remove any validation messages
+        document.querySelectorAll('.validation-error').forEach(el => el.remove());
+        
         toggleInputGroups();
     });
 });
 </script>
 @endpush
-@endsection 
+@endsection
