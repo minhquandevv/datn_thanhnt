@@ -73,36 +73,38 @@
     <!-- Main Content -->
     <div class="card border-0 shadow-sm">
         <div class="card-header bg-white py-2">
-            <div class="row g-2 align-items-center">
-                <div class="col-md-4">
-                    <div class="input-group input-group-sm">
-                        <span class="input-group-text bg-light border-0">
-                            <i class="bi bi-search text-danger"></i>
-                        </span>
-                        <input type="text" class="form-control border-0 bg-light" name="job_name" placeholder="Tìm theo tên công việc" value="{{ request('job_name') }}">
+            <form action="{{ route('admin.job-offers') }}" method="GET">
+                <div class="row g-2 align-items-center">
+                    <div class="col-md-4">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text bg-light border-0">
+                                <i class="bi bi-search text-danger"></i>
+                            </span>
+                            <input type="text" class="form-control border-0 bg-light" name="job_name" placeholder="Tìm theo tên công việc" value="{{ request('job_name') }}">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <select class="form-select form-select-sm border-0 bg-light" name="department_id">
+                            <option value="">Tất cả phòng ban</option>
+                            @foreach($departments as $department)
+                                <option value="{{ $department->department_id }}" {{ request('department_id') == $department->department_id ? 'selected' : '' }}>
+                                    {{ $department->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-danger btn-sm flex-grow-1">
+                                <i class="bi bi-search me-1"></i>Tìm kiếm
+                            </button>
+                            <a href="{{ route('admin.job-offers') }}" class="btn btn-secondary btn-sm">
+                                <i class="bi bi-arrow-counterclockwise"></i>
+                            </a>
+                        </div>
                     </div>
                 </div>
-                <div class="col-md-4">
-                    <select class="form-select form-select-sm border-0 bg-light" name="department_id">
-                        <option value="">Tất cả phòng ban</option>
-                        @foreach($departments as $department)
-                            <option value="{{ $department->department_id }}" {{ request('department_id') == $department->department_id ? 'selected' : '' }}>
-                                {{ $department->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-md-4">
-                    <div class="d-flex gap-2">
-                        <button type="submit" class="btn btn-danger btn-sm flex-grow-1">
-                            <i class="bi bi-search me-1"></i>Tìm kiếm
-                        </button>
-                        <a href="{{ route('admin.job-offers') }}" class="btn btn-secondary btn-sm">
-                            <i class="bi bi-arrow-counterclockwise"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
+            </form>
         </div>
 
         <div class="card-body p-0">
@@ -875,4 +877,4 @@ document.addEventListener('DOMContentLoaded', function () {
 
 @endpush
 
-@endsection 
+@endsection
