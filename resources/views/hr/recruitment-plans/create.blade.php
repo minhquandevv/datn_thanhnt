@@ -275,7 +275,224 @@
                             </button>
                         </div>
                     </div>
-                    <div class="card-body">
+                    <div class="">
+                        <div id="positions-container">
+                            @if(old('positions'))
+                                @foreach(old('positions') as $index => $position)
+                                    <div class="position-item border rounded p-3 mb-3">
+                                        <div class="row g-2">
+                                            <div class="col-md-3">
+                                                <div class="mb-2">
+                                                    <label class="form-label">Tên vị trí <span class="text-danger">*</span></label>
+                                                    <input type="text" 
+                                                        class="form-control @error('positions.'.$index.'.name') is-invalid @enderror" 
+                                                        name="positions[{{ $index }}][name]" 
+                                                        value="{{ $position['name'] }}"
+                                                        placeholder="Nhập tên vị trí"
+                                                        required>
+                                                    @error('positions.'.$index.'.name')
+                                                        <div class="invalid-feedback">{{ $message }}</div>
+                                                    @enderror
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="mb-2">
+                                                    <label class="form-label">Phòng ban <span class="text-danger">*</span></label>
+                                                    <select class="form-select @error('positions.'.$index.'.department_id') is-invalid @enderror" 
+                                                            name="positions[{{ $index }}][department_id]" 
+                                                            required>
+                                                        <option value="">Chọn phòng ban</option>
+                                                        @foreach($departments as $department)
+                                                            <option value="{{ $department->department_id }}" 
+                                                                    {{ old('positions.'.$index.'.department_id') == $department->department_id ? 'selected' : '' }}>
+                                                                {{ $department->name }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                    @error('positions.'.$index.'.department_id')
+                                                        <div class="invalid-feedback">{{ $message }}</div>
+                                                    @enderror
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="mb-2">
+                                                    <label class="form-label">Số lượng <span class="text-danger">*</span></label>
+                                                    <input type="number" 
+                                                        class="form-control @error('positions.'.$index.'.quantity') is-invalid @enderror" 
+                                                        name="positions[{{ $index }}][quantity]" 
+                                                        value="{{ $position['quantity'] }}"
+                                                        min="1" 
+                                                        required>
+                                                    @error('positions.'.$index.'.quantity')
+                                                        <div class="invalid-feedback">{{ $message }}</div>
+                                                    @enderror
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="mb-2">
+                                                    <label class="form-label">Mô tả công việcccc</label>
+                                                    <textarea class="form-control @error('positions.'.$index.'.description') is-invalid @enderror" 
+                                                            name="positions[{{ $index }}][description]" 
+                                                            rows="1"
+                                                            placeholder="Mô tả ngắn gọn công việc">{{ $position['description'] ?? '' }}</textarea>
+                                                    @error('positions.'.$index.'.description')
+                                                        <div class="invalid-feedback">{{ $message }}</div>
+                                                    @enderror
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="mb-2">
+                                                    <label class="form-label">Yêu cầu <span class="text-danger">*</span></label>
+                                                    <textarea class="form-control @error('positions.'.$index.'.requirements') is-invalid @enderror" 
+                                                            name="positions[{{ $index }}][requirements]" 
+                                                            rows="2"
+                                                            placeholder="Nhập yêu cầu cho vị trí này"
+                                                            required>{{ $position['requirements'] }}</textarea>
+                                                    @error('positions.'.$index.'.requirements')
+                                                        <div class="invalid-feedback">{{ $message }}</div>
+                                                    @enderror
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="col-12 text-end">
+                                                <button type="button" class="btn btn-danger btn-sm remove-position">
+                                                    <i class="bi bi-trash me-1"></i>Xóa vị trí
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            @else
+                                <div class="position-item border rounded p-3 mb-3">
+                                    <div class="row g-2">
+                                        <div class="col-md-4">
+                                            <div class="mb-2">
+                                                <label class="form-label">Tên vị trí <span class="text-danger">*</span></label>
+                                                <input type="text" 
+                                                    class="form-control @error('positions.0.name') is-invalid @enderror" 
+                                                    name="positions[0][name]" 
+                                                    value="{{ old('positions.0.name') }}"
+                                                    placeholder="Nhập tên vị trí"
+                                                    required>
+                                                @error('positions.0.name')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="mb-2">
+                                                <label class="form-label">Phòng ban <span class="text-danger">*</span></label>
+                                                <select class="form-select @error('positions.0.department_id') is-invalid @enderror" 
+                                                        name="positions[0][department_id]" 
+                                                        required>
+                                                    <option value="">Chọn phòng ban</option>
+                                                    @foreach($departments as $department)
+                                                        <option value="{{ $department->department_id }}" 
+                                                                {{ old('positions.0.department_id') == $department->department_id ? 'selected' : '' }}>
+                                                            {{ $department->name }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                                @error('positions.0.department_id')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="mb-2">
+                                                <label class="form-label">Số lượng <span class="text-danger">*</span></label>
+                                                <input type="number" 
+                                                    class="form-control @error('positions.0.quantity') is-invalid @enderror" 
+                                                    name="positions[0][quantity]" 
+                                                    value="{{ old('positions.0.quantity') }}"
+                                                    min="1" 
+                                                    required>
+                                                @error('positions.0.quantity')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="col-md-12">
+                                            <div class="mb-2">
+                                                <label class="form-label">Mô tả công việc <span class="text-danger">*</span></label>
+                                                <textarea class="form-control @error('positions.0.description') is-invalid @enderror" 
+                                                        name="positions[0][description]" 
+                                                        rows="1"
+                                                        placeholder="Mô tả ngắn gọn công việc">{{ old('positions.0.description') ?? '' }}</textarea>
+                                                @error('positions.0.description')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                            <div class="mb-2">
+                                                <label class="form-label">Yêu cầu <span class="text-danger">*</span></label>
+                                                <textarea class="form-control @error('positions.0.requirements') is-invalid @enderror" 
+                                                        name="positions[0][requirements]" 
+                                                        rows="2"
+                                                        placeholder="Nhập yêu cầu cho vị trí này"
+                                                        required>{{ old('positions.0.requirements') }}</textarea>
+                                                @error('positions.0.requirements')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="col-12 text-end">
+                                            <button type="button" class="btn btn-danger btn-sm remove-position">
+                                                <i class="bi bi-trash me-1"></i>Xóa vị trí
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-end mt-4">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save me-2"></i>Lưu kế hoạch
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@push('scripts')
+<!-- Bootstrap Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+$(document).ready(function() {
+    // Khởi tạo các biến
+    const form = $('#recruitmentPlanForm');
+    const positionsContainer = $('#positions-container');
+    const addPositionBtn = $('#add-position');
+    let positionCount = $('.position-item').length;
+
+    // Validate form trước khi submit
+    form.on('submit', function(e) {
+        const universities = $('input[name="university_id[]"]:checked');
+        if (universities.length === 0) {
+            e.preventDefault();
+            alert('Vui lòng chọn ít nhất một trường đại học');
+            return;
+        }
+
+        const positions = $('.position-item');
+        if (positions.length === 0) {
+            e.preventDefault();
+            alert('Vui lòng thêm ít nhất một vị trí tuyển dụng');
+            return;
+        }
+    });
+
+    // Hàm tạo HTML cho vị trí mới
+    function createPositionHTML(index) {
+        return `
+                    <div class="">
                         <div id="positions-container">
                             @if(old('positions'))
                                 @foreach(old('positions') as $index => $position)
@@ -448,99 +665,6 @@
                             @endif
                         </div>
                     </div>
-                </div>
-
-                <div class="text-end mt-4">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="bi bi-save me-2"></i>Lưu kế hoạch
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-@push('scripts')
-<!-- Bootstrap Bundle with Popper -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<!-- jQuery -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-<script>
-$(document).ready(function() {
-    // Khởi tạo các biến
-    const form = $('#recruitmentPlanForm');
-    const positionsContainer = $('#positions-container');
-    const addPositionBtn = $('#add-position');
-    let positionCount = $('.position-item').length;
-
-    // Validate form trước khi submit
-    form.on('submit', function(e) {
-        const universities = $('input[name="university_id[]"]:checked');
-        if (universities.length === 0) {
-            e.preventDefault();
-            alert('Vui lòng chọn ít nhất một trường đại học');
-            return;
-        }
-
-        const positions = $('.position-item');
-        if (positions.length === 0) {
-            e.preventDefault();
-            alert('Vui lòng thêm ít nhất một vị trí tuyển dụng');
-            return;
-        }
-    });
-
-    // Hàm tạo HTML cho vị trí mới
-    function createPositionHTML(index) {
-        return `
-            <div class="position-item border rounded p-3 mb-3">
-                <div class="row">
-                    <div class="col-md-3">
-                        <div class="mb-3">
-                            <label class="form-label">Tên vị trí <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" name="positions[${index}][name]" required>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="mb-3">
-                            <label class="form-label">Phòng ban <span class="text-danger">*</span></label>
-                            <select class="form-select" name="positions[${index}][department_id]" required>
-                                <option value="">Chọn phòng ban</option>
-                                @foreach($departments as $department)
-                                    <option value="{{ $department->department_id }}">{{ $department->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="mb-3">
-                            <label class="form-label">Số lượng <span class="text-danger">*</span></label>
-                            <input type="number" class="form-control" name="positions[${index}][quantity]" min="1" required>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="mb-3">
-                            <label class="form-label">Mô tả công việc</label>
-                            <textarea class="form-control" name="positions[${index}][description]" rows="1"></textarea>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="mb-3">
-                            <label class="form-label">Yêu cầu <span class="text-danger">*</span></label>
-                            <textarea class="form-control" name="positions[${index}][requirements]" rows="1" required></textarea>
-                        </div>
-                    </div>
-                    
-                    <div class="col-md-1">
-                        <div class="mb-3">
-                            <label class="form-label d-block">&nbsp;</label>
-                            <button type="button" class="btn btn-danger btn-sm w-100 remove-position">
-                                <i class="bi bi-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
         `;
     }
 
