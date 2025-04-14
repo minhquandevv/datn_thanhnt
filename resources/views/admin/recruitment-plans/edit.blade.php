@@ -64,79 +64,82 @@
                         </div>
 
                         <div class="mb-4">
-                            <label class="form-label fw-bold">
-                                <i class="bi bi-building me-2"></i>
-                                Trường đại học <span class="text-danger">*</span>
-                            </label>
-                            <div class="border rounded p-3 bg-light" style="max-height: 200px; overflow-y: auto;">
-                                @foreach($universities as $university)
-                                    <div class="form-check mb-2">
-                                        <input class="form-check-input" 
-                                               type="checkbox" 
-                                               name="universities[]" 
-                                               value="{{ $university->university_id }}" 
-                                               id="university_{{ $university->university_id }}"
-                                               {{ in_array($university->university_id, old('universities', $recruitmentPlan->universities->pluck('university_id')->toArray())) ? 'checked' : '' }}>
-                                        <label class="form-check-label" for="university_{{ $university->university_id }}">
-                                            <i class="bi bi-mortarboard me-1"></i>
-                                            {{ $university->name }}
-                                        </label>
-                                    </div>
-                                @endforeach
+
+                            <div class="mb-4">
+                                <label for="start_date" class="form-label fw-bold">
+                                    <i class="bi bi-calendar-event me-2"></i>
+                                    Ngày bắt đầu <span class="text-danger">*</span>
+                                </label>
+                                <input type="date" 
+                                       class="form-control @error('start_date') is-invalid @enderror" 
+                                       id="start_date" 
+                                       name="start_date" 
+                                       value="{{ old('start_date', $recruitmentPlan->start_date->setTimezone('Asia/Ho_Chi_Minh')->format('Y-m-d')) }}" 
+                                       required>
+                                @error('start_date')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
-                            @error('universities')
-                                <div class="invalid-feedback d-block">{{ $message }}</div>
-                            @enderror
+    
+                            <div class="mb-4">
+                                <label for="end_date" class="form-label fw-bold">
+                                    <i class="bi bi-calendar-check me-2"></i>
+                                    Ngày kết thúc <span class="text-danger">*</span>
+                                </label>
+                                <input type="date" 
+                                       class="form-control @error('end_date') is-invalid @enderror" 
+                                       id="end_date" 
+                                       name="end_date" 
+                                       value="{{ old('end_date', $recruitmentPlan->end_date->setTimezone('Asia/Ho_Chi_Minh')->format('Y-m-d')) }}" 
+                                       required>
+                                @error('end_date')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            
                         </div>
 
-                        <div class="mb-4">
-                            <label for="description" class="form-label fw-bold">
-                                <i class="bi bi-card-text me-2"></i>
-                                Mô tả <span class="text-danger">*</span>
-                            </label>
-                            <textarea class="form-control @error('description') is-invalid @enderror" 
-                                      id="description" 
-                                      name="description" 
-                                      rows="3" 
-                                      required>{{ old('description', $recruitmentPlan->description) }}</textarea>
-                            @error('description')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
+                        
                     </div>
 
                     <div class="col-md-6">
-                        <div class="mb-4">
-                            <label for="start_date" class="form-label fw-bold">
-                                <i class="bi bi-calendar-event me-2"></i>
-                                Ngày bắt đầu <span class="text-danger">*</span>
-                            </label>
-                            <input type="date" 
-                                   class="form-control @error('start_date') is-invalid @enderror" 
-                                   id="start_date" 
-                                   name="start_date" 
-                                   value="{{ old('start_date', $recruitmentPlan->start_date->setTimezone('Asia/Ho_Chi_Minh')->format('Y-m-d')) }}" 
-                                   required>
-                            @error('start_date')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                        <label class="form-label fw-bold">
+                            <i class="bi bi-building me-2"></i>
+                            Trường đại học <span class="text-danger">*</span>
+                        </label>
+                        <div class="border rounded p-3 bg-light" style="max-height: 225px; overflow-y: auto;">
+                            @foreach($universities as $university)
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" 
+                                           type="checkbox" 
+                                           name="universities[]" 
+                                           value="{{ $university->university_id }}" 
+                                           id="university_{{ $university->university_id }}"
+                                           {{ in_array($university->university_id, old('universities', $recruitmentPlan->universities->pluck('university_id')->toArray())) ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="university_{{ $university->university_id }}">
+                                        <i class="bi bi-mortarboard me-1"></i>
+                                        {{ $university->name }}
+                                    </label>
+                                </div>
+                            @endforeach
                         </div>
-
-                        <div class="mb-4">
-                            <label for="end_date" class="form-label fw-bold">
-                                <i class="bi bi-calendar-check me-2"></i>
-                                Ngày kết thúc <span class="text-danger">*</span>
-                            </label>
-                            <input type="date" 
-                                   class="form-control @error('end_date') is-invalid @enderror" 
-                                   id="end_date" 
-                                   name="end_date" 
-                                   value="{{ old('end_date', $recruitmentPlan->end_date->setTimezone('Asia/Ho_Chi_Minh')->format('Y-m-d')) }}" 
-                                   required>
-                            @error('end_date')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
+                        @error('universities')
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="mb-4">
+                        <label for="description" class="form-label fw-bold">
+                            <i class="bi bi-card-text me-2"></i>
+                            Mô tả <span class="text-danger">*</span>
+                        </label>
+                        <textarea class="form-control @error('description') is-invalid @enderror" 
+                                  id="description" 
+                                  name="description" 
+                                  rows="3" 
+                                  required>{{ old('description', $recruitmentPlan->description) }}</textarea>
+                        @error('description')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
                     </div>
                 </div>
 
@@ -152,11 +155,12 @@
                             </button>
                         </div>
                     </div>
-                    <div class="card-body">
+                    <div class="">
                         <div id="positions-container">
                             @foreach($recruitmentPlan->positions as $position)
                             <div class="position-item border rounded p-3 mb-3 bg-light">
                                 <div class="row">
+                                    <!-- Hàng 1: Tên vị trí, Phòng ban, Số lượng -->
                                     <div class="col-md-4">
                                         <div class="mb-3">
                                             <label class="form-label fw-bold">
@@ -173,7 +177,7 @@
                                             @enderror
                                         </div>
                                     </div>
-                                    <div class="col-md-3">
+                                    <div class="col-md-4">
                                         <div class="mb-3">
                                             <label class="form-label fw-bold">
                                                 <i class="bi bi-building me-2"></i>
@@ -195,7 +199,7 @@
                                             @enderror
                                         </div>
                                     </div>
-                                    <div class="col-md-3">
+                                    <div class="col-md-4">
                                         <div class="mb-3">
                                             <label class="form-label fw-bold">
                                                 <i class="bi bi-people me-2"></i>
@@ -212,21 +216,9 @@
                                             @enderror
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
-                                        <div class="mb-3">
-                                            <label class="form-label fw-bold">
-                                                <i class="bi bi-list-check me-2"></i>
-                                                Yêu cầu <span class="text-danger">*</span>
-                                            </label>
-                                            <textarea class="form-control @error('positions.'.$loop->index.'.requirements') is-invalid @enderror" 
-                                                      name="positions[{{ $loop->index }}][requirements]" 
-                                                      rows="1" required>{{ old('positions.'.$loop->index.'.requirements', $position->requirements) }}</textarea>
-                                            @error('positions.'.$loop->index.'.requirements')
-                                                <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
+                                    
+                                    <!-- Hàng 2: Mô tả công việc -->
+                                    <div class="col-md-12">
                                         <div class="mb-3">
                                             <label class="form-label fw-bold">
                                                 <i class="bi bi-file-text me-2"></i>
@@ -234,19 +226,34 @@
                                             </label>
                                             <textarea class="form-control @error('positions.'.$loop->index.'.description') is-invalid @enderror" 
                                                       name="positions[{{ $loop->index }}][description]" 
-                                                      rows="1">{{ old('positions.'.$loop->index.'.description', $position->description) }}</textarea>
+                                                      rows="2">{{ old('positions.'.$loop->index.'.description', $position->description) }}</textarea>
                                             @error('positions.'.$loop->index.'.description')
                                                 <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
                                         </div>
                                     </div>
-                                    <div class="col-md-1">
+                                    
+                                    <!-- Hàng 3: Yêu cầu -->
+                                    <div class="col-md-12">
                                         <div class="mb-3">
-                                            <label class="form-label">&nbsp;</label>
-                                            <button type="button" class="btn btn-danger btn-sm w-100 remove-position">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
+                                            <label class="form-label fw-bold">
+                                                <i class="bi bi-list-check me-2"></i>
+                                                Yêu cầu <span class="text-danger">*</span>
+                                            </label>
+                                            <textarea class="form-control @error('positions.'.$loop->index.'.requirements') is-invalid @enderror" 
+                                                      name="positions[{{ $loop->index }}][requirements]" 
+                                                      rows="2" required>{{ old('positions.'.$loop->index.'.requirements', $position->requirements) }}</textarea>
+                                            @error('positions.'.$loop->index.'.requirements')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
                                         </div>
+                                    </div>
+                                    
+                                    <!-- Hàng 4: Nút xóa -->
+                                    <div class="col-12 text-end">
+                                        <button type="button" class="btn btn-danger btn-sm remove-position">
+                                            <i class="bi bi-trash me-1"></i>Xóa vị trí
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -296,6 +303,7 @@ document.addEventListener('DOMContentLoaded', function() {
         positionItem.className = 'position-item border rounded p-3 mb-3 bg-light';
         positionItem.innerHTML = `
             <div class="row">
+                <!-- Hàng 1: Tên vị trí, Phòng ban, Số lượng -->
                 <div class="col-md-4">
                     <div class="mb-3">
                         <label class="form-label fw-bold">
@@ -308,7 +316,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                required>
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-4">
                     <div class="mb-3">
                         <label class="form-label fw-bold">
                             <i class="bi bi-building me-2"></i>
@@ -326,7 +334,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         </select>
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-4">
                     <div class="mb-3">
                         <label class="form-label fw-bold">
                             <i class="bi bi-people me-2"></i>
@@ -339,19 +347,9 @@ document.addEventListener('DOMContentLoaded', function() {
                                required>
                     </div>
                 </div>
-                <div class="col-md-4">
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">
-                            <i class="bi bi-list-check me-2"></i>
-                            Yêu cầu <span class="text-danger">*</span>
-                        </label>
-                        <textarea class="form-control" 
-                                  name="positions[${positionCount}][requirements]" 
-                                  rows="1"
-                                  required></textarea>
-                    </div>
-                </div>
-                <div class="col-md-4">
+                
+                <!-- Hàng 2: Mô tả công việc -->
+                <div class="col-md-12">
                     <div class="mb-3">
                         <label class="form-label fw-bold">
                             <i class="bi bi-file-text me-2"></i>
@@ -359,16 +357,29 @@ document.addEventListener('DOMContentLoaded', function() {
                         </label>
                         <textarea class="form-control" 
                                   name="positions[${positionCount}][description]" 
-                                  rows="1"></textarea>
+                                  rows="2"></textarea>
                     </div>
                 </div>
-                <div class="col-md-1">
+                
+                <!-- Hàng 3: Yêu cầu -->
+                <div class="col-md-12">
                     <div class="mb-3">
-                        <label class="form-label">&nbsp;</label>
-                        <button type="button" class="btn btn-danger btn-sm w-100 remove-position">
-                            <i class="bi bi-trash"></i>
-                        </button>
+                        <label class="form-label fw-bold">
+                            <i class="bi bi-list-check me-2"></i>
+                            Yêu cầu <span class="text-danger">*</span>
+                        </label>
+                        <textarea class="form-control" 
+                                  name="positions[${positionCount}][requirements]" 
+                                  rows="2"
+                                  required></textarea>
                     </div>
+                </div>
+                
+                <!-- Hàng 4: Nút xóa -->
+                <div class="col-12 text-end">
+                    <button type="button" class="btn btn-danger btn-sm remove-position">
+                        <i class="bi bi-trash me-1"></i>Xóa vị trí
+                    </button>
                 </div>
             </div>
         `;
@@ -388,4 +399,4 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 @endpush
-@endsection 
+@endsection
