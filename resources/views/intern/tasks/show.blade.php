@@ -126,12 +126,24 @@
                         <div class="attachment-item">
                             <i class="bi bi-file-earmark-text"></i>
                             <span>{{ basename($latestReport->attachment_result) }}</span>
-                            <div class="attachment-actions">
-                                <a href="{{ asset($latestReport->attachment_result) }}" target="_blank" class="btn btn-sm btn-outline-success me-2">
-                                    <i class="bi bi-eye"></i> Xem
+                            <div class="attachment-actions d-flex gap-2">
+                                <a href="{{ asset($latestReport->attachment_result) }}" 
+                                   target="_blank" 
+                                   class="btn btn-sm btn-outline-danger px-2 py-1" 
+                                   data-bs-toggle="tooltip" 
+                                   data-bs-placement="top" 
+                                   title="Xem kết quả">
+                                    <i class="bi bi-eye text-danger"></i>
                                 </a>
-                                <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteResultModal">
-                                    <i class="bi bi-trash"></i> Xóa
+                            
+                                <button type="button" 
+                                        class="btn btn-sm btn-outline-danger px-2 py-1" 
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#deleteResultModal"
+                                        data-bs-toggle="tooltip" 
+                                        data-bs-placement="top" 
+                                        title="Xóa kết quả">
+                                    <i class="bi bi-trash text-danger"></i>
                                 </button>
                             </div>
                         </div>
@@ -436,7 +448,9 @@
     padding: 0.35rem 0.75rem;
     font-weight: 500;
 }
-
+.attachment-actions .btn-outline-danger:hover i {
+    color: white !important;
+}
 .btn-warning {
     background-color: #f6c23e;
     border-color: #f6c23e;
@@ -677,7 +691,13 @@ document.addEventListener('DOMContentLoaded', function() {
         
         toggleInputGroups();
     });
+
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        })
 });
+
 </script>
 @endpush
 @endsection
