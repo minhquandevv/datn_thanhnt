@@ -400,7 +400,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <label class="form-label">
                                 <i class="bi bi-people text-danger me-1"></i>Số lượng tuyển
                             </label>
-                            <input type="number" class="form-control" name="job_quantity" id="job_quantity" value="1" min="1" required>
+                            <input type="number" class="form-control" name="job_quantity" id="job_quantity" value="1" min="1" required readonly>
                         </div>
 
                         <!-- Thời gian -->
@@ -417,7 +417,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <span class="input-group-text bg-light">
                                     <i class="bi bi-calendar text-danger"></i>
                                 </span>
-                                <input type="date" class="form-control" name="expiration_date" required>
+                                <input type="date" class="form-control" name="expiration_date" required readonly>
                             </div>
                             <small class="text-danger d-none" id="expirationDateError">
                                 Hạn nộp phải nhỏ hơn hoặc bằng ngày kết thúc kế hoạch.
@@ -461,13 +461,13 @@ document.addEventListener('DOMContentLoaded', function() {
                             <label class="form-label">
                                 <i class="bi bi-card-text text-danger me-1"></i>Mô tả công việc
                             </label>
-                            <textarea class="form-control" name="job_description" rows="3" required></textarea>
+                            <textarea class="form-control" name="job_description" rows="3" required readonly></textarea>
                         </div>
                         <div class="col-12">
                             <label class="form-label">
                                 <i class="bi bi-clipboard-check text-danger me-1"></i>Yêu cầu
                             </label>
-                            <textarea class="form-control" name="job_requirement" id="job_requirement" rows="3" required></textarea>
+                            <textarea class="form-control" name="job_requirement" id="job_requirement" rows="3" required readonly></textarea>
                         </div>
                     </div>
                     <div class="modal-footer bg-light">
@@ -544,13 +544,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
                         <div class="col-md-6">
                             <label class="form-label"><i class="bi bi-people text-danger me-1"></i>Số lượng tuyển</label>
-                            <input type="number" class="form-control job-quantity" name="job_quantity" value="{{ $job->job_quantity }}" min="1" required>
+                            <input type="number" class="form-control job-quantity" name="job_quantity" value="{{ $job->job_quantity }}" min="1" required readonly>
                         </div>
 
                         <div class="col-md-6">
                             <label class="form-label"><i class="bi bi-calendar-check text-danger me-1"></i>Hạn nộp</label>
                             <input type="date" class="form-control expiration-date" name="expiration_date"
-                                value="{{ \Carbon\Carbon::parse($job->expiration_date)->format('Y-m-d') }}" required>
+                                value="{{ \Carbon\Carbon::parse($job->expiration_date)->format('Y-m-d') }}" required readonly>
                         </div>
                         <div class="col-12 mt-4">
                             <h6 class="text-danger mb-3">
@@ -592,12 +592,12 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                         <div class="col-12">
                             <label class="form-label"><i class="bi bi-card-text text-danger me-1"></i>Mô tả công việc</label>
-                            <textarea class="form-control" name="job_description" rows="3" required>{{ $job->job_description }}</textarea>
+                            <textarea class="form-control" name="job_description" rows="3" required readonly>{{ $job->job_description }}</textarea>
                         </div>
 
                         <div class="col-12">
                             <label class="form-label"><i class="bi bi-clipboard-check text-danger me-1"></i>Yêu cầu</label>
-                            <textarea class="form-control job-requirement" name="job_requirement" rows="3" required>{{ $job->job_requirement }}</textarea>
+                            <textarea class="form-control job-requirement" name="job_requirement" rows="3" required readonly>{{ $job->job_requirement }}</textarea>
                         </div>
                     </div>
                     <div class="modal-footer bg-light">

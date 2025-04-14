@@ -73,23 +73,6 @@
                                     {{ $jobOffer->job_requirement }}
                                 </div>
                             </div>
-
-                            <div>
-                                <h6 class="text-muted mb-2">Quyền lợi:</h6>
-                                <div class="list-group list-group-flush">
-                                    @foreach($jobOffer->benefits as $benefit)
-                                        <div class="list-group-item border-0 bg-transparent">
-                                            <div class="d-flex align-items-start">
-                                                <i class="bi bi-gift text-danger me-2 mt-1"></i>
-                                                <div>
-                                                    <h6 class="mb-1">{{ $benefit->title }}</h6>
-                                                    <p class="mb-0 text-muted">{{ $benefit->description }}</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @endforeach
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -105,7 +88,7 @@
                                 <label class="form-label text-muted">
                                     <i class="bi bi-building text-danger me-2"></i>Kế hoạch
                                 </label>
-                                <select class="form-select recruitment-plan-select" name="recruitment_plan_id" data-job-id="{{ $jobOffer->id }}" required>
+                                <select class="form-select recruitment-plan-select" name="recruitment_plan_id" data-job-id="{{ $jobOffer->id }}" required readonly>
                                     @foreach($recruitmentPlans as $plan)
                                         <option value="{{ $plan->plan_id }}" {{ $jobOffer->recruitment_plan_id == $plan->plan_id ? 'selected' : '' }} readonly>
                                             {{ $plan->name }}
