@@ -393,7 +393,7 @@ class InternController extends Controller
             $sheet->setCellValue('C' . $row, $account->email);
             $sheet->setCellValue('D' . $row, $account->username);
             $sheet->setCellValue('E' . $row, $account->password_plain);
-            $sheet->setCellValue('F' . $row, $account->is_active ? 'Hoạt động' : 'Vô hiệu');
+            $sheet->setCellValue('F' . $row, $account->is_active ? 'Hoạt động' : 'Chưa kích hoạt');
             $sheet->setCellValue('G' . $row, $account->created_at->format('d/m/Y H:i'));
             $row++;
         }

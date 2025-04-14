@@ -25,7 +25,7 @@
                 <div class="card-body">
                     <div class="d-flex align-items-center">
                         @if(session('intern_avatar'))
-                            <img src="{{ asset('uploads/avatars/' . session('intern_avatar')) }}" 
+                            <img src="{{ asset('avatars/default.png') }}" 
                                  alt="Profile Picture" 
                                  class="rounded-circle me-3"
                                  style="width: 80px; height: 80px; object-fit: cover;">
@@ -96,21 +96,6 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="rounded-circle bg-info bg-opacity-10 p-3 me-3">
-                            <i class="bi bi-award text-info fs-4"></i>
-                        </div>
-                        <div>
-                            <h6 class="text-muted mb-1">Tổng số chứng chỉ</h6>
-                            <h3 class="mb-0">{{ $totalCertificates }}</h3>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 
     <!-- Recent Tasks Section -->
@@ -172,24 +157,15 @@
             <div class="card border-0 shadow-sm">
                 <div class="card-header bg-white d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">Mentor</h5>
-                    <a href="#" class="btn btn-sm btn-outline-primary">
-                        <i class="bi bi-chat-dots me-1"></i>Liên hệ
-                    </a>
                 </div>
                 <div class="card-body">
                     @if($mentor)
                     <div class="d-flex align-items-center mb-3">
-                        @if($mentor->avatar)
-                            <img src="{{ asset('uploads/avatars/' . $mentor->avatar) }}" 
-                                 alt="Mentor Avatar" 
-                                 class="rounded-circle me-3"
-                                 style="width: 60px; height: 60px; object-fit: cover;">
-                        @else
-                            <div class="rounded-circle me-3 d-flex align-items-center justify-content-center bg-primary text-white"
-                                 style="width: 60px; height: 60px; font-size: 24px; font-weight: bold;">
-                                {{ \App\Helpers\Helper::getInitials($mentor->mentor_name) }}
-                            </div>
-                        @endif
+                        
+                        <img src="{{ asset('avatars/default.png') }}" 
+                            alt="Profile Picture" 
+                            class="rounded-circle me-3"
+                            style="width: 80px; height: 80px; object-fit: cover;">
                         <div>
                             <h6 class="mb-1">{{ $mentor->mentor_name }}</h6>
                             <p class="text-muted small mb-0">{{ $mentor->position }} - {{ $mentor->department->name }}</p>
@@ -200,11 +176,6 @@
                             <i class="bi bi-building me-2 text-primary"></i>
                             <span>{{ $mentor->department->name }}</span>
                         </div>
-                    </div>
-                    <div class="d-grid">
-                        <a href="#" class="btn btn-outline-secondary btn-sm">
-                            <i class="bi bi-calendar-check me-1"></i>Lịch họp
-                        </a>
                     </div>
                     @else
                     <div class="text-center py-4">

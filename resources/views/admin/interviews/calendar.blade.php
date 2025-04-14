@@ -108,7 +108,7 @@
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="completed-tab" data-bs-toggle="tab" data-bs-target="#completed-tab-pane" type="button" role="tab" aria-controls="completed-tab-pane" aria-selected="false">
-                                <i class="fas fa-check-circle me-2"></i>ĐÃ HOÀN THÀNH PHỎNG VẤN
+                                <i class="fas fa-check-circle me-2"></i>ĐÃ HOÀN THÀNH
                             </button>
                         </li>
                     </ul>

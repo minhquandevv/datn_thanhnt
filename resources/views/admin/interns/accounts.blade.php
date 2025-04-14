@@ -105,7 +105,7 @@
                                 </td>
                                 <td>
                                     <span class="badge {{ $account->is_active ? 'bg-success' : 'bg-danger' }}">
-                                        {{ $account->is_active ? 'Hoạt động' : 'Vô hiệu' }}
+                                        {{ $account->is_active ? 'Hoạt động' : 'Chưa kích hoạt' }}
                                     </span>
                                 </td>
                                 <td>{{ $account->created_at->format('d/m/Y H:i') }}</td>

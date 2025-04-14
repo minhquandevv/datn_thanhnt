@@ -501,7 +501,7 @@
         <div class="user-profile">
             @if(session('intern_avatar'))
                 <div class="user-avatar">
-                    <img src="{{ asset('uploads/avatars/' . session('intern_avatar')) }}" 
+                    <img src="{{ asset('avatars/default.png') }}" 
                          alt="Avatar">
                 </div>
             @else
