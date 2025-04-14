@@ -425,6 +425,19 @@ document.addEventListener('DOMContentLoaded', function() {
                                 Hạn nộp phải nhỏ hơn hoặc bằng ngày kết thúc kế hoạch.
                             </small>
                         </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">
+                                <i class="bi bi-people text-danger me-1"></i>Phòng ban
+                            </label>
+                            <select class="form-select" name="department_id" id="department_id" disabled>
+                                <option value="">Phòng ban</option>
+                                @foreach($departments as $department)
+                                    <option value="{{ $department->department_id }}">{{ $department->name }}</option>
+                                @endforeach 
+                            </select>
+                            <input type="hidden" name="department_id" id="department_id_hidden">
+                        </div>
                         <!-- Phúc lợi -->
                         <!-- Phúc lợi -->
                         <div class="col-12 mt-4">
@@ -531,6 +544,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                     data-quantity="{{ $position->quantity }}"
                                     data-requirements="{{ $position->requirements }}"
                                     data-description="{{ $position->description }}"
+                                    data-department-id="{{ $position->department_id }}"
                                 >
                                     {{ $position->name }}
                                     </option>
@@ -553,6 +567,18 @@ document.addEventListener('DOMContentLoaded', function() {
                             <label class="form-label"><i class="bi bi-calendar-check text-danger me-1"></i>Hạn nộp</label>
                             <input type="date" class="form-control expiration-date" name="expiration_date"
                                 value="{{ \Carbon\Carbon::parse($job->expiration_date)->format('Y-m-d') }}" required readonly>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label"><i class="bi bi-people text-danger me-1"></i>Phòng ban</label>
+                            <select class="form-select" name="department_id" disabled>
+                                <option value="">Phòng ban</option>
+                                @foreach($departments as $department)
+                                    <option value="{{ $department->department_id }}" {{ $job->department_id == $department->department_id ? 'selected' : '' }}>
+                                        {{ $department->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <input type="hidden" name="department_id" id="department_id_hidden_{{ $job->id }}" value="{{ $job->department_id }}">
                         </div>
                         <div class="col-12 mt-4">
                             <h6 class="text-danger mb-3">
@@ -628,6 +654,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const jobNameInput = document.querySelector('input[name="job_name"]');
     const expirationDateInput = document.querySelector('input[name="expiration_date"]');
     const expirationDateError = document.getElementById('expirationDateError');
+    const departmentSelect = document.getElementById('department_id');
+    const departmentHiddenInput = document.getElementById('department_id_hidden');
 
     const recruitmentPlans = @json($recruitmentPlans);
     const usedPositions = @json($jobOffers->pluck('position_id')->toArray());
@@ -644,6 +672,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     option.dataset.quantity = position.quantity;
                     option.dataset.requirements = position.requirements;
                     option.dataset.description = position.description;
+                    option.dataset.departmentId = position.department_id;
                     positionSelect.appendChild(option);
                 }
             });
@@ -674,12 +703,18 @@ document.addEventListener('DOMContentLoaded', function() {
             jobRequirementInput.value = selectedOption.dataset.requirements;
             jobDescriptionInput.value = selectedOption.dataset.description || '';
             jobNameInput.value = selectedOption.textContent;
+
+            const departmentId = selectedOption.dataset.departmentId;
+            departmentSelect.value = departmentId;
+            departmentHiddenInput.value = departmentId;
         } else {
             jobQuantityInput.value = '1';
             jobQuantityInput.removeAttribute('max');
             jobRequirementInput.value = '';
             jobDescriptionInput.value = '';
             jobNameInput.value = '';
+            departmentSelect.value = '';
+            departmentHiddenInput.value = '';
         }
     });
 
@@ -795,11 +830,13 @@ document.addEventListener('DOMContentLoaded', function () {
                             option.dataset.quantity = pos.quantity;
                             option.dataset.requirements = pos.requirements;
                             option.dataset.description = pos.description;
+                            option.dataset.departmentId = pos.department_id;
                             if (isSelected) {
                                 option.selected = true;
                                 jobQuantityInput.value = pos.quantity;
                                 jobRequirementInput.value = pos.requirements;
                                 jobDescriptionInput.value = pos.description || '';
+                                document.getElementById('department_id_hidden_' + jobId).value = pos.department_id;
                             }
                             positionSelect.appendChild(option);
                         }
