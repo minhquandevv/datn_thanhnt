@@ -127,7 +127,6 @@
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
-                            <th>ID</th>
                             <th>Tên công việc</th>
                             <th>Dự án</th>
                             <th>Thực tập sinh</th>
@@ -140,7 +139,6 @@
                     <tbody>
                         @forelse($tasks as $task)
                         <tr>
-                            <td>{{ $task->task_id }}</td>
                             <td>{{ $task->task_name }}</td>
                             <td>{{ $task->project_name }}</td>
                             <td>{{ $task->intern->fullname }}</td>
