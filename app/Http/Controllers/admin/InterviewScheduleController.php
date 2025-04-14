@@ -601,7 +601,7 @@ class InterviewScheduleController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Đã chuyển đổi ứng viên thành thực tập sinh thành công. Tài khoản: ' . $username . ', Mật khẩu: ' . $password,
+                'message' => 'Đã chuyển đổi ứng viên thành thực tập sinh thành công. Tài khoản: ' . $username,
                 'redirect' => route('admin.interns.index')
             ]);
 
