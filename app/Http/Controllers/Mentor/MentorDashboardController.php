@@ -14,8 +14,40 @@ class MentorDashboardController extends Controller
 {
     public function index()
     {
-        $mentor = Auth::guard('mentor')->user();
-        return view('mentor.dashboard', compact('mentor'));
+        $mentor = auth()->user();
+        
+        // Get all tasks count
+        $totalTasks = $mentor->assignedTasks->count();
+        
+        // Get in-progress tasks count
+        $inProgressTasks = $mentor->assignedTasks()
+            ->where('status', 'Đang thực hiện')
+            ->count();
+            
+        // Get overdue tasks count
+        $overdueTasks = $mentor->assignedTasks()
+            ->where('status', 'Trễ hạn')
+            ->count();
+
+        // Get 5 most recent tasks
+        $recentTasks = $mentor->assignedTasks()
+            ->with('intern')
+            ->latest()
+            ->take(5)
+            ->get();
+
+        $taskCompleted = $mentor->assignedTasks()
+            ->where('status', 'Hoàn thành')
+            ->count();
+
+        return view('mentor.dashboard', compact(
+            'mentor',
+            'totalTasks',
+            'inProgressTasks',
+            'overdueTasks',
+            'recentTasks',
+            'taskCompleted'
+        ));
     }
 
     public function interns()
