@@ -33,7 +33,7 @@
                             <th>Tên công việc</th>
                             <th>Trạng thái</th>
                             <th>Ngày giao</th>
-                            <th>Mentor</th>
+                            <th>Người giao</th>
                             <th>Thao tác</th>
                         </tr>
                     </thead>
@@ -52,7 +52,7 @@
                                 </span>
                             </td>
                             <td>{{ date('d/m/Y', strtotime($task->assigned_date)) }}</td>
-                            <td>{{ $task->intern->university->name ?? 'Chưa có thông tin' }}</td>
+                            <td>{{ $task->assignedBy->mentor_name ?? 'Chưa có thông tin' }}</td>
                             <td>
                                 <a href="{{ route('intern.tasks.show', $task->task_id) }}" class="btn btn-sm btn-info">
                                     <i class="bi bi-eye"></i>
