@@ -636,9 +636,7 @@
                     @if(Auth::user()->url_avatar)
                         <img src="{{ asset('uploads/' . Auth::user()->url_avatar) }}" alt="Avatar" class="user-avatar">
                     @else
-                        <div class="user-avatar bg-secondary text-white d-flex align-items-center justify-content-center">
-                            {{ substr(Auth::user()->name, 0, 7) }}
-                        </div>
+                    <img src="{{ asset('avatars/default.png') }}" alt="Avatar" class="user-avatar">
                     @endif
                     <div class="user-info">
                         <div class="user-name">{{ Auth::user()->name }}</div>
