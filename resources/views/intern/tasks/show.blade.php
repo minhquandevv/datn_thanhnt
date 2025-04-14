@@ -63,7 +63,7 @@
 
                     <div class="mb-3">
                         <h6 class="text-muted">Yêu cầu công việc</h6>
-                        <p class="mb-0">{{ $task->requirements }}</p>
+                        <p class="mb-0">{!! nl2br(e(preg_replace('/(^\d+\.\s*|\.\s*)/m', "$1", $task->requirements))) !!}</p>
                     </div>
 
                     @if($task->attachment)
