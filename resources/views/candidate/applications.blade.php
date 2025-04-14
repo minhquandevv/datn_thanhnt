@@ -231,7 +231,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                            class="btn btn-sm btn-outline-primary" 
                                            target="_blank"
                                            title="Xem CV">
-                                            <i class="bi bi-eye"></i>
+                                           <i class="bi bi-file-earmark-person-fill"></i>
                                         </a>
                                         
                                         @if($application->status == 'pending')
