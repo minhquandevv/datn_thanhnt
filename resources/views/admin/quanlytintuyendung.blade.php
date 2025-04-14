@@ -339,6 +339,27 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
+function toggleBenefit(checkboxId, containerId) {
+    const checkbox = document.getElementById(checkboxId);
+    const container = document.getElementById(containerId);
+    
+    if (checkbox && container) {
+        // Uncheck the checkbox to ensure it's not submitted
+        if (checkbox.checked) {
+            checkbox.checked = false;
+        }
+        
+        // Animate the removal with a fade-out effect
+        container.style.transition = 'opacity 0.3s ease';
+        container.style.opacity = '0';
+        
+        // Remove the container after animation completes
+        setTimeout(() => {
+            container.style.display = 'none';
+        }, 300);
+    }
+}
 </script>
 @endpush
 
@@ -439,7 +460,6 @@ document.addEventListener('DOMContentLoaded', function() {
                             <input type="hidden" name="department_id" id="department_id_hidden">
                         </div>
                         <!-- Phúc lợi -->
-                        <!-- Phúc lợi -->
                         <div class="col-12 mt-4">
                             <h6 class="text-danger mb-3">
                                 <i class="bi bi-gift me-2"></i>Phúc lợi
@@ -448,12 +468,18 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="col-12">
                             <div class="row g-2" id="benefits-container">
                                 @foreach($jobBenefits as $benefit)
-                                <div class="col-md-4 benefit-item">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="job_benefits[]" value="{{ $benefit->id }}" id="benefit{{ $benefit->id }}">
-                                        <label class="form-check-label" for="benefit{{ $benefit->id }}">
-                                            {{ $benefit->title }}
-                                        </label>
+                                <div class="col-md-4 benefit-item" id="benefit-container-{{ $benefit->id }}">
+                                    <div class="d-flex align-items-center">
+                                        <div class="form-check flex-grow-1">
+                                            <input class="form-check-input" type="checkbox" name="job_benefits[]" value="{{ $benefit->id }}" id="benefit{{ $benefit->id }}">
+                                            <label class="form-check-label" for="benefit{{ $benefit->id }}">
+                                                {{ $benefit->title }}
+                                            </label>
+                                        </div>
+                                        <span class="text-danger ms-2" style="cursor:pointer;" 
+                                              onclick="toggleBenefit('benefit{{ $benefit->id }}', 'benefit-container-{{ $benefit->id }}')">
+                                            &times;
+                                        </span>
                                     </div>
                                 </div>
                                 @endforeach
@@ -532,7 +558,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="col-md-6">
                             <label class="form-label"><i class="bi bi-person-badge text-danger me-1"></i>Vị trí</label>
                             <select class="form-select position-select" name="position"
-                            data-selected-position="{{ $job->position }}"
+                            data-selected-position="{{ $job->position?->position_id }}"
                             data-plan-id="{{ $job->recruitment_plan_id }}"
                             required>
                                 <option value="">Chọn vị trí</option>
@@ -589,16 +615,22 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="col-12">
                             <div class="row g-2" id="edit-benefits-container-{{ $job->id }}">
                                 @foreach($jobBenefits as $benefit)
-                                <div class="col-md-4 benefit-item">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox"
-                                               name="job_benefits[]"
-                                               value="{{ $benefit->id }}"
-                                               id="edit-benefit{{ $job->id }}-{{ $benefit->id }}"
-                                               {{ $job->benefits->contains('id', $benefit->id) ? 'checked' : '' }}>
-                                        <label class="form-check-label" for="edit-benefit{{ $job->id }}-{{ $benefit->id }}">
-                                            {{ $benefit->title }}
-                                        </label>
+                                <div class="col-md-4 benefit-item" id="edit-benefit-container-{{ $job->id }}-{{ $benefit->id }}">
+                                    <div class="d-flex align-items-center">
+                                        <div class="form-check flex-grow-1">
+                                            <input class="form-check-input" type="checkbox"
+                                                   name="job_benefits[]"
+                                                   value="{{ $benefit->id }}"
+                                                   id="edit-benefit{{ $job->id }}-{{ $benefit->id }}"
+                                                   {{ $job->benefits->contains('id', $benefit->id) ? 'checked' : '' }}>
+                                            <label class="form-check-label" for="edit-benefit{{ $job->id }}-{{ $benefit->id }}">
+                                                {{ $benefit->title }}
+                                            </label>
+                                        </div>
+                                        <span class="text-danger ms-2" style="cursor:pointer;" 
+                                              onclick="toggleBenefit('edit-benefit{{ $job->id }}-{{ $benefit->id }}', 'edit-benefit-container-{{ $job->id }}-{{ $benefit->id }}')">
+                                            &times;
+                                        </span>
                                     </div>
                                 </div>
                                 @endforeach
@@ -796,6 +828,27 @@ function removeAddedBenefit(benefitTitle, element) {
     const index = newBenefits.indexOf(benefitTitle);
     if (index > -1) {
         newBenefits.splice(index, 1);
+    }
+}
+
+function toggleBenefit(checkboxId, containerId) {
+    const checkbox = document.getElementById(checkboxId);
+    const container = document.getElementById(containerId);
+    
+    if (checkbox && container) {
+        // Uncheck the checkbox to ensure it's not submitted
+        if (checkbox.checked) {
+            checkbox.checked = false;
+        }
+        
+        // Animate the removal with a fade-out effect
+        container.style.transition = 'opacity 0.3s ease';
+        container.style.opacity = '0';
+        
+        // Remove the container after animation completes
+        setTimeout(() => {
+            container.style.display = 'none';
+        }, 300);
     }
 }
 
