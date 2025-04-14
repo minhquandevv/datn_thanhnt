@@ -11,14 +11,19 @@ use Illuminate\Support\Facades\Storage;
 
 class TaskController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $tasks = Task::where('intern_id', auth()->id())
+        $query = Task::where('intern_id', auth()->id())
                     ->with(['intern' => function($query) {
                         $query->with('university');
-                    }])
-                    ->orderBy('created_at', 'desc')
-                    ->get();
+                    }]);
+
+        // Filter by status if a specific status is selected
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        $tasks = $query->orderBy('created_at', 'desc')->get();
 
         return view('intern.tasks.index', compact('tasks'));
     }

@@ -7,6 +7,19 @@
             <h1 class="h3 mb-0 text-gray-800">Danh sách công việc</h1>
             <p class="text-muted mb-0">Quản lý các công việc được giao</p>
         </div>
+        <div class="d-flex align-items-center">
+            <form action="{{ route('intern.tasks.index') }}" method="GET" class="d-flex align-items-center">
+                <div class="me-3">
+                    <select name="status" class="form-select" onchange="this.form.submit()">
+                        <option value="">Tất cả trạng thái</option>
+                        <option value="Chưa bắt đầu" {{ request('status') == 'Chưa bắt đầu' ? 'selected' : '' }}>Chưa bắt đầu</option>
+                        <option value="Đang thực hiện" {{ request('status') == 'Đang thực hiện' ? 'selected' : '' }}>Đang thực hiện</option>
+                        <option value="Hoàn thành" {{ request('status') == 'Hoàn thành' ? 'selected' : '' }}>Hoàn thành</option>
+                        <option value="Trễ hạn" {{ request('status') == 'Trễ hạn' ? 'selected' : '' }}>Trễ hạn</option>
+                    </select>
+                </div>
+            </form>
+        </div>
     </div>
 
     @if(session('success'))
@@ -92,6 +105,21 @@
     color: #fff;
     background-color: #2ea1b3;
     border-color: #2a96a5;
+}
+
+.form-select {
+    min-width: 200px;
+    padding: 0.5rem 2rem 0.5rem 1rem;
+    border-radius: 0.5rem;
+    border: 1px solid #e3e6f0;
+    background-color: #f8f9fc;
+    color: #4e73df;
+    font-weight: 500;
+}
+
+.form-select:focus {
+    border-color: #4e73df;
+    box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
 }
 </style>
 @endsection 
