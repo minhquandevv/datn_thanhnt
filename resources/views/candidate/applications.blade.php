@@ -54,7 +54,7 @@
                                     @endif
                                 </td>
                                 <td>{{ $application->jobOffer->department->name ?? 'Chưa phân công' }}</td>
-                                <td>{{ $application->created_at->format('d/m/Y') }}</td>
+                                <td>{{ $application->created_at->format('d/m/Y H:i') }}</td>
                                 <td>
                                     @switch($application->status)
                                         @case('pending')
