@@ -189,9 +189,7 @@
                                                     @if($application->candidate->url_avatar)
                                                         <img src="{{ asset('uploads/' . $application->candidate->url_avatar) }}" class="rounded-circle me-2" style="width: 32px; height: 32px; object-fit: cover;">
                                                     @else
-                                                        <div class="bg-secondary rounded-circle text-white d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px; font-size: 0.8rem;">
-                                                            {{ substr($application->candidate->fullname, 0, 2) }}
-                                                        </div>
+                                                    <img src="{{ asset('avatars/default.png') }}" class="rounded-circle me-2" style="width: 32px; height: 32px; object-fit: cover;">
                                                     @endif
                                                     <div>
                                                         <div class="fw-medium">{{ $application->candidate->fullname }}</div>
