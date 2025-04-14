@@ -41,6 +41,23 @@ class RecruitmentPlanController extends Controller
         } else {
             // For admin/director, exclude draft plans
             $query->where('status', '!=', 'draft');
+            
+            // Apply university filter for admin/director
+            if ($request->filled('university_id')) {
+                $query->whereHas('universities', function($q) use ($request) {
+                    $q->where('recruitment_plan_university.university_id', $request->university_id);
+                });
+            }
+            
+            // Apply start date filter for admin/director
+            if ($request->filled('start_date')) {
+                $query->where('start_date', '>=', $request->start_date);
+            }
+            
+            // Apply end date filter for admin/director
+            if ($request->filled('end_date')) {
+                $query->where('end_date', '<=', $request->end_date);
+            }
         }
 
         // Get counts for statistics
@@ -71,7 +88,8 @@ class RecruitmentPlanController extends Controller
             'totalPlans',
             'pendingPlans',
             'approvedPlans',
-            'rejectedPlans'
+            'rejectedPlans',
+            'universities'
         ));
     }
 

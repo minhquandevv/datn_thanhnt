@@ -152,7 +152,7 @@
             <div class="row mb-4">
                 <div class="col-md-6">
                     <div class="plan-title">Mô tả kế hoạch</div>
-                    <p class="plan-value">{{ $recruitmentPlan->description }}</p>
+                    <p class="plan-value">{!! nl2br(str_replace('. ', ".\n", $recruitmentPlan->description)) !!}</p>
                 </div>
                 <div class="col-md-6">
                     <div class="plan-title">Trường học</div>
@@ -255,8 +255,8 @@
                                     <td class="text-center">
                                         <span class="badge bg-danger">{{ $position->quantity }}</span>
                                     </td>
-                                    <td>{{ $position->requirements }}</td>
-                                    <td>{{ $position->description }}</td>
+                                    <td>{!! nl2br(str_replace('. ', ".\n", $position->requirements)) !!}</td>
+                                    <td>{!! nl2br(str_replace('. ', ".\n", $position->description)) !!}</td>
                                 </tr>
                             @endforeach
                         </tbody>

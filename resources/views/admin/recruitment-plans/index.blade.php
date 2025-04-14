@@ -14,6 +14,48 @@
         </div>
     </div>
 
+    <!-- Filter Card -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header py-3 bg-white">
+            <h6 class="m-0 font-weight-bold text-danger">
+                <i class="bi bi-funnel me-2"></i>Bộ lọc
+            </h6>
+        </div>
+        <div class="card-body">
+            <form method="GET" action="{{ route('admin.recruitment-plans.index') }}" id="filterForm">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label for="university_id" class="form-label">Trường đại học</label>
+                        <select class="form-select" id="university_id" name="university_id">
+                            <option value="">Tất cả</option>
+                            @foreach($universities as $university)
+                                <option value="{{ $university->university_id }}" {{ request('university_id') == $university->university_id ? 'selected' : '' }}>
+                                    {{ $university->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="start_date" class="form-label">Từ ngày</label>
+                        <input type="date" class="form-control" id="start_date" name="start_date" value="{{ request('start_date') }}">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="end_date" class="form-label">Đến ngày</label>
+                        <input type="date" class="form-control" id="end_date" name="end_date" value="{{ request('end_date') }}">
+                    </div>
+                    <div class="col-12 d-flex justify-content-end mt-3">
+                        <button type="button" class="btn btn-outline-secondary me-2" id="resetFilterBtn">
+                            <i class="bi bi-x-circle me-1"></i>Xóa bộ lọc
+                        </button>
+                        <button type="submit" class="btn btn-danger">
+                            <i class="bi bi-funnel me-1"></i>Lọc
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Stats Cards -->
     <div class="row g-2 mb-4">
         <div class="col-sm-6 col-md-3">
@@ -81,6 +123,11 @@
     <!-- Data Table -->
     <div class="card border-0 shadow-sm">
         <div class="card-body p-0">
+            <div class="d-flex justify-content-end p-2 border-bottom bg-light">
+                <button class="btn btn-outline-secondary btn-sm" id="refreshBtn" title="Làm mới">
+                    <i class="bi bi-arrow-clockwise"></i>
+                </button>
+            </div>
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
                     <thead class="bg-light">
@@ -124,7 +171,7 @@
                                     </div>
                                 </td>
                                 <td class="px-2">
-                                    <a href="{{ route('admin.recruitment-plans.show', $plan) }}" class="text-decoration-none text-dark">
+                                    <a href="{{ route('admin.recruitment-plans.show', $plan) }}" class="text-decoration-none text-primary">
                                         <i class="bi bi-file-earmark-text me-1"></i>{{ $plan->name }}
                                     </a>
                                 </td>
@@ -163,7 +210,7 @@
             </div>
 
             <div class="px-3 py-2">
-                {{ $recruitmentPlans->links() }}
+                {{ $recruitmentPlans->appends(request()->query())->links() }}
             </div>
         </div>
     </div>
@@ -286,6 +333,20 @@ $(document).ready(function() {
             text: '{{ session('error') }}'
         });
     @endif
+    
+    // Reset filter button
+    document.getElementById('resetFilterBtn').addEventListener('click', function(e) {
+        e.preventDefault();
+        document.getElementById('university_id').value = '';
+        document.getElementById('start_date').value = '';
+        document.getElementById('end_date').value = '';
+        document.getElementById('filterForm').submit();
+    });
+    
+    // Refresh button
+    document.getElementById('refreshBtn').addEventListener('click', function() {
+        window.location.reload();
+    });
 });
 </script>
 @endpush
@@ -361,4 +422,4 @@ $(document).ready(function() {
     border-color: var(--danger-color);
 }
 </style>
-@endsection 
+@endsection

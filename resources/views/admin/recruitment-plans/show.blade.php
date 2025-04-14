@@ -131,7 +131,9 @@
             <div class="row mb-4">
                 <div class="col-md-6">
                     <div class="plan-title">Mô tả kế hoạch</div>
-                    <p class="plan-value">{{ $recruitmentPlan->description }}</p>
+                    <p class="plan-value">
+                        {{ $recruitmentPlan->description }}
+                    </p>
                 </div>
                 <div class="col-md-6">
                     <div class="plan-title">Trường học</div>
