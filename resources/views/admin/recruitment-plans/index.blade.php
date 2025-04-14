@@ -133,8 +133,8 @@
                                         <span class="badge bg-light text-dark">{{ $university->short_name }}</span>
                                     @endforeach
                                 </td>
-                                <td class="px-2">{{ $plan->start_date->format('d/m/Y H:i') }}</td>
-                                <td class="px-2">{{ $plan->end_date->format('d/m/Y H:i') }}</td>
+                                <td class="px-2">{{ $plan->start_date->format('d/m/Y') }}</td>
+                                <td class="px-2">{{ $plan->end_date->format('d/m/Y') }}</td>
                                 <td class="px-2">
                                     @switch($plan->status)
                                         @case('pending')
