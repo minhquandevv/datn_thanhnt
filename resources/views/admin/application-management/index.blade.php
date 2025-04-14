@@ -254,8 +254,9 @@
                                                             <input type="hidden" name="status" value="processing">
                                                             <button type="submit"
                                                             class="btn btn-sm btn-success confirm-action"
+                                                            style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;"
                                                             data-message="Bạn có chắc chắn muốn tiếp nhận đơn ứng tuyển này?">
-                                                            <i class="bi bi-check-circle me-1"></i> 
+                                                            <i class="bi bi-check-circle"></i> 
                                                         </button>
                                                         </form>
                                                     @elseif($application->status === 'processing')
@@ -265,8 +266,9 @@
                                                             <input type="hidden" name="status" value="approved">
                                                             <button type="submit"
                                                             class="btn btn-sm btn-success confirm-action"
+                                                            style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;"
                                                             data-message="Bạn có chắc chắn muốn duyệt đơn ứng tuyển này?">
-                                                            <i class="bi bi-check-lg me-1"></i> 
+                                                            <i class="bi bi-check-lg"></i> 
                                                         </button>
                                                         </form>
                                                         <form action="{{ route('admin.job-applications.update-status') }}" method="POST" class="d-inline">
@@ -275,8 +277,9 @@
                                                             <input type="hidden" name="status" value="rejected">
                                                             <button type="submit"
                                                                 class="btn btn-sm btn-danger confirm-action"
+                                                                style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;"
                                                                 data-message="Bạn có chắc chắn muốn từ chối đơn ứng tuyển này?">
-                                                            <i class="bi bi-x-lg me-1"></i> 
+                                                            <i class="bi bi-x-lg"></i> 
                                                         </button>
                                                     </form>
                                                     @elseif($application->status === 'passed')
@@ -285,13 +288,16 @@
                                                             <input type="hidden" name="application_id" value="{{ $application->id }}">
                                                             <button type="submit"
                                                                 class="btn btn-sm btn-info confirm-action"
+                                                                style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;"
                                                                 data-message="Bạn có chắc chắn muốn chuyển ứng viên này sang thực tập sinh?">
-                                                                <i class="bi bi-person-plus me-1"></i> 
+                                                                <i class="bi bi-person-plus"></i> 
                                                             </button>
                                                         </form>
                                                     @endif
-                                                    <a href="{{ route('admin.candidates.show', $application->candidate->id) }}" class="btn btn-sm btn-primary">
-                                                        <i class="bi bi-person me-1"></i> 
+                                                    <a href="{{ route('admin.candidates.show', $application->candidate->id) }}" 
+                                                       class="btn btn-sm btn-primary"
+                                                       style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;">
+                                                        <i class="bi bi-person"></i> 
                                                     </a>
                                                 </div>
                                             </td>
@@ -514,4 +520,4 @@
         });
     });
 </script>
-@endsection 
+@endsection

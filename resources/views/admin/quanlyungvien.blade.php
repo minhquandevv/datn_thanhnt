@@ -523,14 +523,7 @@
                                         </div>
                                     @endif
                                 </div>
-                                <div class="col-md-4 mb-3">
-                                    <h6>Ảnh CCCD/CMND</h6>
-                                    @if($candidate->identity_image)
-                                        <img src="{{ asset('uploads/' . $candidate->identity_image) }}" alt="Identity Card" class="img-thumbnail" style="max-width: 200px;">
-                                    @else
-                                        <p class="text-muted">Chưa có ảnh CCCD/CMND</p>
-                                    @endif
-                                </div>
+                                
                             </div>
                             <div class="row">
                                 <div class="col-md-6 mb-3">
@@ -579,52 +572,6 @@
                                             <td>{{ $edu->school_name }}</td>
                                             <td>{{ $edu->graduate_level }}</td>
                                             <td>{{ $edu->graduate_date }}</td>
-                                        </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
-
-                            <!-- Kinh nghiệm -->
-                            <h6 class="mt-4">Kinh nghiệm</h6>
-                            <div class="table-responsive">
-                                <table class="table table-sm">
-                                    <thead>
-                                        <tr>
-                                            <th>Công ty</th>
-                                            <th>Vị trí</th>
-                                            <th>Thời gian</th>
-                                            <th>Mô tả</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach($candidate->experience as $exp)
-                                        <tr>
-                                            <td>{{ $exp->company_name }}</td>
-                                            <td>{{ $exp->position }}</td>
-                                            <td>{{ $exp->date_start }} - {{ $exp->date_end }}</td>
-                                            <td>{{ $exp->description }}</td>
-                                        </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
-
-                            <!-- Kỹ năng -->
-                            <h6 class="mt-4">Kỹ năng</h6>
-                            <div class="table-responsive">
-                                <table class="table table-sm">
-                                    <thead>
-                                        <tr>
-                                            <th>Tên kỹ năng</th>
-                                            <th>Mô tả</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach($candidate->skills as $skill)
-                                        <tr>
-                                            <td>{{ $skill->skill_name }}</td>
-                                            <td>{{ $skill->skill_desc }}</td>
                                         </tr>
                                         @endforeach
                                     </tbody>
