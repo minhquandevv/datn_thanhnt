@@ -14,23 +14,43 @@ use Illuminate\Support\Facades\DB;
 
 class RecruitmentPlanController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $user = Auth::user();
         $query = RecruitmentPlan::with(['universities', 'positions.department', 'creator']);
 
         if ($user->role === 'hr') {
             $query->where('created_by', $user->id);
+            
+            // Apply university filter if selected
+            if ($request->filled('university_id')) {
+                $query->whereHas('universities', function($q) use ($request) {
+                    $q->where('recruitment_plan_university.university_id', $request->university_id);
+                });
+            }
+            
+            // Apply start date filter
+            if ($request->filled('start_date')) {
+                $query->where('start_date', '>=', $request->start_date);
+            }
+            
+            // Apply end date filter
+            if ($request->filled('end_date')) {
+                $query->where('end_date', '<=', $request->end_date);
+            }
         } else {
             // For admin/director, exclude draft plans
             $query->where('status', '!=', 'draft');
         }
 
         // Get counts for statistics
-        $totalPlans = $query->count();
+        $totalPlans = (clone $query)->count();
         $pendingPlans = (clone $query)->where('status', 'pending')->count();
         $approvedPlans = (clone $query)->where('status', 'approved')->count();
         $rejectedPlans = (clone $query)->where('status', 'rejected')->count();
+
+        // Get universities for the filter dropdown
+        $universities = University::orderBy('name', 'asc')->get();
 
         // Get paginated results
         $recruitmentPlans = $query->latest()->paginate(10);
@@ -41,7 +61,8 @@ class RecruitmentPlanController extends Controller
                 'totalPlans',
                 'pendingPlans',
                 'approvedPlans',
-                'rejectedPlans'
+                'rejectedPlans',
+                'universities'
             ));
         }
         
@@ -301,4 +322,4 @@ class RecruitmentPlanController extends Controller
                 ->with('error', 'Có lỗi xảy ra khi xóa kế hoạch. Vui lòng thử lại.');
         }
     }
-} 
+}

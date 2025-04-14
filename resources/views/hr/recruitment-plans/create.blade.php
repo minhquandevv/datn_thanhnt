@@ -80,12 +80,12 @@
                             </div>
 
                             <div class="mb-3">
-                                <label for="description" class="form-label">Mô tả <span class="text-danger">*</span></label>
+                                <label for="description" class="form-label">Mô tả </label>
                                 <textarea class="form-control @error('description') is-invalid @enderror" 
                                         id="description" 
                                         name="description" 
                                         rows="3" 
-                                        required>{{ old('description') }}</textarea>
+                                        >{{ old('description') }}</textarea>
                                 @error('description')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -184,6 +184,17 @@
                                                 </div>
                                                 <div class="col-md-3">
                                                     <div class="mb-3">
+                                                        <label class="form-label">Mô tả công việc</label>
+                                                        <textarea class="form-control @error('positions.'.$index.'.description') is-invalid @enderror" 
+                                                                name="positions[{{ $index }}][description]" 
+                                                                rows="1">{{ $position['description'] ?? '' }}</textarea>
+                                                        @error('positions.'.$index.'.description')
+                                                            <div class="invalid-feedback">{{ $message }}</div>
+                                                        @enderror
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="mb-3">
                                                         <label class="form-label">Yêu cầu <span class="text-danger">*</span></label>
                                                         <textarea class="form-control @error('positions.'.$index.'.requirements') is-invalid @enderror" 
                                                                 name="positions[{{ $index }}][requirements]" 
@@ -194,17 +205,7 @@
                                                         @enderror
                                                     </div>
                                                 </div>
-                                                <div class="col-md-3">
-                                                    <div class="mb-3">
-                                                        <label class="form-label">Mô tả vị trí</label>
-                                                        <textarea class="form-control @error('positions.'.$index.'.description') is-invalid @enderror" 
-                                                                name="positions[{{ $index }}][description]" 
-                                                                rows="1">{{ $position['description'] ?? '' }}</textarea>
-                                                        @error('positions.'.$index.'.description')
-                                                            <div class="invalid-feedback">{{ $message }}</div>
-                                                        @enderror
-                                                    </div>
-                                                </div>
+                                                
                                                 <div class="col-md-1">
                                                     <div class="mb-3">
                                                         <label class="form-label d-block">&nbsp;</label>
@@ -279,7 +280,7 @@
                                             </div>
                                             <div class="col-md-3">
                                                 <div class="mb-3">
-                                                    <label class="form-label">Mô tả vị trí</label>
+                                                    <label class="form-label">Mô tả công việc</label>
                                                     <textarea class="form-control @error('positions.0.description') is-invalid @enderror" 
                                                             name="positions[0][description]" 
                                                             rows="1">{{ old('positions.0.description') ?? '' }}</textarea>
@@ -373,16 +374,17 @@
                         </div>
                         <div class="col-md-3">
                             <div class="mb-3">
+                                <label class="form-label">Mô tả công việc</label>
+                                <textarea class="form-control" name="positions[${index}][description]" rows="1"></textarea>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
                                 <label class="form-label">Yêu cầu <span class="text-danger">*</span></label>
                                 <textarea class="form-control" name="positions[${index}][requirements]" rows="1" required></textarea>
                             </div>
                         </div>
-                        <div class="col-md-1">
-                            <div class="mb-3">
-                                <label class="form-label">Mô tả vị trí</label>
-                                <textarea class="form-control" name="positions[${index}][description]" rows="1"></textarea>
-                            </div>
-                        </div>
+                        
                         <div class="col-md-1">
                             <div class="mb-3">
                                 <label class="form-label d-block">&nbsp;</label>
@@ -401,15 +403,6 @@
             const newPosition = createPositionHTML(positionCount);
             positionsContainer.append(newPosition);
             positionCount++;
-            
-            // Hiển thị thông báo
-            Swal.fire({
-                icon: 'success',
-                title: 'Thành công!',
-                text: 'Đã thêm vị trí mới',
-                timer: 1500,
-                showConfirmButton: false
-            });
         });
 
         // Xử lý sự kiện xóa vị trí

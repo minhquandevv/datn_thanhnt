@@ -11,14 +11,37 @@ use Illuminate\Support\Facades\Auth;
 
 class RecruitmentPlanController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $plans = RecruitmentPlan::where('created_by', Auth::id())
-            ->orWhere('assigned_to', Auth::id())
-            ->with(['universities', 'positions'])
-            ->orderBy('created_at', 'desc')
-            ->get();
-        return view('hr.recruitment-plans.index', compact('plans'));
+        $query = RecruitmentPlan::where(function($q) {
+            $q->where('created_by', Auth::id())
+              ->orWhere('assigned_to', Auth::id());
+        })
+        ->with(['universities', 'positions']);
+        
+        // Apply university filter if selected
+        if ($request->filled('university_id')) {
+            $query->whereHas('universities', function($q) use ($request) {
+                $q->where('universities.university_id', $request->university_id);
+            });
+        }
+        
+        // Apply start date filter
+        if ($request->filled('start_date')) {
+            $query->where('start_date', '>=', $request->start_date);
+        }
+        
+        // Apply end date filter
+        if ($request->filled('end_date')) {
+            $query->where('end_date', '<=', $request->end_date);
+        }
+        
+        $recruitmentPlans = $query->orderBy('created_at', 'desc')->paginate(10);
+        
+        // Get all universities for filter dropdown
+        $universities = University::orderBy('name', 'asc')->get();
+        
+        return view('hr.recruitment-plans.index', compact('recruitmentPlans', 'universities'));
     }
 
     public function create()
@@ -181,4 +204,4 @@ class RecruitmentPlanController extends Controller
                 ->with('error', 'Có lỗi xảy ra khi xóa kế hoạch. Vui lòng thử lại.');
         }
     }
-} 
+}
