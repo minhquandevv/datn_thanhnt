@@ -193,9 +193,44 @@
                             @enderror
                         </div>
 
+                            <div class="mb-3">
+                                <label for="start_date" class="form-label">Ngày bắt đầu <span class="text-danger">*</span></label>
+                                <input type="date" 
+                                    class="form-control @error('start_date') is-invalid @enderror" 
+                                    id="start_date" 
+                                    name="start_date" 
+                                    value="{{ old('start_date') }}" 
+                                    required>
+                                @error('start_date')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+    
+                            <div class="mb-3">
+                                <label for="end_date" class="form-label">Ngày kết thúc <span class="text-danger">*</span></label>
+                                <input type="date" 
+                                    class="form-control @error('end_date') is-invalid @enderror" 
+                                    id="end_date" 
+                                    name="end_date" 
+                                    value="{{ old('end_date') }}" 
+                                    required>
+                                @error('end_date')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+    
+                            
+
+                        
+
+                        
+                    </div>
+
+                    <div class="col-md-6">
+
                         <div class="mb-3">
                             <label class="form-label">Trường đại học <span class="text-danger">*</span></label>
-                            <div class="border rounded p-3" style="max-height: 200px; overflow-y: auto;">
+                            <div class="border rounded p-3" style="max-height: 220px; overflow-y: auto;">
                                 @foreach($universities as $university)
                                     <div class="form-check">
                                         <input class="form-check-input" 
@@ -214,48 +249,20 @@
                                 <div class="invalid-feedback d-block">{{ $message }}</div>
                             @enderror
                         </div>
+                        
 
                         
                     </div>
-
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label for="start_date" class="form-label">Ngày bắt đầu <span class="text-danger">*</span></label>
-                            <input type="date" 
-                                class="form-control @error('start_date') is-invalid @enderror" 
-                                id="start_date" 
-                                name="start_date" 
-                                value="{{ old('start_date') }}" 
-                                required>
-                            @error('start_date')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="end_date" class="form-label">Ngày kết thúc <span class="text-danger">*</span></label>
-                            <input type="date" 
-                                class="form-control @error('end_date') is-invalid @enderror" 
-                                id="end_date" 
-                                name="end_date" 
-                                value="{{ old('end_date') }}" 
-                                required>
-                            @error('end_date')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="description" class="form-label">Mô tả </label>
-                            <textarea class="form-control @error('description') is-invalid @enderror" 
-                                    id="description" 
-                                    name="description" 
-                                    rows="3" 
-                                    >{{ old('description') }}</textarea>
-                            @error('description')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Mô tả </label>
+                        <textarea class="form-control @error('description') is-invalid @enderror" 
+                                id="description" 
+                                name="description" 
+                                rows="3" 
+                                >{{ old('description') }}</textarea>
+                        @error('description')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
                     </div>
                 </div>
 
