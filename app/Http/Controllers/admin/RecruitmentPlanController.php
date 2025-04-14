@@ -7,6 +7,7 @@ use App\Models\RecruitmentPlan;
 use App\Models\JobOffer;
 use App\Models\University;
 use App\Models\RecruitmentPosition;
+use App\Models\Department;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -16,7 +17,7 @@ class RecruitmentPlanController extends Controller
     public function index()
     {
         $user = Auth::user();
-        $query = RecruitmentPlan::with(['universities', 'positions', 'creator']);
+        $query = RecruitmentPlan::with(['universities', 'positions.department', 'creator']);
 
         if ($user->role === 'hr') {
             $query->where('created_by', $user->id);
@@ -60,7 +61,8 @@ class RecruitmentPlanController extends Controller
         }
 
         $universities = University::orderBy('name')->get();
-        return view('hr.recruitment-plans.create', compact('universities'));
+        $departments = Department::orderBy('name')->get();
+        return view('hr.recruitment-plans.create', compact('universities', 'departments'));
     }
 
     public function store(Request $request)
@@ -77,6 +79,7 @@ class RecruitmentPlanController extends Controller
             'end_date' => 'required|date|after:start_date',
             'positions' => 'required|array|min:1',
             'positions.*.name' => 'required|string|max:255',
+            'positions.*.department_id' => 'required|exists:departments,department_id',
             'positions.*.quantity' => 'required|integer|min:1',
             'positions.*.requirements' => 'required|string',
             'positions.*.description' => 'nullable|string'
@@ -101,6 +104,7 @@ class RecruitmentPlanController extends Controller
             foreach ($validated['positions'] as $positionData) {
                 RecruitmentPosition::create([
                     'plan_id' => $recruitmentPlan->plan_id,
+                    'department_id' => $positionData['department_id'],
                     'name' => $positionData['name'],
                     'quantity' => $positionData['quantity'],
                     'requirements' => $positionData['requirements'],
@@ -144,7 +148,8 @@ class RecruitmentPlanController extends Controller
     public function edit(RecruitmentPlan $recruitmentPlan)
     {
         $universities = University::all();
-        return view('admin.recruitment-plans.edit', compact('recruitmentPlan', 'universities'));
+        $departments = Department::orderBy('name')->get();
+        return view('admin.recruitment-plans.edit', compact('recruitmentPlan', 'universities', 'departments'));
     }
 
     public function update(Request $request, RecruitmentPlan $recruitmentPlan)
@@ -158,6 +163,7 @@ class RecruitmentPlanController extends Controller
             'end_date' => 'required|date|after:start_date',
             'positions' => 'required|array|min:1',
             'positions.*.name' => 'required|string|max:255',
+            'positions.*.department_id' => 'required|exists:departments,department_id',
             'positions.*.quantity' => 'required|integer|min:1',
             'positions.*.requirements' => 'required|string',
             'positions.*.description' => 'nullable|string'
@@ -183,6 +189,7 @@ class RecruitmentPlanController extends Controller
             foreach ($validated['positions'] as $position) {
                 $recruitmentPlan->positions()->create([
                     'name' => $position['name'],
+                    'department_id' => $position['department_id'],
                     'quantity' => $position['quantity'],
                     'requirements' => $position['requirements'],
                     'description' => $position['description'] ?? null

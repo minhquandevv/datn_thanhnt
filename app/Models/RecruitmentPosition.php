@@ -16,7 +16,8 @@ class RecruitmentPosition extends Model
         'name',
         'quantity',
         'requirements',
-        'description'
+        'description',
+        'department_id'
     ];
 
     public function plan()
@@ -27,5 +28,10 @@ class RecruitmentPosition extends Model
     public function cvs()
     {
         return $this->hasMany(CV::class, 'position_id');
+    }
+
+    public function department()
+    {
+        return $this->belongsTo(Department::class, 'department_id');
     }
 } 

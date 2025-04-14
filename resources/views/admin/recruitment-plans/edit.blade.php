@@ -115,7 +115,7 @@
                                    class="form-control @error('start_date') is-invalid @enderror" 
                                    id="start_date" 
                                    name="start_date" 
-                                   value="{{ old('start_date', $recruitmentPlan->start_date->format('Y-m-d')) }}" 
+                                   value="{{ old('start_date', $recruitmentPlan->start_date->setTimezone('Asia/Ho_Chi_Minh')->format('Y-m-d')) }}" 
                                    required>
                             @error('start_date')
                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -131,7 +131,7 @@
                                    class="form-control @error('end_date') is-invalid @enderror" 
                                    id="end_date" 
                                    name="end_date" 
-                                   value="{{ old('end_date', $recruitmentPlan->end_date->format('Y-m-d')) }}" 
+                                   value="{{ old('end_date', $recruitmentPlan->end_date->setTimezone('Asia/Ho_Chi_Minh')->format('Y-m-d')) }}" 
                                    required>
                             @error('end_date')
                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -169,6 +169,28 @@
                                                    value="{{ old('positions.'.$loop->index.'.name', $position->name) }}"
                                                    required>
                                             @error('positions.'.$loop->index.'.name')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">
+                                                <i class="bi bi-building me-2"></i>
+                                                Phòng ban <span class="text-danger">*</span>
+                                            </label>
+                                            <select class="form-select @error('positions.'.$loop->index.'.department_id') is-invalid @enderror" 
+                                                    name="positions[{{ $loop->index }}][department_id]" 
+                                                    required>
+                                                <option value="">Chọn phòng ban</option>
+                                                @foreach($departments as $department)
+                                                    <option value="{{ $department->department_id }}"
+                                                            {{ old('positions.'.$loop->index.'.department_id', $position->department_id) == $department->department_id ? 'selected' : '' }}>
+                                                        {{ $department->name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            @error('positions.'.$loop->index.'.department_id')
                                                 <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
                                         </div>
@@ -284,6 +306,24 @@ document.addEventListener('DOMContentLoaded', function() {
                                class="form-control" 
                                name="positions[${positionCount}][name]" 
                                required>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">
+                            <i class="bi bi-building me-2"></i>
+                            Phòng ban <span class="text-danger">*</span>
+                        </label>
+                        <select class="form-select" 
+                                name="positions[${positionCount}][department_id]" 
+                                required>
+                            <option value="">Chọn phòng ban</option>
+                            @foreach($departments as $department)
+                                <option value="{{ $department->department_id }}">
+                                    {{ $department->name }}
+                                </option>
+                            @endforeach
+                        </select>
                     </div>
                 </div>
                 <div class="col-md-3">

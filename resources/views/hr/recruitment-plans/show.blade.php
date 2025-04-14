@@ -85,6 +85,7 @@
                                 <thead class="table-light">
                                     <tr>
                                         <th class="border-0">Vị trí</th>
+                                        <th class="border-0">Phòng ban</th>
                                         <th class="text-center border-0">Số lượng</th>
                                         <th class="border-0">Yêu cầu</th>
                                         <th class="border-0">Mô tả công việc</th>
@@ -96,6 +97,10 @@
                                             <td class="text-gray-700">
                                                 <i class="bi bi-person-badge me-2"></i>
                                                 {{ $position->name }}
+                                            </td>
+                                            <td class="text-gray-700">
+                                                <i class="bi bi-building me-2"></i>
+                                                {{ $position->department->name }}
                                             </td>
                                             <td class="text-center">
                                                 <span class="badge bg-primary px-3 py-2">

@@ -11,6 +11,7 @@ return new class extends Migration
         Schema::create('recruitment_positions', function (Blueprint $table) {
             $table->id('position_id');
             $table->foreignId('plan_id')->constrained('recruitment_plans', 'plan_id')->onDelete('cascade');
+            $table->foreignId('department_id')->constrained('departments', 'department_id')->onDelete('cascade');
             $table->string('name');
             $table->integer('quantity');
             $table->text('requirements');

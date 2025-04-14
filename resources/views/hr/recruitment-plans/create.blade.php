@@ -149,6 +149,25 @@
                                                         @enderror
                                                     </div>
                                                 </div>
+                                                <div class="col-md-3">
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Phòng ban <span class="text-danger">*</span></label>
+                                                        <select class="form-select @error('positions.'.$index.'.department_id') is-invalid @enderror" 
+                                                                name="positions[{{ $index }}][department_id]" 
+                                                                required>
+                                                            <option value="">Chọn phòng ban</option>
+                                                            @foreach($departments as $department)
+                                                                <option value="{{ $department->department_id }}" 
+                                                                        {{ old('positions.'.$index.'.department_id') == $department->department_id ? 'selected' : '' }}>
+                                                                    {{ $department->name }}
+                                                                </option>
+                                                            @endforeach
+                                                        </select>
+                                                        @error('positions.'.$index.'.department_id')
+                                                            <div class="invalid-feedback">{{ $message }}</div>
+                                                        @enderror
+                                                    </div>
+                                                </div>
                                                 <div class="col-md-2">
                                                     <div class="mb-3">
                                                         <label class="form-label">Số lượng <span class="text-danger">*</span></label>
@@ -209,6 +228,25 @@
                                                         value="{{ old('positions.0.name') }}"
                                                         required>
                                                     @error('positions.0.name')
+                                                        <div class="invalid-feedback">{{ $message }}</div>
+                                                    @enderror
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="mb-3">
+                                                    <label class="form-label">Phòng ban <span class="text-danger">*</span></label>
+                                                    <select class="form-select @error('positions.0.department_id') is-invalid @enderror" 
+                                                            name="positions[0][department_id]" 
+                                                            required>
+                                                        <option value="">Chọn phòng ban</option>
+                                                        @foreach($departments as $department)
+                                                            <option value="{{ $department->department_id }}" 
+                                                                    {{ old('positions.0.department_id') == $department->department_id ? 'selected' : '' }}>
+                                                                {{ $department->name }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                    @error('positions.0.department_id')
                                                         <div class="invalid-feedback">{{ $message }}</div>
                                                     @enderror
                                                 </div>
@@ -316,6 +354,17 @@
                                 <input type="text" class="form-control" name="positions[${index}][name]" required>
                             </div>
                         </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label class="form-label">Phòng ban <span class="text-danger">*</span></label>
+                                <select class="form-select" name="positions[${index}][department_id]" required>
+                                    <option value="">Chọn phòng ban</option>
+                                    @foreach($departments as $department)
+                                        <option value="{{ $department->department_id }}">{{ $department->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
                         <div class="col-md-2">
                             <div class="mb-3">
                                 <label class="form-label">Số lượng <span class="text-danger">*</span></label>
@@ -328,7 +377,7 @@
                                 <textarea class="form-control" name="positions[${index}][requirements]" rows="1" required></textarea>
                             </div>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-1">
                             <div class="mb-3">
                                 <label class="form-label">Mô tả vị trí</label>
                                 <textarea class="form-control" name="positions[${index}][description]" rows="1"></textarea>
