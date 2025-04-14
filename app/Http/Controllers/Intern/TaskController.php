@@ -80,8 +80,11 @@ class TaskController extends Controller
 
     public function submitResult(Request $request, Task $task)
     {
+        // Validate request
         $request->validate([
-            'result_file' => 'required|file|mimes:pdf,doc,docx,xls,xlsx,txt,zip,rar|max:10240',
+            'submit_type' => 'required|in:file,link',
+            'result_file' => 'required_if:submit_type,file|file|mimes:pdf,doc,docx,xls,xlsx,txt,zip,rar|max:10240',
+            'result_link' => 'required_if:submit_type,link|url|max:255',
             'result_description' => 'nullable|string|max:1000',
         ]);
 
@@ -90,27 +93,40 @@ class TaskController extends Controller
             return back()->with('error', 'Không thể nộp kết quả cho công việc này.');
         }
 
-        // Store the file in public/uploads/document directory
-        $file = $request->file('result_file');
-        $originalFilename = $file->getClientOriginalName();
-        
-        // Create directory if it doesn't exist
-        $uploadPath = public_path('uploads/document');
-        if (!file_exists($uploadPath)) {
-            mkdir($uploadPath, 0755, true);
+        $attachmentResult = null;
+        $workDone = $request->result_description ?? '';
+
+        // Thêm xuống dòng sau mỗi dấu chấm
+        $workDone = preg_replace('/\.\s*/', ".\n", $workDone);
+
+        if ($request->submit_type === 'file') {
+            // Store the file in public/uploads/document directory
+            $file = $request->file('result_file');
+            $originalFilename = $file->getClientOriginalName();
+            
+            // Create directory if it doesn't exist
+            $uploadPath = public_path('uploads/document');
+            if (!file_exists($uploadPath)) {
+                mkdir($uploadPath, 0755, true);
+            }
+            
+            // Move file to uploads/document directory
+            $file->move($uploadPath, $originalFilename);
+            $attachmentResult = 'uploads/document/' . $originalFilename;
+            $workDone .= "\n\nFile đính kèm: " . $originalFilename;
+        } else {
+            // Store the link
+            $attachmentResult = $request->result_link;
+            $workDone .= "\n\nLink kết quả: " . $request->result_link;
         }
-        
-        // Move file to uploads/document directory
-        $file->move($uploadPath, $originalFilename);
-        $path = 'uploads/document/' . $originalFilename;
 
         // Create a new task report with the result
         TaskReports::create([
             'task_id' => $task->task_id,
             'report_date' => now(),
-            'work_done' => $request->result_description,
+            'work_done' => $workDone,
             'next_day_plan' => 'Đã hoàn thành công việc',
-            'attachment_result' => $path,
+            'attachment_result' => $attachmentResult,
         ]);
         
         // Update task status

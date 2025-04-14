@@ -258,9 +258,35 @@
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label for="result_file" class="form-label">File kết quả</label>
-                        <input type="file" class="form-control" id="result_file" name="result_file" required>
-                        <small class="form-text text-muted">Cho phép các file: PDF, DOC, DOCX, XLS, XLSX, TXT, ZIP, RAR (Tối đa 10MB)</small>
+                        <label class="form-label">Chọn cách nộp kết quả</label>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="submit_type" id="fileType" value="file" checked>
+                            <label class="form-check-label" for="fileType">
+                                Nộp file kết quả
+                            </label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="submit_type" id="linkType" value="link">
+                            <label class="form-check-label" for="linkType">
+                                Nộp link kết quả
+                            </label>
+                        </div>
+                    </div>
+
+                    <div id="fileInputGroup">
+                        <div class="mb-3">
+                            <label for="result_file" class="form-label">File kết quả</label>
+                            <input type="file" class="form-control" id="result_file" name="result_file">
+                            <small class="form-text text-muted">Cho phép các file: PDF, DOC, DOCX, XLS, XLSX, TXT, ZIP, RAR (Tối đa 10MB)</small>
+                        </div>
+                    </div>
+
+                    <div id="linkInputGroup" style="display: none;">
+                        <div class="mb-3">
+                            <label for="result_link" class="form-label">Link kết quả</label>
+                            <input type="url" class="form-control" id="result_link" name="result_link" placeholder="https://...">
+                            <small class="form-text text-muted">Ví dụ: https://drive.google.com/... hoặc https://github.com/...</small>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -295,4 +321,61 @@
         </div>
     </div>
 </div>
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const fileTypeRadio = document.getElementById('fileType');
+    const linkTypeRadio = document.getElementById('linkType');
+    const fileInputGroup = document.getElementById('fileInputGroup');
+    const linkInputGroup = document.getElementById('linkInputGroup');
+    const resultFile = document.getElementById('result_file');
+    const resultLink = document.getElementById('result_link');
+
+    function toggleInputGroups() {
+        if (fileTypeRadio.checked) {
+            fileInputGroup.style.display = 'block';
+            linkInputGroup.style.display = 'none';
+            resultFile.required = true;
+            resultLink.required = false;
+            resultLink.value = ''; // Clear link value when switching to file
+        } else {
+            fileInputGroup.style.display = 'none';
+            linkInputGroup.style.display = 'block';
+            resultFile.required = false;
+            resultLink.required = true;
+            resultFile.value = ''; // Clear file value when switching to link
+        }
+    }
+
+    // Add event listeners to radio buttons
+    fileTypeRadio.addEventListener('change', toggleInputGroups);
+    linkTypeRadio.addEventListener('change', toggleInputGroups);
+
+    // Initialize on page load
+    toggleInputGroups();
+
+    // Add form validation
+    const form = document.querySelector('#submitResultModal form');
+    form.addEventListener('submit', function(e) {
+        if (fileTypeRadio.checked && !resultFile.value) {
+            e.preventDefault();
+            alert('Vui lòng chọn file kết quả');
+        } else if (linkTypeRadio.checked && !resultLink.value) {
+            e.preventDefault();
+            alert('Vui lòng nhập link kết quả');
+        }
+    });
+
+    // Reset form when modal is closed
+    const modal = document.getElementById('submitResultModal');
+    modal.addEventListener('hidden.bs.modal', function () {
+        fileTypeRadio.checked = true;
+        resultFile.value = '';
+        resultLink.value = '';
+        toggleInputGroups();
+    });
+});
+</script>
+@endpush
 @endsection 
