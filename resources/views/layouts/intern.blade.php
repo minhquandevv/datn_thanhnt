@@ -528,6 +528,13 @@
                         <span>Thông tin cá nhân</span>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('intern.task.*') ? 'active' : '' }}" 
+                       href="{{ route('intern.tasks.index') }}">
+                        <i class="bi bi-file-earmark-text"></i>
+                        <span>Danh sách công việc</span>
+                    </a>
+                </li>
                 <li class="nav-item mt-auto">
                     <form action="{{ route('intern.logout') }}" method="POST">
                         @csrf
