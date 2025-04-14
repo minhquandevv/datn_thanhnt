@@ -106,16 +106,12 @@
                     <div class="col-md-6">
                         <div class="mb-3">
                             <label for="status" class="form-label">Trạng thái</label>
-                            <select class="form-select @error('status') is-invalid @enderror" 
-                                    id="status" 
-                                    name="status" 
-                                    required>
-                                <option value="">Chọn trạng thái</option>
-                                <option value="Chưa bắt đầu" {{ old('status', $task->status) == 'Chưa bắt đầu' ? 'selected' : '' }}>Chưa bắt đầu</option>
-                                <option value="Đang thực hiện" {{ old('status', $task->status) == 'Đang thực hiện' ? 'selected' : '' }}>Đang thực hiện</option>
-                                <option value="Hoàn thành" {{ old('status', $task->status) == 'Hoàn thành' ? 'selected' : '' }}>Hoàn thành</option>
-                                <option value="Trễ hạn" {{ old('status', $task->status) == 'Trễ hạn' ? 'selected' : '' }}>Trễ hạn</option>
-                            </select>
+                            <input type="text" 
+                                  class="form-control bg-light" 
+                                  id="status_display" 
+                                  value="{{ $task->status }}" 
+                                  readonly>
+                            <input type="hidden" name="status" value="{{ $task->status }}">
                             @error('status')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -273,21 +269,8 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const statusSelect = document.getElementById('status');
-    const resultFields = document.getElementById('resultFields');
     const fileInput = document.getElementById('attachments');
     const newFileList = document.getElementById('newFileList');
-
-    function toggleResultFields() {
-        if (statusSelect.value === 'Hoàn thành') {
-            resultFields.style.display = 'block';
-        } else {
-            resultFields.style.display = 'none';
-            document.getElementById('result').value = '';
-            document.getElementById('mentor_comment').value = '';
-            document.getElementById('evaluation').value = '';
-        }
-    }
 
     function updateFileList() {
         newFileList.innerHTML = '';
@@ -309,10 +292,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    statusSelect.addEventListener('change', toggleResultFields);
     fileInput.addEventListener('change', updateFileList);
-    toggleResultFields();
 });
 </script>
 @endpush
-@endsection 
+@endsection

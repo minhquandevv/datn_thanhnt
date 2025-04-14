@@ -17,6 +17,7 @@
             <form action="{{ route('mentor.tasks.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <input type="hidden" name="assigned_by" value="{{ auth()->guard('mentor')->user()->mentor_id }}">
+                <input type="hidden" name="status" value="Chưa bắt đầu">
 
                 <div class="row">
                     <div class="col-md-6">
@@ -104,30 +105,9 @@
                             @enderror
                         </div>
                     </div>
-
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label for="status" class="form-label">Trạng thái</label>
-                            <select class="form-select @error('status') is-invalid @enderror" 
-                                    id="status" 
-                                    name="status" 
-                                    required>
-                                <option value="">Chọn trạng thái</option>
-                                <option value="Chưa bắt đầu" {{ old('status') == 'Chưa bắt đầu' ? 'selected' : '' }}>Chưa bắt đầu</option>
-                                <option value="Đang thực hiện" {{ old('status') == 'Đang thực hiện' ? 'selected' : '' }}>Đang thực hiện</option>
-                                <option value="Đã hoàn thành" {{ old('status') == 'Đã hoàn thành' ? 'selected' : '' }}>Đã hoàn thành</option>
-                                <option value="Bị hủy" {{ old('status') == 'Bị hủy' ? 'selected' : '' }}>Bị hủy</option>
-                            </select>
-                            @error('status')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-                    </div>
                 </div>
 
                 <div class="row">
-                    <input type="hidden" name="status" value="Chưa bắt đầu">
-
                     <div class="col-md-12">
                         <div class="mb-3">
                             <div class="row">
@@ -165,58 +145,6 @@
                     @error('requirements')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
-                </div>
-
-                <div id="resultFields" style="display: none;">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="result" class="form-label">Kết quả</label>
-                                <textarea class="form-control @error('result') is-invalid @enderror" 
-                                          id="result" 
-                                          name="result" 
-                                          rows="3"
-                                          placeholder="Nhập kết quả công việc">{{ old('result') }}</textarea>
-                                @error('result')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="mentor_comment" class="form-label">Nhận xét của mentor</label>
-                                <textarea class="form-control @error('mentor_comment') is-invalid @enderror" 
-                                          id="mentor_comment" 
-                                          name="mentor_comment" 
-                                          rows="3"
-                                          placeholder="Nhập nhận xét của bạn">{{ old('mentor_comment') }}</textarea>
-                                @error('mentor_comment')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="evaluation" class="form-label">Đánh giá</label>
-                                <select class="form-select @error('evaluation') is-invalid @enderror" 
-                                        id="evaluation" 
-                                        name="evaluation">
-                                    <option value="">Chọn đánh giá</option>
-                                    <option value="Rất tốt" {{ old('evaluation') == 'Rất tốt' ? 'selected' : '' }}>Rất tốt</option>
-                                    <option value="Tốt" {{ old('evaluation', 'Tốt') == 'Tốt' ? 'selected' : '' }}>Tốt</option>
-                                    <option value="Trung bình" {{ old('evaluation') == 'Trung bình' ? 'selected' : '' }}>Trung bình</option>
-                                    <option value="Kém" {{ old('evaluation') == 'Kém' ? 'selected' : '' }}>Kém</option>
-                                </select>
-                                @error('evaluation')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-                    </div>
                 </div>
 
                 <div class="text-end">
@@ -393,27 +321,6 @@ function removeFile(index) {
     // Update the display
     showFileNames(fileInput);
 }
-
-document.addEventListener('DOMContentLoaded', function() {
-    const statusSelect = document.getElementById('status');
-    const resultFields = document.getElementById('resultFields');
-
-    function toggleResultFields() {
-        if (statusSelect.value === 'Hoàn thành') {
-            resultFields.style.display = 'block';
-        } else {
-            resultFields.style.display = 'none';
-            document.getElementById('result').value = '';
-            document.getElementById('mentor_comment').value = '';
-            document.getElementById('evaluation').value = '';
-        }
-    }
-    
-    if (statusSelect) {
-        statusSelect.addEventListener('change', toggleResultFields);
-        toggleResultFields();
-    }
-});
 </script>
 @endpush
-@endsection 
+@endsection
