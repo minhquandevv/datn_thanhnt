@@ -25,6 +25,7 @@ use App\Http\Controllers\ApplicationManagementController;
 use App\Http\Controllers\admin\InterviewScheduleController;
 use App\Http\Controllers\admin\EvaluationController;
 use App\Http\Controllers\Intern\TaskController;
+use App\Http\Controllers\Auth\ChangePasswordController;
 
 // Authentication Routes
 Route::middleware('guest')->group(function () {
@@ -57,6 +58,9 @@ Route::middleware(['auth:candidate'])->group(function () {
         Route::get('/applications', [CandidateController::class, 'applications'])->name('candidate.applications');
         Route::get('/applications/{id}', [CandidateController::class, 'showApplication'])->name('candidate.applications.show');
     });
+
+    // Route đổi mật khẩu cho candidate
+    Route::post('/change-password', [ChangePasswordController::class, 'changePassword'])->name('change-password.post');
 });
 
 //Candidate routes
@@ -264,3 +268,6 @@ Route::middleware(['auth', 'check.role:hr'])->prefix('hr')->name('hr.')->group(f
     Route::post('/job-applications/update-status', [HRJobApplicationController::class, 'updateStatus'])->name('job-applications.update-status');
     Route::get('/job-applications/{id}/download-cv', [HRJobApplicationController::class, 'downloadCV'])->name('job-applications.download-cv');
 });
+
+// Route đổi mật khẩu cho tất cả các guard
+Route::post('/change-password', [ChangePasswordController::class, 'changePassword'])->name('change-password.post');

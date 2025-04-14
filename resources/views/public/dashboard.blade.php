@@ -43,92 +43,83 @@
         @else
             <div class="row g-4">
                 @foreach ($jobOffers as $job)
-                    <div class="col-md-6 col-lg-4">
-                        <a href="{{ route('public.show', $job->id) }}" class="text-decoration-none">
-                            <div class="card h-100 border-0 shadow-sm hover-shadow d-flex flex-column">
-                                <div class="card-body d-flex flex-column">
-                                    <div class="d-flex justify-content-between align-items-start mb-3">
-                                        <div class="me-4">
-                                            <h5 class="card-title mb-1 text-dark">Công việc: {{ $job->job_name }}</h5>
-                                        </div>
-                                        @if($job->job_quantity > 0 && \Carbon\Carbon::parse($job->expiration_date)->isFuture())
-                                            <span class="badge bg-danger flex-shrink-0">Mới</span>
-                                        @elseif($job->job_quantity <= 0)
-                                            <span class="badge bg-success flex-shrink-0">Đã đủ</span>
-                                        @else
-                                            <span class="badge bg-warning flex-shrink-0">Hết hạn</span>
-                                        @endif
-                                    </div>
-
-                                    <p class="card-text text-dark mb-3">Phòng ban: {{ $job->department->name }}</p>
-                                    
-                                    <div class="d-flex justify-content-between align-items-center mb-3">
-                                        <div class="d-flex gap-2">
-                                            <span class="badge bg-light text-primary">
-                                                <i class="bi bi-clock me-1"></i>Toàn thời gian
-                                            </span>
-                                            <span class="badge bg-light text-primary">
-                                                <i class="bi bi-cash me-1"></i>{{ number_format($job->job_salary) }}đ
-                                            </span>
+                    @if(\Carbon\Carbon::parse($job->expiration_date)->isFuture())
+                        <div class="col-md-6 col-lg-4">
+                            <a href="{{ route('public.show', $job->id) }}" class="text-decoration-none">
+                                <div class="card h-100 border-0 shadow-sm hover-shadow d-flex flex-column">
+                                    <div class="card-body d-flex flex-column">
+                                        <div class="d-flex justify-content-between align-items-start mb-3">
+                                            <div class="me-4">
+                                                <h5 class="card-title mb-1 text-dark">Công việc: {{ $job->job_name }}</h5>
+                                            </div>
                                             @if($job->job_quantity > 0)
-                                                <span class="badge bg-light text-primary">
-                                                    <i class="bi bi-people me-1"></i>Còn {{ $job->job_quantity }} vị trí
-                                                </span>
+                                                <span class="badge bg-danger flex-shrink-0">Mới</span>
                                             @else
-                                                <span class="badge bg-light text-danger">
-                                                    <i class="bi bi-people me-1"></i>Đã đủ
-                                                </span>
+                                                <span class="badge bg-success flex-shrink-0">Đã đủ</span>
                                             @endif
                                         </div>
-                                        <span class="text-muted small">
-                                            <i class="bi bi-calendar me-1"></i>
-                                            @if(\Carbon\Carbon::parse($job->expiration_date)->isFuture())
+
+                                        <p class="card-text text-dark mb-3">Phòng ban: {{ $job->department->name }}</p>
+                                        
+                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                            <div class="d-flex gap-2">
+                                                <span class="badge bg-light text-primary">
+                                                    <i class="bi bi-clock me-1"></i>Toàn thời gian
+                                                </span>
+                                                <span class="badge bg-light text-primary">
+                                                    <i class="bi bi-cash me-1"></i>{{ number_format($job->job_salary) }}đ
+                                                </span>
+                                                @if($job->job_quantity > 0)
+                                                    <span class="badge bg-light text-primary">
+                                                        <i class="bi bi-people me-1"></i>Còn {{ $job->job_quantity }} vị trí
+                                                    </span>
+                                                @else
+                                                    <span class="badge bg-light text-danger">
+                                                        <i class="bi bi-people me-1"></i>Đã đủ
+                                                    </span>
+                                                @endif
+                                            </div>
+                                            <span class="text-muted small">
+                                                <i class="bi bi-calendar me-1"></i>
                                                 Hạn: {{ \Carbon\Carbon::parse($job->expiration_date)->format('d/m/Y') }}
-                                            @else
-                                                Đã hết hạn
-                                            @endif
-                                        </span>
-                                    </div>
+                                            </span>
+                                        </div>
 
-                                    <div class="mt-auto">
-                                        @if(Auth::check() && Auth::user()->role === 'admin')
-                                            <button class="btn btn-danger w-100">
-                                                <i class="bi bi-eye me-2"></i>Xem chi tiết
-                                            </button>
-                                        @elseif(Auth::guard('candidate')->check())
-                                            @php
-                                                $candidate = Auth::guard('candidate')->user();
-                                                $hasApplied = $job->applications()->where('candidate_id', $candidate->id)->exists();
-                                            @endphp
-
-                                            @if($hasApplied)
-                                                <button class="btn btn-secondary w-100" disabled>
-                                                    <i class="bi bi-check-circle me-2"></i>Đã ứng tuyển
-                                                </button>
-                                            @elseif($job->job_quantity > 0 && \Carbon\Carbon::parse($job->expiration_date)->isFuture())
+                                        <div class="mt-auto">
+                                            @if(Auth::check() && Auth::user()->role === 'admin')
                                                 <button class="btn btn-danger w-100">
-                                                    <i class="bi bi-send me-2"></i>Ứng tuyển ngay
+                                                    <i class="bi bi-eye me-2"></i>Xem chi tiết
                                                 </button>
+                                            @elseif(Auth::guard('candidate')->check())
+                                                @php
+                                                    $candidate = Auth::guard('candidate')->user();
+                                                    $hasApplied = $job->applications()->where('candidate_id', $candidate->id)->exists();
+                                                @endphp
+
+                                                @if($hasApplied)
+                                                    <button class="btn btn-secondary w-100" disabled>
+                                                        <i class="bi bi-check-circle me-2"></i>Đã ứng tuyển
+                                                    </button>
+                                                @elseif($job->job_quantity > 0)
+                                                    <button class="btn btn-danger w-100">
+                                                        <i class="bi bi-send me-2"></i>Ứng tuyển ngay
+                                                    </button>
+                                                @else
+                                                    <button class="btn btn-secondary w-100" disabled>
+                                                        <i class="bi bi-people me-2"></i>Đã đủ ứng viên
+                                                    </button>
+                                                @endif
                                             @else
-                                                <button class="btn btn-secondary w-100" disabled>
-                                                    <i class="bi bi-clock me-2"></i>
-                                                    @if($job->job_quantity <= 0)
-                                                        Đã đủ ứng viên
-                                                    @else
-                                                        Đã hết hạn
-                                                    @endif
+                                                <button class="btn btn-danger w-100">
+                                                    <i class="bi bi-box-arrow-in-right me-2"></i>Đăng nhập để ứng tuyển
                                                 </button>
                                             @endif
-                                        @else
-                                            <button class="btn btn-danger w-100">
-                                                <i class="bi bi-box-arrow-in-right me-2"></i>Đăng nhập để ứng tuyển
-                                            </button>
-                                        @endif
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </a>
-                    </div>
+                            </a>
+                        </div>
+                    @endif
                 @endforeach
             </div>
         @endif

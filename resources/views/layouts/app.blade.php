@@ -12,17 +12,18 @@
 
     <style>
         footer {
-    font-size: 0.95rem;
-}
+            font-size: 0.95rem;
+        }
 
-footer ul {
-    padding-left: 0;
-}
+        footer ul {
+            padding-left: 0;
+        }
 
-footer ul li a:hover {
-    color: #d40000;
-    text-decoration: underline;
-}
+        footer ul li a:hover {
+            color: #d40000;
+            text-decoration: underline;
+        }
+
         :root {
             --primary-color: #D40000;
             --secondary-color: #f8f9fa;
@@ -34,14 +35,14 @@ footer ul li a:hover {
 
         .navbar {
             background-color: white !important;
-            box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
             padding: 1rem 0;
             transition: all 0.3s ease;
         }
 
         .navbar.scrolled {
             padding: 0.5rem 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
 
         .navbar-brand {
@@ -94,7 +95,7 @@ footer ul li a:hover {
 
         .dropdown-menu {
             border: none;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
             border-radius: 12px;
             padding: 0.5rem;
             margin-top: 0.5rem;
@@ -106,6 +107,7 @@ footer ul li a:hover {
                 opacity: 0;
                 transform: translateY(-10px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -186,18 +188,18 @@ footer ul li a:hover {
                 background: white;
                 padding: 1rem;
                 border-radius: 12px;
-                box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+                box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
                 margin-top: 1rem;
             }
-            
+
             .nav-link {
                 padding: 0.8rem 1rem;
             }
-            
+
             .nav-link::after {
                 display: none;
             }
-            
+
             .btn-apply {
                 margin: 1rem 0 0 0;
                 width: 100%;
@@ -205,7 +207,7 @@ footer ul li a:hover {
         }
 
         .banner {
-            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('{{ asset('assets/banner.jpg') }}');
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('{{ asset('assets/banner.jpg') }}');
             background-size: cover;
             background-position: center;
             padding: 8rem 0;
@@ -225,7 +227,7 @@ footer ul li a:hover {
         .banner-title {
             font-size: 4rem;
             line-height: 1.2;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
             animation: fadeInUp 1s ease-out;
             font-weight: 800;
             letter-spacing: -1px;
@@ -235,7 +237,7 @@ footer ul li a:hover {
             font-size: 1.5rem;
             opacity: 0.95;
             animation: fadeInUp 1s ease-out 0.3s backwards;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
         }
 
         .banner-shape {
@@ -259,6 +261,7 @@ footer ul li a:hover {
                 opacity: 0;
                 transform: translateY(30px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -269,11 +272,11 @@ footer ul li a:hover {
             .banner {
                 padding: 6rem 0;
             }
-            
+
             .banner-title {
                 font-size: 2.8rem;
             }
-            
+
             .banner-subtitle {
                 font-size: 1.2rem;
             }
@@ -283,7 +286,7 @@ footer ul li a:hover {
             background: white;
             border-radius: 50px;
             padding: 1rem 2rem;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
 
         .search-input {
@@ -336,24 +339,25 @@ footer ul li a:hover {
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item"><a class="nav-link" href="{{ route('home') }}">Trang chủ</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Về chúng tôi</a></li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Việc làm</a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">Việc làm đã lưu</a></li>
-                            <li><a class="dropdown-item" href="#">Việc làm đã ứng tuyển</a></li>
-                        </ul>
-                    </li>
+                    @auth('candidate')
+                        @if (Auth::guard('candidate')->user() && Auth::guard('candidate')->user()->url_avatar)
+                            <li class="nav-item"><a class="nav-link" href="{{ route('candidate.applications') }}">Quản lý
+                                    đơn ứng tuyển</a></li>
+                        @endif
+                    @endauth
                 </ul>
                 <div class="ms-3">
                     @auth('candidate')
                         <div class="d-flex align-items-center">
                             <div class="dropdown">
-                                <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
-                                    @if(Auth::guard('candidate')->user()->url_avatar)
-                                        <img src="{{ asset('uploads/' . Auth::guard('candidate')->user()->url_avatar) }}" alt="Avatar" class="user-avatar me-2">
+                                <a class="nav-link dropdown-toggle d-flex align-items-center" href="#"
+                                    id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                                    @if (Auth::guard('candidate')->user()->url_avatar)
+                                        <img src="{{ asset('uploads/' . Auth::guard('candidate')->user()->url_avatar) }}"
+                                            alt="Avatar" class="user-avatar me-2">
                                     @else
-                                        <div class="user-avatar bg-secondary text-white d-flex align-items-center justify-content-center me-2">
+                                        <div
+                                            class="user-avatar bg-secondary text-white d-flex align-items-center justify-content-center me-2">
                                             {{ substr(Auth::guard('candidate')->user()->fullname, 0, 1) }}
                                         </div>
                                     @endif
@@ -361,12 +365,14 @@ footer ul li a:hover {
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end">
                                     <li><a class="dropdown-item" href="{{ route('candidate.profile') }}">
-                                        <i class="bi bi-person-badge me-2"></i>Thông tin cá nhân
-                                    </a></li>
-                                    <li><a class="dropdown-item" href="#">
-                                        <i class="bi bi-key me-2"></i>Đổi mật khẩu
-                                    </a></li>
-                                    <li><hr class="dropdown-divider"></li>
+                                            <i class="bi bi-person-badge me-2"></i>Thông tin cá nhân
+                                        </a></li>
+                                    <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+                                            <i class="bi bi-key me-2"></i>Đổi mật khẩu
+                                        </a></li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
                                     <li>
                                         <form action="{{ route('logout') }}" method="POST">
                                             @csrf
@@ -381,11 +387,14 @@ footer ul li a:hover {
                     @elseif(Auth::check() && (Auth::user()->role === 'admin' || Auth::user()->role === 'hr'))
                         <div class="d-flex align-items-center">
                             <div class="dropdown">
-                                <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
-                                    @if(Auth::user()->url_avatar)
-                                        <img src="{{ asset('uploads/' . Auth::user()->url_avatar) }}" alt="Avatar" class="user-avatar me-2">
+                                <a class="nav-link dropdown-toggle d-flex align-items-center" href="#"
+                                    id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                                    @if (Auth::user()->url_avatar)
+                                        <img src="{{ asset('uploads/' . Auth::user()->url_avatar) }}" alt="Avatar"
+                                            class="user-avatar me-2">
                                     @else
-                                        <div class="user-avatar bg-secondary text-white d-flex align-items-center justify-content-center me-2">
+                                        <div
+                                            class="user-avatar bg-secondary text-white d-flex align-items-center justify-content-center me-2">
                                             {{ substr(Auth::user()->name, 0, 1) }}
                                         </div>
                                     @endif
@@ -393,12 +402,14 @@ footer ul li a:hover {
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end">
                                     <li><a class="dropdown-item" href="{{ route('admin.home') }}">
-                                        <i class="bi bi-briefcase me-2"></i>Quản lý tuyển dụng
-                                    </a></li>
-                                    <li><a class="dropdown-item" href="#">
-                                        <i class="bi bi-key me-2"></i>Đổi mật khẩu
-                                    </a></li>
-                                    <li><hr class="dropdown-divider"></li>
+                                            <i class="bi bi-briefcase me-2"></i>Quản lý tuyển dụng
+                                        </a></li>
+                                    <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+                                            <i class="bi bi-key me-2"></i>Đổi mật khẩu
+                                        </a></li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
                                     <li>
                                         <form action="{{ route('logout') }}" method="POST">
                                             @csrf
@@ -432,25 +443,97 @@ footer ul li a:hover {
                 </div>
             </div>
         </div>
-        
+
     </div>
     <div class="container mt-4">
         @yield('content')
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Modal Đổi mật khẩu -->
+    <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="changePasswordModalLabel">Đổi mật khẩu</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{{ route('change-password.post') }}" method="POST">
+                    @csrf
+                    <div class="modal-body">
+                        @if (session('success'))
+                            <div class="alert alert-success" role="alert">
+                                {{ session('success') }}
+                            </div>
+                        @endif
+
+                        @if (session('error'))
+                            <div class="alert alert-danger" role="alert">
+                                {{ session('error') }}
+                            </div>
+                        @endif
+
+                        <div class="mb-3">
+                            <label for="current_password" class="form-label">Mật khẩu hiện tại</label>
+                            <input type="password" class="form-control @error('current_password') is-invalid @enderror" 
+                                id="current_password" name="current_password" required>
+                            @error('current_password')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="new_password" class="form-label">Mật khẩu mới</label>
+                            <input type="password" class="form-control @error('new_password') is-invalid @enderror" 
+                                id="new_password" name="new_password" required>
+                            @error('new_password')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="new_password_confirmation" class="form-label">Xác nhận mật khẩu mới</label>
+                            <input type="password" class="form-control" 
+                                id="new_password_confirmation" name="new_password_confirmation" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        <button type="submit" class="btn btn-primary">Đổi mật khẩu</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const navbar = document.querySelector('.navbar');
-        
-        window.addEventListener('scroll', function() {
-            if (window.scrollY > 50) {
-                navbar.classList.add('scrolled');
-            } else {
-                navbar.classList.remove('scrolled');
+        document.addEventListener('DOMContentLoaded', function() {
+            const navbar = document.querySelector('.navbar');
+
+            window.addEventListener('scroll', function() {
+                if (window.scrollY > 50) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
+            });
+
+            // Xử lý modal đổi mật khẩu
+            const changePasswordModal = document.getElementById('changePasswordModal');
+            if (changePasswordModal) {
+                changePasswordModal.addEventListener('hidden.bs.modal', function () {
+                    // Xóa các thông báo lỗi khi đóng modal
+                    const alerts = changePasswordModal.querySelectorAll('.alert');
+                    alerts.forEach(alert => alert.remove());
+                    
+                    // Reset form
+                    const form = changePasswordModal.querySelector('form');
+                    form.reset();
+                });
             }
         });
-    });
     </script>
 
     @yield('scripts')
@@ -474,9 +557,12 @@ footer ul li a:hover {
                 <ul class="list-unstyled">
                     <li class="mb-2"><a href="#" class="text-decoration-none text-dark">Trang chủ</a></li>
                     <li class="mb-2"><a href="#" class="text-decoration-none text-dark">Về chúng tôi</a></li>
-                    <li class="mb-2"><a href="#" class="text-decoration-none text-dark">Sản phẩm & Công nghệ</a></li>
-                    <li class="mb-2"><a href="#" class="text-decoration-none text-dark">Khách hàng & Đối tác</a></li>
-                    <li class="mb-2"><a href="#" class="text-decoration-none text-dark">Cơ hội nghề nghiệp</a></li>
+                    <li class="mb-2"><a href="#" class="text-decoration-none text-dark">Sản phẩm & Công
+                            nghệ</a></li>
+                    <li class="mb-2"><a href="#" class="text-decoration-none text-dark">Khách hàng & Đối
+                            tác</a></li>
+                    <li class="mb-2"><a href="#" class="text-decoration-none text-dark">Cơ hội nghề
+                            nghiệp</a></li>
                 </ul>
             </div>
             <div class="col-md-4 mb-4">
@@ -489,9 +575,8 @@ footer ul li a:hover {
         </div>
     </div>
 
-    <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" 
-            class="btn btn-danger rounded-circle position-fixed bottom-0 end-0 m-4 shadow"
-            style="z-index: 1050;">
+    <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})"
+        class="btn btn-danger rounded-circle position-fixed bottom-0 end-0 m-4 shadow" style="z-index: 1050;">
         <i class="bi bi-arrow-up-short fs-4"></i>
     </button>
 </footer>
