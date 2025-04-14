@@ -2,216 +2,265 @@
 
 @section('title', 'Chi tiết kế hoạch tuyển dụng')
 
+@push('styles')
+<style>
+    .bg-gradient-light {
+        background: linear-gradient(to right, #f8f9fa, #ffffff);
+    }
+    .plan-title {
+        font-weight: 600;
+        color: #495057;
+        margin-bottom: 0.5rem;
+    }
+    .plan-value {
+        color: #343a40;
+        margin-bottom: 1.5rem;
+    }
+    .plan-divider {
+        border-top: 1px solid rgba(0,0,0,0.08);
+        margin: 1.5rem 0;
+    }
+    .badge-university {
+        padding: 0.5rem 0.75rem;
+        margin-right: 0.5rem;
+        margin-bottom: 0.5rem;
+        background-color: rgba(220, 53, 69, 0.1);
+        color: #dc3545;
+        border-radius: 50px;
+        font-weight: 500;
+    }
+    .status-box {
+        padding: 1rem;
+        border-radius: 0.5rem;
+        margin-bottom: 1.5rem;
+    }
+    .status-box.draft {
+        background-color: rgba(108, 117, 125, 0.1);
+        border-left: 4px solid #6c757d;
+    }
+    .status-box.pending {
+        background-color: rgba(255, 193, 7, 0.1);
+        border-left: 4px solid #ffc107;
+    }
+    .status-box.approved {
+        background-color: rgba(40, 167, 69, 0.1);
+        border-left: 4px solid #28a745;
+    }
+    .status-box.rejected {
+        background-color: rgba(220, 53, 69, 0.1);
+        border-left: 4px solid #dc3545;
+    }
+    .card {
+        border: none;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        border-radius: 0.5rem;
+    }
+    .card-header {
+        background-color: #fff;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        padding: 1rem 1.5rem;
+    }
+    .card-body {
+        padding: 1.5rem;
+    }
+    .table thead th {
+        background-color: rgba(0, 0, 0, 0.03);
+        font-weight: 600;
+        color: #495057;
+    }
+    .table td, .table th {
+        padding: 0.75rem 1rem;
+    }
+    .action-btn {
+        transition: all 0.3s;
+    }
+    .action-btn:hover {
+        transform: translateY(-2px);
+    }
+    .info-label {
+        color: #6c757d;
+        font-size: 0.875rem;
+        margin-bottom: 0.25rem;
+    }
+    .info-value {
+        font-size: 1rem;
+        font-weight: 500;
+    }
+    .meta-info {
+        display: inline-flex;
+        align-items: center;
+        margin-right: 1.5rem;
+        margin-bottom: 0.75rem;
+    }
+    .meta-info .icon {
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: rgba(220, 53, 69, 0.1);
+        color: #dc3545;
+        border-radius: 50%;
+        margin-right: 0.5rem;
+    }
+</style>
+@endpush
+
 @section('content')
-<div class="container-fluid">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+<div class="container-fluid py-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="h4 text-danger fw-bold mb-0">
+            <i class="bi bi-file-earmark-text me-2"></i>Chi tiết kế hoạch tuyển dụng
+        </h1>
         <div>
-
-            <h1 class="h4 text-danger fw-bold mb-0">
-                <i class="bi bi-building me-2"></i>                Chi tiết kế hoạch tuyển dụng
-
-            </h1>
-        </div>
-        <div>
-            <a href="{{ route('hr.recruitment-plans.index') }}" class="btn btn-outline-secondary me-2">
-                <i class="bi bi-arrow-left me-2"></i>Quay lại
+            <a href="{{ route('hr.recruitment-plans.index') }}" class="btn btn-outline-danger btn-sm">
+                <i class="bi bi-arrow-left me-1"></i>Quay lại danh sách
             </a>
             @if($recruitmentPlan->status === 'draft')
-                <a href="{{ route('hr.recruitment-plans.edit', $recruitmentPlan) }}" class="btn btn-warning">
-                    <i class="bi bi-pencil me-2"></i>Chỉnh sửa
+                <a href="{{ route('hr.recruitment-plans.edit', $recruitmentPlan) }}" class="btn btn-warning btn-sm ms-2">
+                    <i class="bi bi-pencil me-1"></i>Chỉnh sửa
                 </a>
             @endif
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-md-8">
-            <div class="card shadow-sm mb-4 border-0">
-                <div class="card-header py-3 d-flex justify-content-between align-items-center bg-white border-bottom">
-                    <h6 class="m-0 font-weight-bold text-danger">
-                        <i class="bi bi-info-circle me-2"></i>
-                        Thông tin kế hoạch
-                    </h6>
-                    <span class="badge bg-{{ $recruitmentPlan->status === 'draft' ? 'secondary' : 
-                        ($recruitmentPlan->status === 'pending' ? 'warning' : 
-                        ($recruitmentPlan->status === 'approved' ? 'success' : 'danger')) }} px-3 py-2">
-                        <i class="bi bi-{{ $recruitmentPlan->status === 'draft' ? 'file-earmark' : 
-                            ($recruitmentPlan->status === 'pending' ? 'clock' : 
-                            ($recruitmentPlan->status === 'approved' ? 'check-circle' : 'x-circle')) }} me-1"></i>
-                        {{ $recruitmentPlan->status === 'draft' ? 'Nháp' : 
-                           ($recruitmentPlan->status === 'pending' ? 'Chờ duyệt' : 
-                           ($recruitmentPlan->status === 'approved' ? 'Đã duyệt' : 'Từ chối')) }}
-                    </span>
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 text-danger">
+                <i class="bi bi-info-circle me-2"></i>Thông tin chi tiết kế hoạch
+            </h5>
+            <span class="badge bg-{{ $recruitmentPlan->status === 'draft' ? 'secondary' : 
+                ($recruitmentPlan->status === 'pending' ? 'warning' : 
+                ($recruitmentPlan->status === 'approved' ? 'success' : 'danger')) }} px-3 py-2">
+                <i class="bi bi-{{ $recruitmentPlan->status === 'draft' ? 'file-earmark' : 
+                    ($recruitmentPlan->status === 'pending' ? 'hourglass-split' : 
+                    ($recruitmentPlan->status === 'approved' ? 'check-circle' : 'x-circle')) }} me-1"></i>
+                {{ $recruitmentPlan->status === 'draft' ? 'Nháp' : 
+                    ($recruitmentPlan->status === 'pending' ? 'Chờ duyệt' : 
+                    ($recruitmentPlan->status === 'approved' ? 'Đã duyệt' : 'Từ chối')) }}
+            </span>
+        </div>
+        <div class="card-body">
+            <div class="mb-4">
+                <h5 class="text-danger fw-bold">{{ $recruitmentPlan->name }}</h5>
+                <div class="text-muted small">
+                    <i class="bi bi-calendar-event me-1"></i>
+                    {{ $recruitmentPlan->start_date->format('d/m/Y') }} - {{ $recruitmentPlan->end_date->format('d/m/Y') }}
                 </div>
-                <div class="card-body">
-                    <div class="mb-4">
-                        <h5 class="font-weight-bold text-danger mb-3">
-                            <i class="bi bi-bookmark me-2"></i>
-                            Tên kế hoạch
-                        </h5>
-                        <p class="mb-0 text-gray-700">{{ $recruitmentPlan->name }}</p>
-                    </div>
+            </div>
 
-                    <div class="mb-4">
-                        <h5 class="font-weight-bold text-danger mb-3">
-                            <i class="bi bi-card-text me-2"></i>
-                            Mô tả
-                        </h5>
-                        <p class="mb-0 text-gray-700">{{ $recruitmentPlan->description }}</p>
-                    </div>
-
-                    <div class="mb-4">
-                        <h5 class="font-weight-bold text-danger mb-3">
-                            <i class="bi bi-building me-2"></i>
-                            Trường đại học
-                        </h5>
-                        <div class="d-flex flex-wrap gap-2">
-                            @foreach($recruitmentPlan->universities as $university)
-                                <span class="badge bg-light text-dark border px-3 py-2">
-                                    <i class="bi bi-mortarboard me-1"></i>
-                                    {{ $university->name }}
-                                </span>
-                            @endforeach
-                        </div>
-                    </div>
-
-                    <div class="mb-4">
-                        <h5 class="font-weight-bold text-danger mb-3">
-                            <i class="bi bi-briefcase me-2"></i>
-                            Vị trí tuyển dụng
-                        </h5>
-                        <div class="table-responsive">
-                            <table class="table table-hover align-middle">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th class="border-0">Vị trí</th>
-                                        <th class="border-0">Phòng ban</th>
-                                        <th class="text-center border-0">Số lượng</th>
-                                        <th class="border-0">Yêu cầu</th>
-                                        <th class="border-0">Mô tả công việc</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach($recruitmentPlan->positions as $position)
-                                        <tr>
-                                            <td class="text-gray-700">
-                                                <i class="bi bi-person-badge me-2"></i>
-                                                {{ $position->name }}
-                                            </td>
-                                            <td class="text-gray-700">
-                                                <i class="bi bi-building me-2"></i>
-                                                {{ $position->department->name }}
-                                            </td>
-                                            <td class="text-center">
-                                                <span class="badge bg-primary px-3 py-2">
-                                                    {{ $position->quantity }}
-                                                </span>
-                                            </td>
-                                            <td class="text-gray-700">{{ $position->requirements }}</td>
-                                            <td class="text-gray-700">{{ $position->description }}</td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="plan-title">Mô tả kế hoạch</div>
+                    <p class="plan-value">{{ $recruitmentPlan->description }}</p>
+                </div>
+                <div class="col-md-6">
+                    <div class="plan-title">Trường học</div>
+                    <div class="d-flex flex-wrap mt-2">
+                        @foreach($recruitmentPlan->universities as $university)
+                            <span class="badge-university">
+                                <i class="bi bi-building me-1"></i>{{ $university->name }}
+                            </span>
+                        @endforeach
                     </div>
                 </div>
             </div>
-        </div>
-
-        <div class="col-md-4">
-            <div class="card shadow-sm mb-4 border-0">
-                <div class="card-header py-3 bg-white border-bottom">
-                    <h6 class="m-0 font-weight-bold text-danger">
-                        <i class="bi bi-info-circle me-2"></i>
-                        Thông tin bổ sung
-                    </h6>
+            
+            <div class="status-box 
+                @if($recruitmentPlan->status == 'draft') draft
+                @elseif($recruitmentPlan->status == 'pending') pending
+                @elseif($recruitmentPlan->status == 'approved') approved
+                @else rejected @endif">
+                <h6 class="fw-bold mb-2">
+                    <i class="bi 
+                        @if($recruitmentPlan->status == 'draft') bi-file-earmark
+                        @elseif($recruitmentPlan->status == 'pending') bi-hourglass-split
+                        @elseif($recruitmentPlan->status == 'approved') bi-check-circle
+                        @else bi-x-circle @endif me-2"></i>
+                    Trạng thái: 
+                    @if($recruitmentPlan->status == 'draft') Nháp
+                    @elseif($recruitmentPlan->status == 'pending') Chờ duyệt
+                    @elseif($recruitmentPlan->status == 'approved') Đã duyệt
+                    @else Từ chối @endif
+                </h6>
+                
+                @if($recruitmentPlan->status == 'rejected' && $recruitmentPlan->rejection_reason)
+                    <div class="mt-2 small">
+                        <div class="fw-bold mb-1">Lý do từ chối:</div>
+                        <p class="mb-0">{{ $recruitmentPlan->rejection_reason }}</p>
+                    </div>
+                @endif
+            </div>
+            
+            <div class="d-flex flex-wrap mb-4">
+                <div class="meta-info">
+                    <div class="icon">
+                        <i class="bi bi-person"></i>
+                    </div>
+                    <div>
+                        <div class="info-label">Người tạo</div>
+                        <div class="info-value">{{ $recruitmentPlan->creator->name }}</div>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <div class="mb-4">
-                        <h6 class="font-weight-bold text-danger mb-3">
-                            <i class="bi bi-calendar me-2"></i>
-                            Thời gian
-                        </h6>
-                        <div class="bg-light p-3 rounded">
-                            <div class="mb-3">
-                                <div class="d-flex align-items-center text-gray-700">
-                                    <i class="bi bi-calendar-event text-primary me-2"></i>
-                                    <div>
-                                        <div class="small text-muted">Bắt đầu</div>
-                                        <div>{{ $recruitmentPlan->start_date->format('d/m/Y') }}</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="d-flex align-items-center text-gray-700">
-                                    <i class="bi bi-calendar-check text-primary me-2"></i>
-                                    <div>
-                                        <div class="small text-muted">Kết thúc</div>
-                                        <div>{{ $recruitmentPlan->end_date->format('d/m/Y') }}</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                
+                <div class="meta-info">
+                    <div class="icon">
+                        <i class="bi bi-calendar"></i>
                     </div>
-
-                    <div class="mb-4">
-                        <h6 class="font-weight-bold text-danger mb-3">
-                            <i class="bi bi-person me-2"></i>
-                            Người tạo
-                        </h6>
-                        <div class="bg-light p-3 rounded">
-                            <div class="d-flex align-items-center text-gray-700">
-                                <i class="bi bi-person-circle text-danger me-2"></i>
-                                {{ $recruitmentPlan->creator->name }}
-                            </div>
-                        </div>
+                    <div>
+                        <div class="info-label">Ngày tạo</div>
+                        <div class="info-value">{{ $recruitmentPlan->created_at->format('d/m/Y H:i') }}</div>
                     </div>
+                </div>
+            </div>
 
-                    <div class="mb-4">
-                        <h6 class="font-weight-bold text-danger mb-3">
-                            <i class="bi bi-clock me-2"></i>
-                            Ngày tạo
-                        </h6>
-                        <div class="bg-light p-3 rounded">
-                            <div class="d-flex align-items-center text-gray-700">
-                                <i class="bi bi-clock-history text-primary me-2"></i>
-                                {{ $recruitmentPlan->created_at->format('d/m/Y H:i') }}
-                            </div>
-                        </div>
-                    </div>
+            @if($recruitmentPlan->status === 'draft')
+            <div class="d-flex gap-2 mb-4">
+                <button type="button" 
+                        class="btn btn-success action-btn"
+                        data-bs-toggle="modal" 
+                        data-bs-target="#submitModal">
+                    <i class="bi bi-send me-2"></i>Nộp duyệt
+                </button>
 
-                    @if($recruitmentPlan->status === 'rejected')
-                        <div class="mb-4">
-                            <h6 class="font-weight-bold text-danger mb-3">
-                                <i class="bi bi-exclamation-triangle me-2"></i>
-                                Lý do từ chối
-                            </h6>
-                            <div class="bg-light p-3 rounded border-start border-danger border-4">
-                                <div class="text-danger">
-                                    {{ $recruitmentPlan->rejection_reason }}
-                                </div>
-                            </div>
-                        </div>
-                    @endif
+                <button type="button" 
+                        class="btn btn-outline-danger action-btn"
+                        data-bs-toggle="modal" 
+                        data-bs-target="#deleteModal">
+                    <i class="bi bi-trash me-2"></i>Xóa kế hoạch
+                </button>
+            </div>
+            @endif
+            
+            <div class="plan-divider"></div>
 
-                    <div class="mt-4">
-                        @if($recruitmentPlan->status === 'draft')
-                            <button type="button" 
-                                    class="btn btn-success w-100 py-2 mb-2"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#submitModal">
-                                <i class="bi bi-send me-2"></i>Nộp duyệt
-                            </button>
-
-                            <button type="button" 
-                                    class="btn btn-danger w-100 py-2"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#deleteModal">
-                                <i class="bi bi-trash me-2"></i>Xóa kế hoạch
-                            </button>
-                        @endif
-                    </div>
+            <div>
+                <div class="plan-title mb-3">Vị trí tuyển dụng</div>
+                <div class="table-responsive">
+                    <table class="table table-hover border">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 20%">Vị trí</th>
+                                <th style="width: 15%">Phòng ban</th>
+                                <th style="width: 10%" class="text-center">Số lượng</th>
+                                <th style="width: 25%">Yêu cầu</th>
+                                <th>Mô tả công việc</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($recruitmentPlan->positions as $position)
+                                <tr>
+                                    <td class="fw-medium">{{ $position->name }}</td>
+                                    <td>{{ $position->department->name }}</td>
+                                    <td class="text-center">
+                                        <span class="badge bg-danger">{{ $position->quantity }}</span>
+                                    </td>
+                                    <td>{{ $position->requirements }}</td>
+                                    <td>{{ $position->description }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -220,25 +269,34 @@
 
 <!-- Submit Modal -->
 <div class="modal fade" id="submitModal" tabindex="-1">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <form action="{{ route('hr.recruitment-plans.submit', $recruitmentPlan) }}" method="POST">
                 @csrf
                 <div class="modal-header">
-                    <h5 class="modal-title">Gửi duyệt kế hoạch</h5>
+                    <h5 class="modal-title">
+                        <i class="bi bi-send text-success me-2"></i>Nộp duyệt kế hoạch
+                    </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <p>Bạn có chắc chắn muốn gửi kế hoạch này để duyệt?</p>
+                    <div class="text-center mb-3">
+                        <div class="display-5 text-success">
+                            <i class="bi bi-send"></i>
+                        </div>
+                    </div>
+                    <p class="mb-1">Bạn có chắc chắn muốn gửi kế hoạch này để duyệt?</p>
                     <p class="mb-0 text-muted small">
                         <i class="bi bi-info-circle me-1"></i>
                         Sau khi gửi, kế hoạch sẽ được chuyển sang trạng thái "Chờ duyệt" và admin/director sẽ xem xét.
                     </p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x me-1"></i>Hủy
+                    </button>
                     <button type="submit" class="btn btn-success">
-                        <i class="bi bi-send me-2"></i>Gửi duyệt
+                        <i class="bi bi-send me-1"></i>Gửi duyệt
                     </button>
                 </div>
             </form>
@@ -248,30 +306,51 @@
 
 <!-- Delete Modal -->
 <div class="modal fade" id="deleteModal" tabindex="-1">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <form action="{{ route('hr.recruitment-plans.destroy', $recruitmentPlan) }}" method="POST">
                 @csrf
                 @method('DELETE')
                 <div class="modal-header">
-                    <h5 class="modal-title">Xóa kế hoạch</h5>
+                    <h5 class="modal-title">
+                        <i class="bi bi-trash text-danger me-2"></i>Xóa kế hoạch
+                    </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <p>Bạn có chắc chắn muốn xóa kế hoạch này?</p>
+                    <div class="text-center mb-3">
+                        <div class="display-5 text-danger">
+                            <i class="bi bi-trash"></i>
+                        </div>
+                    </div>
+                    <p class="mb-1">Bạn có chắc chắn muốn xóa kế hoạch này?</p>
                     <p class="mb-0 text-muted small">
                         <i class="bi bi-exclamation-triangle me-1"></i>
                         Hành động này không thể hoàn tác. Tất cả dữ liệu liên quan đến kế hoạch sẽ bị xóa vĩnh viễn.
                     </p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-arrow-left me-1"></i>Quay lại
+                    </button>
                     <button type="submit" class="btn btn-danger">
-                        <i class="bi bi-trash me-2"></i>Xóa kế hoạch
+                        <i class="bi bi-trash me-1"></i>Xác nhận xóa
                     </button>
                 </div>
             </form>
         </div>
     </div>
 </div>
-@endsection 
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize all tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    });
+</script>
+@endpush
+@endsection
